@@ -1,1 +1,161 @@
-index.html
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUPITER UNIVERSE Store</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: var(--tg-theme-bg-color, #f4f6f8);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+            --text-color: var(--tg-theme-text-color, #222222);
+            --hint-color: var(--tg-theme-hint-color, #888888);
+            --btn-color: var(--tg-theme-button-color, #2AABEE);
+            --btn-text: var(--tg-theme-button-text-color, #ffffff);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            color: var(--hint-color);
+            font-size: 13px;
+        }
+
+        .product-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .product-img {
+            width: 55px;
+            height: 55px;
+            border-radius: 10px;
+            object-fit: cover;
+            background-color: #eee;
+            flex-shrink: 0;
+        }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .product-plan {
+            font-size: 12px;
+            color: var(--hint-color);
+        }
+
+        .product-price {
+            font-size: 14px;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .select-btn {
+            background-color: var(--btn-color);
+            color: var(--btn-text);
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+
+        .select-btn:active {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>📦 Digital Store Catalog</h2>
+        <p>ဝယ်ယူလိုသော Product ကို ရွေးချယ်ပါ</p>
+    </div>
+
+    <div class="product-grid" id="product-container">
+        <!-- Dynamic Products -->
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+
+        const productsList = [
+            { id: "PROD-MN-001", name: "CapCut Pro", plan: "Private (1 Month)", price: "10,500 MMK", image: "https://img.icons8.com/color/144/capcut.png" },
+            { id: "PROD-MN-006", name: "Spotify Premium", plan: "Family Plan (1 Month)", price: "5,500 MMK", image: "https://img.icons8.com/color/144/spotify--v1.png" },
+            { id: "PROD-MN-012", name: "Canva Pro", plan: "Business Pro (1 Month)", price: "4,500 MMK", image: "https://img.icons8.com/color/144/canva.png" },
+            { id: "PROD-MN-028", name: "ChatGPT Plus", plan: "Private (1 Month)", price: "25,000 MMK", image: "https://img.icons8.com/fluent/144/chatgpt.png" },
+            { id: "PROD-MN-051", name: "Telegram Premium", plan: "Official (3 Months)", price: "45,000 MMK", image: "https://img.icons8.com/color/144/telegram-app.png" }
+        ];
+
+        const container = document.getElementById('product-container');
+
+        productsList.forEach(prod => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <img src="${prod.image}" alt="${prod.name}" class="product-img">
+                <div class="product-info">
+                    <div class="product-name">${prod.name}</div>
+                    <div class="product-plan">${prod.plan}</div>
+                    <div class="product-price">${prod.price}</div>
+                </div>
+                <button class="select-btn" onclick="orderProduct('${prod.id}', '${prod.name} - ${prod.plan}', '${prod.price}')">Order</button>
+            `;
+            container.appendChild(card);
+        });
+
+        function orderProduct(productId, fullTitle, price) {
+            const payload = {
+                product_id: productId,
+                product_title: fullTitle,
+                price: price
+            };
+            tg.sendData(JSON.stringify(payload));
+        }
+    </script>
+</body>
+</html>
