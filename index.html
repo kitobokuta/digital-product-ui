@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JUPITER UNIVERSE Store</title>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -25,68 +24,63 @@
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .header h2 {
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .header p {
-            margin: 5px 0 0;
-            color: var(--hint-color);
-            font-size: 13px;
-        }
-
-        .product-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 12px;
             display: flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--btn-color);
+            display: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            cursor: pointer;
             border: 1px solid rgba(0,0,0,0.05);
         }
 
-        .product-img {
-            width: 55px;
-            height: 55px;
-            border-radius: 10px;
-            object-fit: cover;
-            background-color: #eee;
-            flex-shrink: 0;
-        }
-
-        .product-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            flex-grow: 1;
-        }
-
-        .product-name {
+        .info-title {
             font-weight: 600;
             font-size: 15px;
         }
 
-        .product-plan {
+        .info-sub {
             font-size: 12px;
             color: var(--hint-color);
+            margin-top: 3px;
         }
 
-        .product-price {
+        .price-text {
             font-size: 14px;
             font-weight: bold;
             color: #10b981;
+            margin-top: 4px;
         }
 
         .select-btn {
@@ -98,55 +92,110 @@
             font-weight: 600;
             cursor: pointer;
             font-size: 13px;
-            transition: opacity 0.2s;
             flex-shrink: 0;
         }
 
         .select-btn:active {
             opacity: 0.8;
         }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--hint-color);
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h2>📦 Digital Store Catalog</h2>
-        <p>ဝယ်ယူလိုသော Product ကို ရွေးချယ်ပါ</p>
+        <button class="back-btn" id="back-btn" onclick="showMainPage()">⬅</button>
+        <h2 class="title" id="page-title">📦 Select Product</h2>
     </div>
 
-    <div class="product-grid" id="product-container">
-        <!-- Dynamic Products -->
-    </div>
+    <div id="loading" class="loading">Loading Database...</div>
+    <div class="grid" id="container"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        const productsList = [
-            { id: "PROD-MN-001", name: "CapCut Pro", plan: "Private (1 Month)", price: "10,500 MMK", image: "https://img.icons8.com/color/144/capcut.png" },
-            { id: "PROD-MN-006", name: "Spotify Premium", plan: "Family Plan (1 Month)", price: "5,500 MMK", image: "https://img.icons8.com/color/144/spotify--v1.png" },
-            { id: "PROD-MN-012", name: "Canva Pro", plan: "Business Pro (1 Month)", price: "4,500 MMK", image: "https://img.icons8.com/color/144/canva.png" },
-            { id: "PROD-MN-028", name: "ChatGPT Plus", plan: "Private (1 Month)", price: "25,000 MMK", image: "https://img.icons8.com/fluent/144/chatgpt.png" },
-            { id: "PROD-MN-051", name: "Telegram Premium", plan: "Official (3 Months)", price: "45,000 MMK", image: "https://img.icons8.com/color/144/telegram-app.png" }
-        ];
+        // 🔗 Boss ရဲ့ Google Sheet Live API URL
+        const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzUIf5yy0TBBCGyVQCa724hv1FBJkZrApdvSACYrNopzCsyZHnixk-wgHx03lVnqRk/exec";
 
-        const container = document.getElementById('product-container');
+        let rawProducts = [];
+        let groupedProducts = {};
 
-        productsList.forEach(prod => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <img src="${prod.image}" alt="${prod.name}" class="product-img">
-                <div class="product-info">
-                    <div class="product-name">${prod.name}</div>
-                    <div class="product-plan">${prod.plan}</div>
-                    <div class="product-price">${prod.price}</div>
-                </div>
-                <button class="select-btn" onclick="orderProduct('${prod.id}', '${prod.name} - ${prod.plan}', '${prod.price}')">Order</button>
-            `;
-            container.appendChild(card);
-        });
+        async function fetchProducts() {
+            try {
+                const res = await fetch(GOOGLE_SHEET_API_URL);
+                rawProducts = await res.json();
+                groupData();
+                showMainPage();
+            } catch (err) {
+                document.getElementById('loading').innerText = "Database မတက်နိုင်ပါ။ Sheet API Link ကို စစ်ဆေးပါခင်ဗျာ။";
+            }
+        }
+
+        function groupData() {
+            groupedProducts = {};
+            rawProducts.forEach(item => {
+                if (!groupedProducts[item.name]) {
+                    groupedProducts[item.name] = [];
+                }
+                groupedProducts[item.name].push(item);
+            });
+        }
+
+        function showMainPage() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('back-btn').style.display = 'none';
+            document.getElementById('page-title').innerText = "📦 Select Product";
+
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+
+            Object.keys(groupedProducts).forEach(prodName => {
+                const count = groupedProducts[prodName].length;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => showDetailPage(prodName);
+                card.innerHTML = `
+                    <div>
+                        <div class="info-title">${prodName}</div>
+                        <div class="info-sub">${count} Plan Options Available</div>
+                    </div>
+                    <div style="color: var(--hint-color); font-weight: bold;">❯</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showDetailPage(prodName) {
+            document.getElementById('back-btn').style.display = 'block';
+            document.getElementById('page-title').innerText = prodName;
+
+            const container = document.getElementById('container');
+            container.innerHTML = '';
+
+            const items = groupedProducts[prodName];
+            items.forEach(item => {
+                const formattedPrice = Number(item.price).toLocaleString();
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div>
+                        <div class="info-title">${item.plan} (${item.duration})</div>
+                        <div class="info-sub">${item.note ? item.note : 'Instant Delivery'}</div>
+                        <div class="price-text">${formattedPrice} MMK</div>
+                    </div>
+                    <button class="select-btn" onclick="orderProduct('${item.id}', '${item.name} - ${item.plan} (${item.duration})', '${formattedPrice} MMK')">Order</button>
+                `;
+                container.appendChild(card);
+            });
+        }
 
         function orderProduct(productId, fullTitle, price) {
             const payload = {
@@ -156,6 +205,8 @@
             };
             tg.sendData(JSON.stringify(payload));
         }
+
+        fetchProducts();
     </script>
 </body>
 </html>
