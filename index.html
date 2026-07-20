@@ -60,12 +60,13 @@
 
         .card h3 {
             margin: 0 0 8px 0;
-            font-size: 16px;
+            font-size: 15px;
+            word-break: break-word;
         }
 
         .card p {
             margin: 0;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--hint-color);
         }
 
@@ -145,7 +146,7 @@
         tg.expand(); // Fullscreen mode
 
         // Google Apps Script API Web App URL
-        const API_URL = "https://script.google.com/macros/s/AKfycbzUIf5yy0TBBCGyVQCa724hv1FBJkZrApdvSACYrNopzCsyZHnixk-wgHx03lVnqRk/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwFy-yG5nKp4U2IK3RQq3fQfpVQ5EhDOS3AG3sh_OTQ5xOSjCwSKr4qzeJAUxWMod5_/exec";
 
         let rawData = [];
         let selectedProduct = null;
@@ -171,7 +172,8 @@
             document.getElementById('detailView').style.display = 'none';
             tg.MainButton.hide();
 
-            const categories = [...new Set(rawData.map(item => item.category))];
+            // Extract unique categories safely
+            const categories = [...new Set(rawData.map(item => item.category || "General"))];
             const container = document.getElementById('categoryGrid');
             container.innerHTML = '';
 
@@ -192,7 +194,7 @@
             document.getElementById('detailView').style.display = 'none';
             tg.MainButton.hide();
 
-            const products = rawData.filter(item => item.category === category);
+            const products = rawData.filter(item => (item.category || "General") === category);
             const container = document.getElementById('productGrid');
             container.innerHTML = '';
 
@@ -200,8 +202,8 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <h3>${prod.name}</h3>
-                    <p class="price">${prod.price} MMK</p>
+                    <h3>${prod.name || 'Plan'}</h3>
+                    <p class="price">${prod.price ? prod.price + ' MMK' : 'Free / Contact'}</p>
                 `;
                 card.onclick = () => showDetail(prod);
                 container.appendChild(card);
@@ -214,7 +216,7 @@
             document.getElementById('productGrid').style.display = 'none';
             document.getElementById('detailView').style.display = 'block';
 
-            document.getElementById('productTitle').innerText = product.name;
+            document.getElementById('productTitle').innerText = `${product.category} - ${product.name}`;
             document.getElementById('productDescription').innerText = product.description || '';
             document.getElementById('productPrice').innerText = `${product.price} MMK`;
 
@@ -228,7 +230,7 @@
             const userInput = document.getElementById('accountData').value;
             const payload = {
                 order_id: selectedProduct.id,
-                item: selectedProduct.name,
+                item: `${selectedProduct.category} (${selectedProduct.name})`,
                 price: selectedProduct.price,
                 user_info: userInput
             };
