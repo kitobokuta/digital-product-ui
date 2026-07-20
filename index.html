@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Storefront</title>
+    <title>Jupiter Universe Storefront</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -12,7 +12,6 @@
             --text-color: var(--tg-theme-text-color, #222222);
             --hint-color: var(--tg-theme-hint-color, #8e8e93);
             --button-color: var(--tg-theme-button-color, #007aff);
-            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
             --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
         }
 
@@ -47,7 +46,7 @@
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            padding: 16px;
+            padding: 12px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
@@ -58,22 +57,31 @@
             transform: scale(0.98);
         }
 
+        .card img {
+            width: 52px;
+            height: 52px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 6px;
+        }
+
         .card h3 {
-            margin: 0 0 8px 0;
+            margin: 0 0 4px 0;
             font-size: 15px;
             word-break: break-word;
         }
 
-        .card p {
-            margin: 0;
-            font-size: 13px;
+        .duration {
+            font-size: 11px;
             color: var(--hint-color);
+            margin-bottom: 4px;
         }
 
         .price {
             font-weight: bold;
             color: var(--button-color);
-            margin-top: 8px !important;
+            margin-top: 4px;
+            font-size: 14px;
         }
 
         .back-btn {
@@ -90,16 +98,24 @@
         .detail-view {
             display: none;
             background-color: var(--card-bg);
-            padding: 20px;
+            padding: 18px;
             border-radius: 12px;
         }
 
-        .detail-view h3 {
-            margin-top: 0;
+        .note-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            color: #5c3c00;
+            padding: 10px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            margin: 14px 0;
+            text-align: left;
+            line-height: 1.4;
         }
 
         .input-group {
-            margin-top: 16px;
+            margin-top: 14px;
             text-align: left;
         }
 
@@ -131,13 +147,20 @@
     <div id="productGrid" class="grid" style="display: none;"></div>
 
     <div id="detailView" class="detail-view">
-        <h3 id="productTitle"></h3>
-        <p id="productDescription" style="color: var(--hint-color);"></p>
-        <p id="productPrice" class="price" style="font-size: 18px;"></p>
+        <div style="text-align: center;">
+            <img id="detailLogo" src="" style="width: 64px; height: 64px; border-radius: 12px; display: none; object-fit: cover; margin-bottom: 8px;">
+            <h3 id="productTitle" style="margin: 4px 0;"></h3>
+            <div id="productDuration" class="duration" style="font-size: 13px;"></div>
+            <div id="productPrice" class="price" style="font-size: 18px; margin-top: 6px;"></div>
+        </div>
+
+        <!-- ၁။ Admin ဘက်မှ ထည့်ပေးလိုက်သော Note / Condition -->
+        <div id="noteBox" class="note-box" style="display:none;"></div>
         
+        <!-- ၂။ Customer အတွက် Note / Account Info ရိုက်ထည့်ရန် Box -->
         <div class="input-group">
-            <label for="accountData">Account ID / Phone / Remarks:</label>
-            <input type="text" id="accountData" placeholder="Enter details for order processing...">
+            <label for="accountData">Account ID / Email / Phone / Remarks:</label>
+            <input type="text" id="accountData" placeholder="ဝယ်ယူမည့် အကောင့်အချက်အလက်ထည့်ပါ...">
         </div>
     </div>
 
@@ -146,7 +169,7 @@
         tg.expand(); // Fullscreen mode
 
         // Google Apps Script API Web App URL (Updated with Latest Deployment Link)
-        const API_URL = "https://script.google.com/macros/s/AKfycbxeKqxP4kC2oiKQiZsN1V6xhItZ2eYmeYPXaDxE1ZkN89rx-xLOuFdOXOy6AfNCHFdb/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbya__sa_PI_8-tjrxz3BDhtJzOUVTgAIGaUyuG5k7XpWVx_PddL4ZkBqjukQlqoh7MY/exec";
 
         let rawData = [];
         let selectedProduct = null;
@@ -172,15 +195,21 @@
             document.getElementById('detailView').style.display = 'none';
             tg.MainButton.hide();
 
-            // Extract unique categories safely
-            const categories = [...new Set(rawData.map(item => item.category || "General"))];
+            // Extract unique categories
+            const categories = [...new Set(rawData.map(item => item.category || "Other"))];
             const container = document.getElementById('categoryGrid');
             container.innerHTML = '';
 
             categories.forEach(cat => {
+                const firstItem = rawData.find(i => i.category === cat);
+                const logoHtml = firstItem && firstItem.logo ? `<img src="${firstItem.logo}" alt="logo">` : '';
+                
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<h3>${cat}</h3>`;
+                card.innerHTML = `
+                    ${logoHtml}
+                    <h3>${cat}</h3>
+                `;
                 card.onclick = () => showProducts(cat);
                 container.appendChild(card);
             });
@@ -194,16 +223,21 @@
             document.getElementById('detailView').style.display = 'none';
             tg.MainButton.hide();
 
-            const products = rawData.filter(item => (item.category || "General") === category);
+            const products = rawData.filter(item => (item.category || "Other") === category);
             const container = document.getElementById('productGrid');
             container.innerHTML = '';
 
             products.forEach(prod => {
+                const logoHtml = prod.logo ? `<img src="${prod.logo}" alt="logo">` : '';
+                const durationHtml = prod.duration ? `<div class="duration">⏱ ${prod.duration}</div>` : '';
+
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
+                    ${logoHtml}
                     <h3>${prod.name || 'Plan'}</h3>
-                    <p class="price">${prod.price ? prod.price + ' MMK' : 'Free / Contact'}</p>
+                    ${durationHtml}
+                    <div class="price">${prod.price ? prod.price + ' MMK' : 'Free / Contact'}</div>
                 `;
                 card.onclick = () => showDetail(prod);
                 container.appendChild(card);
@@ -216,9 +250,27 @@
             document.getElementById('productGrid').style.display = 'none';
             document.getElementById('detailView').style.display = 'block';
 
+            // Show Product Logo
+            const logoImg = document.getElementById('detailLogo');
+            if (product.logo) {
+                logoImg.src = product.logo;
+                logoImg.style.display = 'inline-block';
+            } else {
+                logoImg.style.display = 'none';
+            }
+
             document.getElementById('productTitle').innerText = `${product.category} - ${product.name}`;
-            document.getElementById('productDescription').innerText = product.description || '';
+            document.getElementById('productDuration').innerText = product.duration ? `Duration: ${product.duration}` : '';
             document.getElementById('productPrice').innerText = `${product.price} MMK`;
+
+            // Admin Note Display
+            const noteBox = document.getElementById('noteBox');
+            if (product.description && product.description.trim() !== "") {
+                noteBox.innerHTML = `<strong>📌 Condition / Note:</strong><br>${product.description}`;
+                noteBox.style.display = 'block';
+            } else {
+                noteBox.style.display = 'none';
+            }
 
             // Configure Telegram Main Button
             tg.MainButton.setText(`ORDER NOW (${product.price} MMK)`);
@@ -228,15 +280,20 @@
 
         function sendOrder() {
             const userInput = document.getElementById('accountData').value;
+            const fullDuration = selectedProduct.duration ? ` - ${selectedProduct.duration}` : '';
+            
             const payload = {
-                order_id: selectedProduct.id,
-                item: `${selectedProduct.category} (${selectedProduct.name})`,
+                product_id: selectedProduct.id,
+                full_item_name: `${selectedProduct.category} (${selectedProduct.name}${fullDuration})`,
                 price: selectedProduct.price,
-                user_info: userInput
+                customer_note: userInput
             };
 
             // Send payload back to Python Telegram Bot
             tg.sendData(JSON.stringify(payload));
+            
+            // Order Now နှိပ်လိုက်သည်နှင့် Mini App Web ကို ချက်ချင်း ပိတ်ပေးမည်
+            tg.close();
         }
 
         // Initialize App
