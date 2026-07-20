@@ -3,209 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUPITER UNIVERSE Store</title>
+    <title>Digital Storefront</title>
+    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --bg-color: var(--tg-theme-bg-color, #f4f6f8);
-            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
             --text-color: var(--tg-theme-text-color, #222222);
-            --hint-color: var(--tg-theme-hint-color, #888888);
-            --btn-color: var(--tg-theme-button-color, #2AABEE);
-            --btn-text: var(--tg-theme-button-text-color, #ffffff);
+            --hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --button-color: var(--tg-theme-button-color, #007aff);
+            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             padding: 16px;
+            box-sizing: border-box;
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
+        h2 {
+            margin-top: 0;
+            font-size: 20px;
+            text-align: center;
         }
 
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            cursor: pointer;
-            color: var(--btn-color);
-            display: none;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .title {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 0;
+        .loading {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--hint-color);
         }
 
         .grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
         }
 
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            padding: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.1s ease;
         }
 
-        .info-title {
-            font-weight: 600;
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--hint-color);
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--button-color);
+            margin-top: 8px !important;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: none;
+            color: var(--button-color);
             font-size: 15px;
+            cursor: pointer;
+            padding: 8px 0;
+            margin-bottom: 12px;
+            display: none;
         }
 
-        .info-sub {
+        .detail-view {
+            display: none;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .detail-view h3 {
+            margin-top: 0;
+        }
+
+        .input-group {
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .input-group label {
             font-size: 12px;
             color: var(--hint-color);
-            margin-top: 3px;
+            display: block;
+            margin-bottom: 6px;
         }
 
-        .price-text {
-            font-size: 14px;
-            font-weight: bold;
-            color: #10b981;
-            margin-top: 4px;
-        }
-
-        .select-btn {
-            background-color: var(--btn-color);
-            color: var(--btn-text);
-            border: none;
-            padding: 8px 14px;
+        .input-group input {
+            width: 100%;
+            padding: 10px;
             border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-
-        .select-btn:active {
-            opacity: 0.8;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--hint-color);
+            border: 1px solid #ccc;
+            box-sizing: border-box;
             font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <button class="back-btn" id="back-btn" onclick="showMainPage()">⬅</button>
-        <h2 class="title" id="page-title">📦 Select Product</h2>
-    </div>
+    <button id="backBtn" class="back-btn" onclick="showCategories()">← Back to Categories</button>
+    
+    <h2 id="title">Categories</h2>
+    <div id="loading" class="loading">Loading products...</div>
 
-    <div id="loading" class="loading">Loading Database...</div>
-    <div class="grid" id="container"></div>
+    <div id="categoryGrid" class="grid"></div>
+    <div id="productGrid" class="grid" style="display: none;"></div>
+
+    <div id="detailView" class="detail-view">
+        <h3 id="productTitle"></h3>
+        <p id="productDescription" style="color: var(--hint-color);"></p>
+        <p id="productPrice" class="price" style="font-size: 18px;"></p>
+        
+        <div class="input-group">
+            <label for="accountData">Account ID / Phone / Remarks:</label>
+            <input type="text" id="accountData" placeholder="Enter details for order processing...">
+        </div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        tg.expand(); // Fullscreen mode
 
-        // 🔗 Boss ရဲ့ Google Sheet Live API URL
-        const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzUIf5yy0TBBCGyVQCa724hv1FBJkZrApdvSACYrNopzCsyZHnixk-wgHx03lVnqRk/exec";
+        // Google Apps Script API Web App URL
+        const API_URL = "https://script.google.com/macros/s/AKfycbwqZ-Xj0Z34S9Y-YourAppScriptID/exec";
 
-        let rawProducts = [];
-        let groupedProducts = {};
+        let rawData = [];
+        let selectedProduct = null;
 
+        // Fetch data from Apps Script API
         async function fetchProducts() {
             try {
-                const res = await fetch(GOOGLE_SHEET_API_URL);
-                rawProducts = await res.json();
-                groupData();
-                showMainPage();
-            } catch (err) {
-                document.getElementById('loading').innerText = "Database မတက်နိုင်ပါ။ Sheet API Link ကို စစ်ဆေးပါခင်ဗျာ။";
+                const response = await fetch(API_URL);
+                rawData = await response.json();
+                document.getElementById('loading').style.display = 'none';
+                showCategories();
+            } catch (error) {
+                document.getElementById('loading').innerText = "Error loading data!";
+                console.error("Fetch error:", error);
             }
         }
 
-        function groupData() {
-            groupedProducts = {};
-            rawProducts.forEach(item => {
-                if (!groupedProducts[item.name]) {
-                    groupedProducts[item.name] = [];
-                }
-                groupedProducts[item.name].push(item);
-            });
-        }
+        function showCategories() {
+            document.getElementById('title').innerText = "Categories";
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('categoryGrid').style.display = 'grid';
+            document.getElementById('productGrid').style.display = 'none';
+            document.getElementById('detailView').style.display = 'none';
+            tg.MainButton.hide();
 
-        function showMainPage() {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('back-btn').style.display = 'none';
-            document.getElementById('page-title').innerText = "📦 Select Product";
-
-            const container = document.getElementById('container');
+            const categories = [...new Set(rawData.map(item => item.category))];
+            const container = document.getElementById('categoryGrid');
             container.innerHTML = '';
 
-            Object.keys(groupedProducts).forEach(prodName => {
-                const count = groupedProducts[prodName].length;
+            categories.forEach(cat => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => showDetailPage(prodName);
-                card.innerHTML = `
-                    <div>
-                        <div class="info-title">${prodName}</div>
-                        <div class="info-sub">${count} Plan Options Available</div>
-                    </div>
-                    <div style="color: var(--hint-color); font-weight: bold;">❯</div>
-                `;
+                card.innerHTML = `<h3>${cat}</h3>`;
+                card.onclick = () => showProducts(cat);
                 container.appendChild(card);
             });
         }
 
-        function showDetailPage(prodName) {
-            document.getElementById('back-btn').style.display = 'block';
-            document.getElementById('page-title').innerText = prodName;
+        function showProducts(category) {
+            document.getElementById('title').innerText = category;
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('categoryGrid').style.display = 'none';
+            document.getElementById('productGrid').style.display = 'grid';
+            document.getElementById('detailView').style.display = 'none';
+            tg.MainButton.hide();
 
-            const container = document.getElementById('container');
+            const products = rawData.filter(item => item.category === category);
+            const container = document.getElementById('productGrid');
             container.innerHTML = '';
 
-            const items = groupedProducts[prodName];
-            items.forEach(item => {
-                const formattedPrice = Number(item.price).toLocaleString();
+            products.forEach(prod => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
-                    <div>
-                        <div class="info-title">${item.plan} (${item.duration})</div>
-                        <div class="info-sub">${item.note ? item.note : 'Instant Delivery'}</div>
-                        <div class="price-text">${formattedPrice} MMK</div>
-                    </div>
-                    <button class="select-btn" onclick="orderProduct('${item.id}', '${item.name} - ${item.plan} (${item.duration})', '${formattedPrice} MMK')">Order</button>
+                    <h3>${prod.name}</h3>
+                    <p class="price">${prod.price} MMK</p>
                 `;
+                card.onclick = () => showDetail(prod);
                 container.appendChild(card);
             });
         }
 
-        function orderProduct(productId, fullTitle, price) {
+        function showDetail(product) {
+            selectedProduct = product;
+            document.getElementById('title').innerText = "Confirm Order";
+            document.getElementById('productGrid').style.display = 'none';
+            document.getElementById('detailView').style.display = 'block';
+
+            document.getElementById('productTitle').innerText = product.name;
+            document.getElementById('productDescription').innerText = product.description || '';
+            document.getElementById('productPrice').innerText = `${product.price} MMK`;
+
+            // Configure Telegram Main Button
+            tg.MainButton.setText(`ORDER NOW (${product.price} MMK)`);
+            tg.MainButton.show();
+            tg.MainButton.onClick(sendOrder);
+        }
+
+        function sendOrder() {
+            const userInput = document.getElementById('accountData').value;
             const payload = {
-                product_id: productId,
-                product_title: fullTitle,
-                price: price
+                order_id: selectedProduct.id,
+                item: selectedProduct.name,
+                price: selectedProduct.price,
+                user_info: userInput
             };
+
+            // Send payload back to Python Telegram Bot
             tg.sendData(JSON.stringify(payload));
         }
 
+        // Initialize App
         fetchProducts();
     </script>
 </body>
