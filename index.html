@@ -31,7 +31,7 @@
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            padding: 16px 12px;
+            padding: 20px 12px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
@@ -43,17 +43,17 @@
         }
         .card:active { transform: scale(0.98); }
         .card img {
-            width: 56px;
-            height: 56px;
+            width: 60px;
+            height: 60px;
             border-radius: 14px;
             object-fit: cover;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             background-color: rgba(0,0,0,0.03);
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
         .card h3 { margin: 0; font-size: 15px; word-break: break-word; font-weight: 600; }
         
-        /* Premium Bold Red Duration Styling */
+        /* Sub-tier styling for second UI */
         .duration { 
             font-size: 11px; 
             font-weight: 700; 
@@ -215,7 +215,7 @@
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
-        // Group unique products by Name/Title (e.g. Spotify, Netflix)
+        // Group unique products by Name/Title (e.g., Spotify, Netflix)
         const uniqueProductsMap = new Map();
         rawData.forEach((prod) => {
             const prodName = getProp(prod, ["name", "title"]) || 'Plan';
@@ -230,6 +230,7 @@
 
             const card = document.createElement('div');
             card.className = 'card';
+            // First page UI shows ONLY product name, without duration or MMK price tags
             card.innerHTML = `
                 <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${prodName}</h3>
@@ -242,7 +243,7 @@
     function showCategoriesOrDetail(prodName) {
         const matchedItems = rawData.filter(i => getProp(i, ["name", "title"]) === prodName);
 
-        if (matchedItems.length > 1) {
+        if (matchedItems.length > 0) {
             document.getElementById('title').innerText = prodName;
             document.getElementById('backBtn').style.display = 'block';
             document.getElementById('productGrid').style.display = 'none';
@@ -254,7 +255,7 @@
             container.innerHTML = '';
 
             matchedItems.forEach(item => {
-                const itemCat = getProp(item, ["category", "cat"]) || 'Option';
+                const itemCat = getProp(item, ["category", "cat"]) || prodName;
                 const itemPrice = getProp(item, ["price", "cost"]) || '0';
                 const itemDuration = getProp(item, ["duration", "time"]) || '';
                 const logoSrc = resolveLogo(item, itemCat);
@@ -263,6 +264,7 @@
 
                 const card = document.createElement('div');
                 card.className = 'card';
+                // Second UI displays individual variants (e.g. Individual / Family) with duration and price
                 card.innerHTML = `
                     <img src="${logoSrc}" alt="${itemCat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                     <h3>${itemCat}</h3>
@@ -272,8 +274,6 @@
                 card.onclick = () => showDetail(item);
                 container.appendChild(card);
             });
-        } else if (matchedItems.length === 1) {
-            showDetail(matchedItems[0]);
         }
     }
 
@@ -301,8 +301,7 @@
             this.src = fallbackSrc;
         };
 
-        // Display product name + option/category if applicable without supplier prefix
-        document.getElementById('productTitle').innerText = prodCat ? `${prodName} - ${prodCat}` : prodName;
+        document.getElementById('productTitle').innerText = prodCat && prodCat !== prodName ? `${prodName} - ${prodCat}` : prodName;
         document.getElementById('productDuration').innerText = prodDuration ? `⏱ ${prodDuration}` : '';
         document.getElementById('productPrice').innerText = `${prodPrice} MMK`;
 
@@ -332,7 +331,7 @@
         const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
 
         const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
-        const fullItemName = prodCat ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
+        const fullItemName = (prodCat && prodCat !== prodName) ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
         const user = tg.initDataUnsafe?.user;
@@ -345,9 +344,8 @@
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
 
         if (chatId) {
-            let photoSent = false;
             try {
-                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -357,8 +355,6 @@
                         parse_mode: 'HTML'
                     })
                 });
-                const resData = await res.json();
-                if (resData.ok) photoSent = the; // wait, ok check
             } catch (err) {
                 console.error("Direct API Photo Error:", err);
             }
