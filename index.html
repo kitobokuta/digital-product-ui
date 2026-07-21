@@ -30,19 +30,25 @@
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            padding: 12px;
+            padding: 14px 10px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
             transition: transform 0.1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .card:active { transform: scale(0.98); }
         .card img {
             width: 52px;
             height: 52px;
-            border-radius: 10px;
+            border-radius: 12px;
             object-fit: cover;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            background-color: rgba(0,0,0,0.03);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
         .card h3 { margin: 0 0 4px 0; font-size: 15px; word-break: break-word; }
         .duration { font-size: 11px; color: var(--hint-color); margin-bottom: 4px; }
@@ -57,6 +63,7 @@
             padding: 8px 0;
             margin-bottom: 12px;
             display: none;
+            font-weight: 500;
         }
 
         .detail-view { display: none; background-color: var(--card-bg); padding: 18px; border-radius: 12px; }
@@ -95,7 +102,7 @@
 
 <div id="detailView" class="detail-view">
     <div style="text-align: center;">
-        <img id="detailLogo" src="" style="width: 64px; height: 64px; border-radius: 12px; display: none; object-fit: cover; margin-bottom: 8px;" onerror="this.style.display='none'">
+        <img id="detailLogo" src="" style="width: 64px; height: 64px; border-radius: 14px; object-fit: cover; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <h3 id="productTitle" style="margin: 4px 0;"></h3>
         <div id="productDuration" class="duration" style="font-size: 13px;"></div>
         <div id="productPrice" class="price" style="font-size: 18px; margin-top: 6px;"></div>
@@ -119,6 +126,62 @@
 
     let rawData = [];
     let selectedProduct = null;
+
+    const APP_LOGOS = {
+        "capcut": "https://img.icons8.com/color/144/capcut.png",
+        "canva": "https://img.icons8.com/color/144/canva.png",
+        "netflix": "https://img.icons8.com/color/144/netflix--v1.png",
+        "spotify": "https://img.icons8.com/color/144/spotify--v1.png",
+        "chatgpt": "https://img.icons8.com/color/144/chatgpt.png",
+        "openai": "https://img.icons8.com/color/144/chatgpt.png",
+        "youtube": "https://img.icons8.com/color/144/youtube-play.png",
+        "telegram": "https://img.icons8.com/color/144/telegram-app.png",
+        "zoom": "https://img.icons8.com/color/144/zoom.png",
+        "adobe": "https://img.icons8.com/color/144/adobe.png",
+        "nordvpn": "https://img.icons8.com/color/144/nordvpn.png",
+        "expressvpn": "https://img.icons8.com/color/144/expressvpn.png",
+        "apple": "https://img.icons8.com/color/144/mac-os.png",
+        "microsoft": "https://img.icons8.com/color/144/microsoft.png",
+        "disney": "https://img.icons8.com/color/144/disney-plus.png",
+        "duolingo": "https://img.icons8.com/color/144/duolingo.png",
+        "grammarly": "https://img.icons8.com/color/144/grammarly.png",
+        "claude": "https://img.icons8.com/color/144/artificial-intelligence.png",
+        "midjourney": "https://img.icons8.com/color/144/artificial-intelligence.png",
+        "pubg": "https://img.icons8.com/color/144/pubg.png",
+        "freefire": "https://img.icons8.com/color/144/controller.png"
+    };
+
+    function getSvgInitialsLogo(text) {
+        const initial = (text || "J").trim().charAt(0).toUpperCase();
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="22" fill="url(#blueGrad)"/>
+            <defs>
+                <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#2481cc"/>
+                    <stop offset="100%" stop-color="#0056b3"/>
+                </linearGradient>
+            </defs>
+            <text x="50%" y="55%" font-family="-apple-system, Roboto, sans-serif" font-weight="bold" font-size="46" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initial}</text>
+        </svg>`;
+        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function resolveLogo(item, categoryName) {
+        if (item && item.logo && typeof item.logo === "string" && item.logo.trim() !== "") {
+            return item.logo.trim();
+        }
+
+        const nameToSearch = `${item ? item.name || "" : ""} ${item ? item.category || "" : ""} ${categoryName || ""}`.toLowerCase();
+        
+        for (const key in APP_LOGOS) {
+            if (nameToSearch.includes(key)) {
+                return APP_LOGOS[key];
+            }
+        }
+
+        const titleForInitial = (item && item.name) || categoryName || (item && item.category) || "Product";
+        return getSvgInitialsLogo(titleForInitial);
+    }
 
     async function fetchProducts() {
         try {
@@ -145,11 +208,15 @@
 
         categories.forEach(cat => {
             const firstItem = rawData.find(i => i.category === cat);
-            const logoHtml = firstItem && firstItem.logo ? `<img src="${firstItem.logo}" alt="logo" onerror="this.style.display='none'">` : '';
+            const logoSrc = resolveLogo(firstItem, cat);
+            const fallbackSrc = getSvgInitialsLogo(cat);
             
             const card = document.createElement('div');
             card.className = 'card';
-            card.innerHTML = `${logoHtml}<h3>${cat}</h3>`;
+            card.innerHTML = `
+                <img src="${logoSrc}" alt="${cat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                <h3>${cat}</h3>
+            `;
             card.onclick = () => showProducts(cat);
             container.appendChild(card);
         });
@@ -168,13 +235,14 @@
         container.innerHTML = '';
 
         products.forEach(prod => {
-            const logoHtml = prod.logo ? `<img src="${prod.logo}" alt="logo" onerror="this.style.display='none'">` : '';
+            const logoSrc = resolveLogo(prod, category);
+            const fallbackSrc = getSvgInitialsLogo(prod.name || category);
             const durationHtml = prod.duration ? `<div class="duration">⏱ ${prod.duration}</div>` : '';
 
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
-                ${logoHtml}
+                <img src="${logoSrc}" alt="${prod.name || 'Plan'}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${prod.name || 'Plan'}</h3>
                 ${durationHtml}
                 <div class="price">${prod.price ? prod.price + ' MMK' : 'Free / Contact'}</div>
@@ -191,12 +259,14 @@
         document.getElementById('detailView').style.display = 'block';
 
         const logoImg = document.getElementById('detailLogo');
-        if (product.logo) {
-            logoImg.src = product.logo;
-            logoImg.style.display = 'inline-block';
-        } else {
-            logoImg.style.display = 'none';
-        }
+        const logoSrc = resolveLogo(product, product.category);
+        const fallbackSrc = getSvgInitialsLogo(product.name || product.category);
+        
+        logoImg.src = logoSrc;
+        logoImg.onerror = function() {
+            this.onerror = null;
+            this.src = fallbackSrc;
+        };
 
         document.getElementById('productTitle').innerText = `${product.category} - ${product.name}`;
         document.getElementById('productDuration').innerText = product.duration ? `Duration: ${product.duration}` : '';
