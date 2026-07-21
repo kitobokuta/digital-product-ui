@@ -113,7 +113,10 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
     const API_URL = "https://script.google.com/macros/s/AKfycbya__sa_PI_8-tjrxz3BDhtJzOUVTgAIGaUyuG5k7XpWVx_PddL4ZkBqjukQlqoh7MY/exec";
+    const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
+
     let rawData = [];
     let selectedProduct = null;
 
@@ -214,23 +217,55 @@
         tg.MainButton.onClick(sendOrder);
     }
 
-    function sendOrder() {
+    async function sendOrder() {
         if (!selectedProduct) return;
+        
         const userInput = document.getElementById('accountData').value;
         const fullDuration = selectedProduct.duration ? ` - ${selectedProduct.duration}` : '';
-        
-        const payload = {
-            product_id: selectedProduct.id,
-            full_item_name: `${selectedProduct.category} (${selectedProduct.name}${fullDuration})`,
-            price: selectedProduct.price,
-            customer_note: userInput || "-"
-        };
+        const fullItemName = `${selectedProduct.category} (${selectedProduct.name}${fullDuration})`;
+        const price = selectedProduct.price;
+        const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
+        const user = tg.initDataUnsafe?.user;
+        const chatId = user?.id;
+
+        const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
+                            `<b>Item:</b> ${fullItemName}\n` +
+                            `<b>Price:</b> ${price} MMK\n\n` +
+                            `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
+
+        // 1. Send Order QR Code directly via Telegram Bot API (Works on BOTH Inline & Keyboard Buttons)
+        if (chatId) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        photo: QR_IMAGE_URL,
+                        caption: captionText,
+                        parse_mode: 'HTML'
+                    })
+                });
+            } catch (err) {
+                console.error("Direct API Error:", err);
+            }
+        }
+
+        // 2. Also attempt sendData for fallback
         try {
+            const payload = {
+                order_id: orderId,
+                product_id: selectedProduct.id,
+                full_item_name: fullItemName,
+                price: price,
+                customer_note: userInput || "-"
+            };
             tg.sendData(JSON.stringify(payload));
         } catch (e) {
             console.error("sendData Error:", e);
         }
+
         tg.close();
     }
 
