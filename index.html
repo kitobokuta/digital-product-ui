@@ -231,13 +231,15 @@
 
         const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
                             `<b>Item:</b> ${fullItemName}\n` +
-                            `<b>Price:</b> ${price} MMK\n\n` +
+                            `<b>Price:</b> ${price} MMK\n` +
+                            `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
 
-        // 1. Send Order QR Code directly via Telegram Bot API (Works on BOTH Inline & Keyboard Buttons)
+        // 1. Direct Telegram Bot API sendPhoto (Primary for Inline WebApp)
         if (chatId) {
+            let photoSent = false;
             try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -247,12 +249,31 @@
                         parse_mode: 'HTML'
                     })
                 });
+                const resData = await res.json();
+                if (resData.ok) photoSent = true;
             } catch (err) {
-                console.error("Direct API Error:", err);
+                console.error("Direct API Photo Error:", err);
+            }
+
+            // Fallback: Send Text Message if Photo fetch failed
+            if (!photoSent) {
+                try {
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: captionText,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                } catch (err) {
+                    console.error("Direct API Message Error:", err);
+                }
             }
         }
 
-        // 2. Also attempt sendData for fallback
+        // 2. Reply Keyboard sendData fallback
         try {
             const payload = {
                 order_id: orderId,
