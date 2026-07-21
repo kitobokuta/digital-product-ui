@@ -136,14 +136,13 @@
     try { tg.expand(); } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbzrzwE55Sjow7y-EbesmOaAe90_ZSfuawGMpbj5oNtehsdgoXVjtauQDXDX-Eom4vbI/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyyrtXomYwO-izUAc7WtDmer5224cqD_AFi11C24KeQ86hbCsfg8lQJ-iNSUMKS5JJJ/exec";
     const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
 
     let rawData = [];
     let selectedProduct = null;
     let currentView = 'PRODUCTS'; // 'PRODUCTS', 'VARIANTS', 'DETAIL'
     let lastSelectedProductName = '';
-    let navigationHistory = ['PRODUCTS']; // Keeps track of history for correct back navigation without going to top
 
     function getProp(obj, keys) {
         if (!obj) return "";
@@ -209,13 +208,12 @@
             showProductsView();
         } catch (error) {
             console.error("Fetch error:", error);
-            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script Deploy ပြန်စစ်ပေးပါရန်။</span>";
+            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script URL သို့မဟုတ် Deploy အသစ်ကို စစ်ဆေးပေးပါ။</span>";
         }
     }
 
     function showProductsView() {
         currentView = 'PRODUCTS';
-        navigationHistory = ['PRODUCTS'];
         document.getElementById('title').innerText = "Jupiter Store";
         document.getElementById('backBtn').style.display = 'none';
         document.getElementById('productGrid').style.display = 'grid';
@@ -226,7 +224,6 @@
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
-        // Unique product names only (e.g. Spotify)
         const uniqueNames = new Set();
         rawData.forEach(item => {
             const name = getProp(item, ["name", "title"]);
@@ -240,7 +237,6 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            // FIRST PAGE: ONLY Product Name. NO supplier, NO price, NO duration.
             card.innerHTML = `
                 <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${prodName}</h3>
@@ -253,8 +249,6 @@
     function showVariantsView(prodName) {
         currentView = 'VARIANTS';
         lastSelectedProductName = prodName;
-        navigationHistory = ['PRODUCTS', 'VARIANTS'];
-        
         document.getElementById('title').innerText = prodName;
         document.getElementById('backBtn').style.display = 'block';
         document.getElementById('productGrid').style.display = 'none';
@@ -277,7 +271,6 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            // SECOND PAGE: Display plan (individual/family), duration, price, note
             card.innerHTML = `
                 <img src="${logoSrc}" alt="${cat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${cat}</h3>
@@ -292,8 +285,6 @@
     function showDetailView(product) {
         currentView = 'DETAIL';
         selectedProduct = product;
-        navigationHistory = ['PRODUCTS', 'VARIANTS', 'DETAIL'];
-
         document.getElementById('title').innerText = "Confirm Order";
         document.getElementById('productGrid').style.display = 'none';
         document.getElementById('variantGrid').style.display = 'none';
@@ -337,7 +328,6 @@
     }
 
     function goBack() {
-        // Precise back navigation without resetting to top unnecessarily
         if (currentView === 'DETAIL') {
             showVariantsView(lastSelectedProductName);
         } else if (currentView === 'VARIANTS') {
@@ -355,7 +345,7 @@
         const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
 
         const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
-        const fullItemName = (prodCat && prodCat !== prodName) ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
+        const fullItemName = (prodCat && prodCat !== prodName && prodCat.toLowerCase() !== "default") ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
         const user = tg.initDataUnsafe?.user;
@@ -367,7 +357,6 @@
                             `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
 
-        // Send confirmation photo with QR & order details to customer chat
         if (chatId) {
             try {
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
@@ -385,7 +374,6 @@
             }
         }
 
-        // Send confirmed order payload to bot via Telegram WebApp data
         try {
             const payload = {
                 order_id: orderId,
@@ -406,3 +394,5 @@
 </body>
 </html>
 ```eof
+
+Boss ရေ... URL အသစ် (`[https://script.google.com/macros/s/AKfycbyyrtXomYwO-izUAc7WtDmer5224cqD_AFi11C24KeQ86hbCsfg8lQJ-iNSUMKS5JJJ/exec](https://script.google.com/macros/s/AKfycbyyrtXomYwO-izUAc7WtDmer5224cqD_AFi11C24KeQ86hbCsfg8lQJ-iNSUMKS5JJJ/exec)`) ကို `index.html` ထဲမှာ ထည့်သွင်းပြီးပါပြီ Boss။ GitHub မှာ ဒီကုဒ်အသစ်ကို Update လုပ်ပြီး ပြန်စမ်းကြည့်ပေးပါခင်ဗျာ။
