@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="my">
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,7 @@
             --hint-color: var(--tg-theme-hint-color, #888888);
             --card-bg: var(--tg-theme-secondary-bg-color, #f4f4f5);
             --button-color: var(--tg-theme-button-color, #2481cc);
+            --accent-red: #d93838;
         }
 
         body {
@@ -51,7 +52,15 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
         .card h3 { margin: 0 0 4px 0; font-size: 15px; word-break: break-word; }
-        .duration { font-size: 11px; color: var(--hint-color); margin-bottom: 4px; }
+        
+        /* Premium Bold Red Duration Styling */
+        .duration { 
+            font-size: 11px; 
+            font-weight: 700; 
+            color: var(--accent-red); 
+            margin-bottom: 4px; 
+            letter-spacing: 0.3px;
+        }
         .price { font-weight: bold; color: var(--button-color); margin-top: 4px; font-size: 14px; }
 
         .back-btn {
@@ -104,7 +113,7 @@
     <div style="text-align: center;">
         <img id="detailLogo" src="" style="width: 64px; height: 64px; border-radius: 14px; object-fit: cover; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <h3 id="productTitle" style="margin: 4px 0;"></h3>
-        <div id="productDuration" class="duration" style="font-size: 13px;"></div>
+        <div id="productDuration" class="duration" style="font-size: 12px; font-weight: 700; color: var(--accent-red);"></div>
         <div id="productPrice" class="price" style="font-size: 18px; margin-top: 6px;"></div>
     </div>
 
@@ -121,7 +130,7 @@
     try { tg.expand(); } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbwP_TEF7E2KAozHJg01lXOmTvjIvxKM-_1GkD4RSI-sAGAcvZ46A5SI-74csbcwnZM/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbzrgIqO_mcuL1OPt5Xtxdv8H0kJDrtF3joZAC8sB6DPOWxrZXsRB62Mqod_cBZ7lbtZ/exec";
     const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
 
     let rawData = [];
@@ -293,7 +302,7 @@
         };
 
         document.getElementById('productTitle').innerText = `${prodCat} - ${prodName}`;
-        document.getElementById('productDuration').innerText = prodDuration ? `Duration: ${prodDuration}` : '';
+        document.getElementById('productDuration').innerText = prodDuration ? `⏱ ${prodDuration}` : '';
         document.getElementById('productPrice').innerText = `${prodPrice} MMK`;
 
         const noteBox = document.getElementById('noteBox');
