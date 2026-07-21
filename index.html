@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="my">
 <head>
     <meta charset="UTF-8">
@@ -93,12 +93,12 @@
 </head>
 <body>
 
-<button id="backBtn" class="back-btn" onclick="showCategories()">← Back to Categories</button>
-<h2 id="title">Categories</h2>
+<button id="backBtn" class="back-btn" onclick="showProducts()">← Back to Products</button>
+<h2 id="title">Jupiter Store</h2>
 <div id="loading" class="loading">Loading products...</div>
 
-<div id="categoryGrid" class="grid"></div>
-<div id="productGrid" class="grid" style="display: none;"></div>
+<div id="productGrid" class="grid"></div>
+<div id="categoryGrid" class="grid" style="display: none;"></div>
 
 <div id="detailView" class="detail-view">
     <div style="text-align: center;">
@@ -121,7 +121,7 @@
     try { tg.expand(); } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbzrgIqO_mcuL1OPt5Xtxdv8H0kJDrtF3joZAC8sB6DPOWxrZXsRB62Mqod_cBZ7lbtZ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwP_TEF7E2KAozHJg01lXOmTvjIvxKM-_1GkD4RSI-sAGAcvZ46A5SI-74csbcwnZM/exec";
     const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
 
     let rawData = [];
@@ -188,59 +188,31 @@
             }
 
             document.getElementById('loading').style.display = 'none';
-            showCategories();
+            showProducts();
         } catch (error) {
             console.error("Fetch error:", error);
             document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script Deploy (New Version) ပြန်လုပ်ပေးရန် လိုအပ်ပါသည်။</span>";
         }
     }
 
-    function showCategories() {
-        document.getElementById('title').innerText = "Categories";
+    function showProducts() {
+        document.getElementById('title').innerText = "Jupiter Store";
         document.getElementById('backBtn').style.display = 'none';
-        document.getElementById('categoryGrid').style.display = 'grid';
-        document.getElementById('productGrid').style.display = 'none';
-        document.getElementById('detailView').style.display = 'none';
-        try { tg.MainButton.hide(); } catch(e){}
-
-        const categories = [...new Set(rawData.map(item => getProp(item, ["category", "cat"]) || "Other"))];
-        const container = document.getElementById('categoryGrid');
-        container.innerHTML = '';
-
-        categories.forEach(cat => {
-            const firstItem = rawData.find(i => (getProp(i, ["category", "cat"]) || "Other") === cat);
-            const logoSrc = resolveLogo(firstItem, cat);
-            const fallbackSrc = getSvgInitialsLogo(cat);
-            
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <img src="${logoSrc}" alt="${cat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
-                <h3>${cat}</h3>
-            `;
-            card.onclick = () => showProducts(cat);
-            container.appendChild(card);
-        });
-    }
-
-    function showProducts(category) {
-        document.getElementById('title').innerText = category;
-        document.getElementById('backBtn').style.display = 'block';
-        document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('productGrid').style.display = 'grid';
+        document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'none';
         try { tg.MainButton.hide(); } catch(e){}
 
-        const products = rawData.filter(item => (getProp(item, ["category", "cat"]) || "Other") === category);
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
-        products.forEach(prod => {
+        rawData.forEach((prod, index) => {
             const prodName = getProp(prod, ["name", "title"]) || 'Plan';
             const prodPrice = getProp(prod, ["price", "cost"]) || '0';
             const prodDuration = getProp(prod, ["duration", "time"]) || '';
+            const prodCat = getProp(prod, ["category", "cat"]) || 'Product';
 
-            const logoSrc = resolveLogo(prod, category);
+            const logoSrc = resolveLogo(prod, prodCat);
             const fallbackSrc = getSvgInitialsLogo(prodName);
             const durationHtml = prodDuration ? `<div class="duration">⏱ ${prodDuration}</div>` : '';
 
@@ -252,16 +224,57 @@
                 ${durationHtml}
                 <div class="price">${prodPrice} MMK</div>
             `;
-            card.onclick = () => showDetail(prod);
+            card.onclick = () => showCategoriesOrDetail(prod);
             container.appendChild(card);
         });
+    }
+
+    function showCategoriesOrDetail(product) {
+        const prodName = getProp(product, ["name", "title"]);
+        const matchedItems = rawData.filter(i => getProp(i, ["name", "title"]) === prodName);
+
+        if (matchedItems.length > 1) {
+            document.getElementById('title').innerText = prodName;
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('productGrid').style.display = 'none';
+            document.getElementById('categoryGrid').style.display = 'grid';
+            document.getElementById('detailView').style.display = 'none';
+            try { tg.MainButton.hide(); } catch(e){}
+
+            const container = document.getElementById('categoryGrid');
+            container.innerHTML = '';
+
+            matchedItems.forEach(item => {
+                const itemCat = getProp(item, ["category", "cat"]) || 'Option';
+                const itemPrice = getProp(item, ["price", "cost"]) || '0';
+                const itemDuration = getProp(item, ["duration", "time"]) || '';
+                const logoSrc = resolveLogo(item, itemCat);
+                const fallbackSrc = getSvgInitialsLogo(itemCat);
+                const durationHtml = itemDuration ? `<div class="duration">⏱ ${itemDuration}</div>` : '';
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${logoSrc}" alt="${itemCat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                    <h3>${itemCat}</h3>
+                    ${durationHtml}
+                    <div class="price">${itemPrice} MMK</div>
+                `;
+                card.onclick = () => showDetail(item);
+                container.appendChild(card);
+            });
+        } else {
+            showDetail(product);
+        }
     }
 
     function showDetail(product) {
         selectedProduct = product;
         document.getElementById('title').innerText = "Confirm Order";
         document.getElementById('productGrid').style.display = 'none';
+        document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'block';
+        document.getElementById('backBtn').style.display = 'block';
 
         const prodName = getProp(product, ["name", "title"]) || 'Plan';
         const prodCat = getProp(product, ["category", "cat"]) || 'Product';
