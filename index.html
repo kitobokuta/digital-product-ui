@@ -118,10 +118,10 @@
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();
+    try { tg.expand(); } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbya__sa_PI_8-tjrxz3BDhtJzOUVTgAIGaUyuG5k7XpWVx_PddL4ZkBqjukQlqoh7MY/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyEWJ2SxyFFkqklaDxHksHFcVURV3uP0oVYKVgw6-JgD_qGmsgE1YSaLL3CowuSvI7V/exec";
     const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
 
     let rawData = [];
@@ -145,10 +145,11 @@
     function resolveLogo(item, categoryName) {
         if (item && item.logo && typeof item.logo === "string" && item.logo.trim() !== "") {
             let logoVal = item.logo.trim();
-            if (!logoVal.startsWith("http://") && !logoVal.startsWith("https://") && !logoVal.startsWith("data:")) {
-                if (!logoVal.startsWith("images/")) {
-                    logoVal = "images/" + logoVal;
-                }
+            if (logoVal.startsWith("http://") || logoVal.startsWith("https://") || logoVal.startsWith("data:")) {
+                return logoVal;
+            }
+            if (!logoVal.startsWith("images/")) {
+                logoVal = "images/" + logoVal;
             }
             return logoVal;
         }
@@ -158,12 +159,21 @@
 
     async function fetchProducts() {
         try {
-            const response = await fetch(API_URL);
+            const timestampUrl = API_URL + (API_URL.includes("?") ? "&" : "?") + "_t=" + new Date().getTime();
+            const response = await fetch(timestampUrl, { redirect: "follow" });
+            if (!response.ok) throw new Error("Network response was not ok");
             rawData = await response.json();
+            
+            if (!Array.isArray(rawData) || rawData.length === 0) {
+                document.getElementById('loading').innerText = "No products found in Google Sheet!";
+                return;
+            }
+
             document.getElementById('loading').style.display = 'none';
             showCategories();
         } catch (error) {
-            document.getElementById('loading').innerText = "Error loading data!";
+            console.error("Fetch error:", error);
+            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script Deploy (New Version) ပြန်လုပ်ပေးရန် လိုအပ်ပါသည်။</span>";
         }
     }
 
@@ -173,14 +183,14 @@
         document.getElementById('categoryGrid').style.display = 'grid';
         document.getElementById('productGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'none';
-        tg.MainButton.hide();
+        try { tg.MainButton.hide(); } catch(e){}
 
         const categories = [...new Set(rawData.map(item => item.category || "Other"))];
         const container = document.getElementById('categoryGrid');
         container.innerHTML = '';
 
         categories.forEach(cat => {
-            const firstItem = rawData.find(i => i.category === cat);
+            const firstItem = rawData.find(i => (i.category || "Other") === cat);
             const logoSrc = resolveLogo(firstItem, cat);
             const fallbackSrc = getSvgInitialsLogo(cat);
             
@@ -201,7 +211,7 @@
         document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('productGrid').style.display = 'grid';
         document.getElementById('detailView').style.display = 'none';
-        tg.MainButton.hide();
+        try { tg.MainButton.hide(); } catch(e){}
 
         const products = rawData.filter(item => (item.category || "Other") === category);
         const container = document.getElementById('productGrid');
@@ -253,11 +263,12 @@
             noteBox.style.display = 'none';
         }
 
-        tg.MainButton.setText(`ORDER NOW (${product.price} MMK)`);
-        tg.MainButton.show();
-        
-        tg.MainButton.offClick(sendOrder);
-        tg.MainButton.onClick(sendOrder);
+        try {
+            tg.MainButton.setText(`ORDER NOW (${product.price} MMK)`);
+            tg.MainButton.show();
+            tg.MainButton.offClick(sendOrder);
+            tg.MainButton.onClick(sendOrder);
+        } catch(e){}
     }
 
     async function sendOrder() {
@@ -327,4 +338,10 @@
             console.error("sendData Error:", e);
         }
 
-        tg.close();
+        try { tg.close(); } catch(e){}
+    }
+
+    fetchProducts();
+</script>
+</body>
+</html>
