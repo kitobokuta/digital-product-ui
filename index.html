@@ -143,8 +143,14 @@
     }
 
     function resolveLogo(item, categoryName) {
-        if (item && item.logo && typeof item.logo === "string" && item.logo.trim() !== "") {
-            let logoVal = item.logo.trim();
+        let logoVal = "";
+        if (item) {
+            // Check various possible key names for logo from Google Sheet
+            logoVal = item.logo || item.Logo || item.IMAGE || item.image || "";
+            if (typeof logoVal === "string") logoVal = logoVal.trim();
+        }
+
+        if (logoVal !== "") {
             if (logoVal.startsWith("http://") || logoVal.startsWith("https://") || logoVal.startsWith("data:")) {
                 return logoVal;
             }
@@ -153,7 +159,7 @@
             }
             return logoVal;
         }
-        const titleForInitial = (item && item.name) || categoryName || "Product";
+        const titleForInitial = (item && (item.name || item.Name)) || categoryName || "Product";
         return getSvgInitialsLogo(titleForInitial);
     }
 
@@ -185,12 +191,13 @@
         document.getElementById('detailView').style.display = 'none';
         try { tg.MainButton.hide(); } catch(e){}
 
-        const categories = [...new Set(rawData.map(item => item.category || "Other"))];
+        // Extract categories safely (supporting both lowercase and capitalized keys)
+        const categories = [...new Set(rawData.map(item => String(item.category || item.Category || "Other").trim()))];
         const container = document.getElementById('categoryGrid');
         container.innerHTML = '';
 
         categories.forEach(cat => {
-            const firstItem = rawData.find(i => (i.category || "Other") === cat);
+            const firstItem = rawData.find(i => String(i.category || i.Category || "Other").trim() === cat);
             const logoSrc = resolveLogo(firstItem, cat);
             const fallbackSrc = getSvgInitialsLogo(cat);
             
@@ -213,22 +220,26 @@
         document.getElementById('detailView').style.display = 'none';
         try { tg.MainButton.hide(); } catch(e){}
 
-        const products = rawData.filter(item => (item.category || "Other") === category);
+        const products = rawData.filter(item => String(item.category || item.Category || "Other").trim() === category);
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
         products.forEach(prod => {
+            const prodName = prod.name || prod.Name || 'Plan';
+            const prodPrice = prod.price || prod.Price || '0';
+            const prodDuration = prod.duration || prod.Duration || '';
+
             const logoSrc = resolveLogo(prod, category);
-            const fallbackSrc = getSvgInitialsLogo(prod.name || category);
-            const durationHtml = prod.duration ? `<div class="duration">⏱ ${prod.duration}</div>` : '';
+            const fallbackSrc = getSvgInitialsLogo(prodName);
+            const durationHtml = prodDuration ? `<div class="duration">⏱ ${prodDuration}</div>` : '';
 
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
-                <img src="${logoSrc}" alt="${prod.name || 'Plan'}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
-                <h3>${prod.name || 'Plan'}</h3>
+                <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                <h3>${prodName}</h3>
                 ${durationHtml}
-                <div class="price">${prod.price ? prod.price + ' MMK' : 'Free / Contact'}</div>
+                <div class="price">${prodPrice} MMK</div>
             `;
             card.onclick = () => showDetail(prod);
             container.appendChild(card);
@@ -241,9 +252,15 @@
         document.getElementById('productGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'block';
 
+        const prodName = product.name || product.Name || 'Plan';
+        const prodCat = product.category || product.Category || 'Product';
+        const prodPrice = product.price || product.Price || '0';
+        const prodDuration = product.duration || product.Duration || '';
+        const prodDesc = product.description || product.Description || '';
+
         const logoImg = document.getElementById('detailLogo');
-        const logoSrc = resolveLogo(product, product.category);
-        const fallbackSrc = getSvgInitialsLogo(product.name || product.category);
+        const logoSrc = resolveLogo(product, prodCat);
+        const fallbackSrc = getSvgInitialsLogo(prodName);
         
         logoImg.src = logoSrc;
         logoImg.onerror = function() {
@@ -251,20 +268,20 @@
             this.src = fallbackSrc;
         };
 
-        document.getElementById('productTitle').innerText = `${product.category} - ${product.name}`;
-        document.getElementById('productDuration').innerText = product.duration ? `Duration: ${product.duration}` : '';
-        document.getElementById('productPrice').innerText = `${product.price} MMK`;
+        document.getElementById('productTitle').innerText = `${prodCat} - ${prodName}`;
+        document.getElementById('productDuration').innerText = prodDuration ? `Duration: ${prodDuration}` : '';
+        document.getElementById('productPrice').innerText = `${prodPrice} MMK`;
 
         const noteBox = document.getElementById('noteBox');
-        if (product.description && product.description.trim() !== "") {
-            noteBox.innerHTML = `📌 <b>Condition / Note:</b><br>${product.description}`;
+        if (prodDesc && prodDesc.trim() !== "") {
+            noteBox.innerHTML = `📌 <b>Condition / Note:</b><br>${prodDesc}`;
             noteBox.style.display = 'block';
         } else {
             noteBox.style.display = 'none';
         }
 
         try {
-            tg.MainButton.setText(`ORDER NOW (${product.price} MMK)`);
+            tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
             tg.MainButton.show();
             tg.MainButton.offClick(sendOrder);
             tg.MainButton.onClick(sendOrder);
@@ -275,9 +292,13 @@
         if (!selectedProduct) return;
         
         const userInput = document.getElementById('accountData').value;
-        const fullDuration = selectedProduct.duration ? ` - ${selectedProduct.duration}` : '';
-        const fullItemName = `${selectedProduct.category} (${selectedProduct.name}${fullDuration})`;
-        const price = selectedProduct.price;
+        const prodName = selectedProduct.name || selectedProduct.Name || 'Plan';
+        const prodCat = selectedProduct.category || selectedProduct.Category || 'Product';
+        const prodPrice = selectedProduct.price || selectedProduct.Price || '0';
+        const prodDuration = selectedProduct.duration || selectedProduct.Duration || '';
+
+        const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
+        const fullItemName = `${prodCat} (${prodName}${fullDuration})`;
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
         const user = tg.initDataUnsafe?.user;
@@ -285,7 +306,7 @@
 
         const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
                             `<b>Item:</b> ${fullItemName}\n` +
-                            `<b>Price:</b> ${price} MMK\n` +
+                            `<b>Price:</b> ${prodPrice} MMK\n` +
                             `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
 
@@ -328,9 +349,9 @@
         try {
             const payload = {
                 order_id: orderId,
-                product_id: selectedProduct.id,
+                product_id: selectedProduct.id || selectedProduct.ID || '',
                 full_item_name: fullItemName,
-                price: price,
+                price: prodPrice,
                 customer_note: userInput || "-"
             };
             tg.sendData(JSON.stringify(payload));
