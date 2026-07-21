@@ -127,39 +127,6 @@
     let rawData = [];
     let selectedProduct = null;
 
-    const APP_LOGOS = {
-        "capcut": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/capcut.png",
-        "canva": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canva_icon_2021.svg/500px-Canva_icon_2021.svg.png",
-        "netflix": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/netflix.png",
-        "spotify": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/spotify.png",
-        "chatgpt": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/chatgpt.png",
-        "openai": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/chatgpt.png",
-        "youtube": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/youtube.png",
-        "telegram": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/telegram.png",
-        "channel boost": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/telegram.png",
-        "zoom": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/zoom.png",
-        "adobe": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/adobe-creative-cloud.png",
-        "nordvpn": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/nordvpn.png",
-        "express": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/expressvpn.png",
-        "expressvpn": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/expressvpn.png",
-        "proton": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/protonvpn.png",
-        "quillbot": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/QuillBot_logo.png/320px-QuillBot_logo.png",
-        "duolingo": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/duolingo.png",
-        "super duolingo": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/duolingo.png",
-        "hiddify": "https://raw.githubusercontent.com/hiddify/hiddify-next/main/assets/images/origin_icon.png",
-        "v2box": "https://raw.githubusercontent.com/hiddify/hiddify-next/main/assets/images/origin_icon.png",
-        "jumpjump": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/wireguard.png",
-        "vpn": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/wireguard.png",
-        "apple": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/apple.png",
-        "microsoft": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/microsoft.png",
-        "disney": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/disney-plus.png",
-        "grammarly": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/grammarly.png",
-        "claude": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/claude.png",
-        "midjourney": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/midjourney.png",
-        "pubg": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/pubg.png",
-        "freefire": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/steam.png"
-    };
-
     function getSvgInitialsLogo(text) {
         const initial = (text || "J").trim().charAt(0).toUpperCase();
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
@@ -177,18 +144,15 @@
 
     function resolveLogo(item, categoryName) {
         if (item && item.logo && typeof item.logo === "string" && item.logo.trim() !== "") {
-            return item.logo.trim();
-        }
-
-        const nameToSearch = `${item ? item.name || "" : ""} ${item ? item.category || "" : ""} ${categoryName || ""}`.toLowerCase();
-        
-        for (const key in APP_LOGOS) {
-            if (nameToSearch.includes(key)) {
-                return APP_LOGOS[key];
+            let logoVal = item.logo.trim();
+            if (!logoVal.startsWith("http://") && !logoVal.startsWith("https://") && !logoVal.startsWith("data:")) {
+                if (!logoVal.startsWith("images/")) {
+                    logoVal = "images/" + logoVal;
+                }
             }
+            return logoVal;
         }
-
-        const titleForInitial = (item && item.name) || categoryName || (item && item.category) || "Product";
+        const titleForInitial = (item && item.name) || categoryName || "Product";
         return getSvgInitialsLogo(titleForInitial);
     }
 
@@ -314,7 +278,6 @@
                             `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
 
-        // 1. Direct Telegram Bot API sendPhoto (Primary for Inline WebApp)
         if (chatId) {
             let photoSent = false;
             try {
@@ -334,7 +297,6 @@
                 console.error("Direct API Photo Error:", err);
             }
 
-            // Fallback: Send Text Message if Photo fetch failed
             if (!photoSent) {
                 try {
                     await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -352,7 +314,6 @@
             }
         }
 
-        // 2. Reply Keyboard sendData fallback
         try {
             const payload = {
                 order_id: orderId,
@@ -367,9 +328,3 @@
         }
 
         tg.close();
-    }
-
-    fetchProducts();
-</script>
-</body>
-</html>
