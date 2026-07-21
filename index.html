@@ -51,16 +51,16 @@
             background-color: rgba(0,0,0,0.03);
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
-        .card h3 { margin: 0; font-size: 15px; word-break: break-word; font-weight: 600; }
+        .card h3 { margin: 0; font-size: 16px; word-break: break-word; font-weight: 600; }
         
         .duration { 
-            font-size: 11px; 
+            font-size: 12px; 
             font-weight: 700; 
             color: var(--accent-red); 
             margin-bottom: 4px; 
             letter-spacing: 0.3px;
         }
-        .price { font-weight: bold; color: var(--button-color); margin-top: 6px; font-size: 14px; }
+        .price { font-weight: bold; color: var(--button-color); margin-top: 6px; font-size: 15px; }
 
         .back-btn {
             background: transparent;
@@ -74,7 +74,8 @@
             font-weight: 500;
         }
 
-        .detail-view { display: none; background-color: var(--card-bg); padding: 18px; border-radius: 12px; }
+        .section-view { display: none; }
+        .detail-view { background-color: var(--card-bg); padding: 18px; border-radius: 12px; margin-top: 12px; }
         .note-box {
             background-color: #fff8e1;
             border-left: 4px solid #ffc107;
@@ -106,14 +107,14 @@
 <div id="loading" class="loading">Loading products...</div>
 
 <div id="productGrid" class="grid"></div>
-<div id="categoryGrid" class="grid" style="display: none;"></div>
+<div id="variantGrid" class="grid section-view"></div>
 
-<div id="detailView" class="detail-view">
+<div id="detailView" class="section-view">
     <div style="text-align: center;">
         <img id="detailLogo" src="" style="width: 64px; height: 64px; border-radius: 14px; object-fit: cover; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <h3 id="productTitle" style="margin: 4px 0;"></h3>
-        <div id="productDuration" class="duration" style="font-size: 12px; font-weight: 700; color: var(--accent-red);"></div>
-        <div id="productPrice" class="price" style="font-size: 18px; margin-top: 6px;"></div>
+        <div id="productDuration" class="duration"></div>
+        <div id="productPrice" class="price"></div>
     </div>
 
     <div id="noteBox" class="note-box" style="display:none;"></div>
@@ -129,7 +130,7 @@
     try { tg.expand(); } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbyyrtXomYwO-izUAc7WtDmer5224cqD_AFi11C24KeQ86hbCsfg8lQJ-iNSUMKS5JJJ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxzXewvRlEjfFIxjm5x39sgCgngV6f7odI2yaXezBieKmsf6Rj6-oTy4cTSHfXjxljE/exec";
     const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
 
     let rawData = [];
@@ -190,6 +191,7 @@
             if (!response.ok) throw new Error("Network response was not ok");
             
             rawData = await response.json();
+            console.log("Fetched Raw Data:", rawData);
 
             if (!Array.isArray(rawData) || rawData.length === 0) {
                 document.getElementById('loading').innerText = "No products found in Google Sheet!";
@@ -197,43 +199,34 @@
             }
 
             document.getElementById('loading').style.display = 'none';
-            showProducts();
+            showProductsView();
         } catch (error) {
             console.error("Fetch error:", error);
-            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script URL သို့မဟုတ် Deploy အခြေအနေ ပြန်လည်စစ်ဆေးပါ။</span>";
+            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script URL သို့မဟုတ် Deploy အသစ်ကို စစ်ဆေးပေးပါ။</span>";
         }
     }
 
-    function showProducts() {
+    function showProductsView() {
         currentView = 'PRODUCTS';
         document.getElementById('title').innerText = "Jupiter Store";
         document.getElementById('backBtn').style.display = 'none';
         document.getElementById('productGrid').style.display = 'grid';
-        document.getElementById('categoryGrid').style.display = 'none';
+        document.getElementById('variantGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'none';
         try { tg.MainButton.hide(); } catch(e){}
 
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
-        const uniqueProductsMap = new Map();
-        rawData.forEach((prod) => {
-            const prodName = getProp(prod, ["name", "title"]) || '';
-            const lowerName = prodName.toLowerCase();
-            if (!prodName || 
-                lowerName.includes("supplier") || 
-                lowerName.includes("mainia") || 
-                lowerName === "name" || 
-                lowerName === "title") {
-                return;
-            }
-            if (!uniqueProductsMap.has(prodName)) {
-                uniqueProductsMap.set(prodName, prod);
-            }
+        const uniqueNames = new Set();
+        rawData.forEach(item => {
+            const name = getProp(item, ["name", "title"]);
+            if (name) uniqueNames.add(name);
         });
 
-        uniqueProductsMap.forEach((prod, prodName) => {
-            const logoSrc = resolveLogo(prod, prodName);
+        uniqueNames.forEach(prodName => {
+            const sampleItem = rawData.find(i => getProp(i, ["name", "title"]) === prodName);
+            const logoSrc = resolveLogo(sampleItem, prodName);
             const fallbackSrc = getSvgInitialsLogo(prodName);
 
             const card = document.createElement('div');
@@ -242,55 +235,53 @@
                 <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${prodName}</h3>
             `;
-            card.onclick = () => showVariants(prodName);
+            card.onclick = () => showVariantsView(prodName);
             container.appendChild(card);
         });
     }
 
-    function showVariants(prodName) {
+    function showVariantsView(prodName) {
         currentView = 'VARIANTS';
         lastSelectedProductName = prodName;
-        const matchedItems = rawData.filter(i => getProp(i, ["name", "title"]) === prodName);
+        document.getElementById('title').innerText = prodName;
+        document.getElementById('backBtn').style.display = 'block';
+        document.getElementById('productGrid').style.display = 'none';
+        document.getElementById('variantGrid').style.display = 'grid';
+        document.getElementById('detailView').style.display = 'none';
+        try { tg.MainButton.hide(); } catch(e){}
 
-        if (matchedItems.length > 0) {
-            document.getElementById('title').innerText = prodName;
-            document.getElementById('backBtn').style.display = 'block';
-            document.getElementById('productGrid').style.display = 'none';
-            document.getElementById('categoryGrid').style.display = 'grid';
-            document.getElementById('detailView').style.display = 'none';
-            try { tg.MainButton.hide(); } catch(e){}
+        const container = document.getElementById('variantGrid');
+        container.innerHTML = '';
 
-            const container = document.getElementById('categoryGrid');
-            container.innerHTML = '';
+        const matched = rawData.filter(i => getProp(i, ["name", "title"]) === prodName);
 
-            matchedItems.forEach(item => {
-                const itemCat = getProp(item, ["category", "cat"]) || prodName;
-                const itemPrice = getProp(item, ["price", "cost"]) || '0';
-                const itemDuration = getProp(item, ["duration", "time"]) || '';
-                const logoSrc = resolveLogo(item, itemCat);
-                const fallbackSrc = getSvgInitialsLogo(itemCat);
-                const durationHtml = itemDuration ? `<div class="duration">⏱ ${itemDuration}</div>` : '';
+        matched.forEach(item => {
+            const cat = getProp(item, ["category", "cat"]) || prodName;
+            const price = getProp(item, ["price", "cost"]) || '0';
+            const duration = getProp(item, ["duration", "time"]) || '';
+            const logoSrc = resolveLogo(item, cat);
+            const fallbackSrc = getSvgInitialsLogo(cat);
+            const durationHtml = duration ? `<div class="duration">⏱ ${duration}</div>` : '';
 
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <img src="${logoSrc}" alt="${itemCat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
-                    <h3>${itemCat}</h3>
-                    ${durationHtml}
-                    <div class="price">${itemPrice} MMK</div>
-                `;
-                card.onclick = () => showDetail(item);
-                container.appendChild(card);
-            });
-        }
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${logoSrc}" alt="${cat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                <h3>${cat}</h3>
+                ${durationHtml}
+                <div class="price">${price} MMK</div>
+            `;
+            card.onclick = () => showDetailView(item);
+            container.appendChild(card);
+        });
     }
 
-    function showDetail(product) {
+    function showDetailView(product) {
         currentView = 'DETAIL';
         selectedProduct = product;
         document.getElementById('title').innerText = "Confirm Order";
         document.getElementById('productGrid').style.display = 'none';
-        document.getElementById('categoryGrid').style.display = 'none';
+        document.getElementById('variantGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'block';
         document.getElementById('backBtn').style.display = 'block';
 
@@ -332,9 +323,9 @@
 
     function goBack() {
         if (currentView === 'DETAIL') {
-            showVariants(lastSelectedProductName);
+            showVariantsView(lastSelectedProductName);
         } else if (currentView === 'VARIANTS') {
-            showProducts();
+            showProductsView();
         }
     }
 
@@ -348,7 +339,7 @@
         const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
 
         const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
-        const fullItemName = (prodCat && prodCat !== prodName) ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
+        const fullItemName = (prodCat && prodCat !== prodName && prodCat.toLowerCase() !== "default") ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
         const user = tg.initDataUnsafe?.user;
@@ -395,4 +386,4 @@
     fetchProducts();
 </script>
 </body>
-</html>
+</html> 
