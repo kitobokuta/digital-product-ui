@@ -51,10 +51,8 @@
             background-color: rgba(0,0,0,0.03);
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
-        /* First page: Only Product Name */
-        .card h3 { margin: 0; font-size: 16px; word-break: break-word; font-weight: 600; }
+        .card h3 { margin: 0; font-size: 15px; word-break: break-word; font-weight: 600; }
         
-        /* Second tier styling */
         .duration { 
             font-size: 11px; 
             font-weight: 700; 
@@ -103,7 +101,7 @@
 </head>
 <body>
 
-<button id="backBtn" class="back-btn" onclick="showProducts()">← Back</button>
+<button id="backBtn" class="back-btn" onclick="goBack()">← Back</button>
 <h2 id="title">Jupiter Store</h2>
 <div id="loading" class="loading">Loading products...</div>
 
@@ -136,6 +134,8 @@
 
     let rawData = [];
     let selectedProduct = null;
+    let currentView = 'PRODUCTS'; // 'PRODUCTS', 'VARIANTS', 'DETAIL'
+    let lastSelectedProductName = '';
 
     function getProp(obj, keys) {
         if (!obj) return "";
@@ -189,31 +189,12 @@
             const response = await fetch(timestampUrl, { redirect: "follow" });
             if (!response.ok) throw new Error("Network response was not ok");
             
-            const fetched = await response.json();
-            console.log("Fetched Raw Data:", fetched);
+            rawData = await response.json();
+            console.log("Fetched Raw Data:", rawData);
 
-            if (!Array.isArray(fetched) || fetched.length === 0) {
+            if (!Array.isArray(rawData) || rawData.length === 0) {
                 document.getElementById('loading').innerText = "No products found in Google Sheet!";
                 return;
-            }
-
-            // Filter out metadata, title rows, and header text rows like "Product ID", "Mainia", etc.
-            rawData = fetched.filter(item => {
-                const name = getProp(item, ["name", "title"]);
-                const price = getProp(item, ["price", "cost"]);
-                if (!name) return false;
-                const lowerName = name.toLowerCase();
-                // Exclude rows that are spreadsheet titles or column headers
-                if (lowerName.includes("catalog") || lowerName.includes("database") || lowerName.includes("product id") || lowerName.includes("supplier") || lowerName.includes("mainia")) {
-                    return false;
-                }
-                // Must have a valid price or be a product row
-                return true;
-            });
-
-            if (rawData.length === 0) {
-                // Fallback to all if filtering was too strict
-                rawData = fetched;
             }
 
             document.getElementById('loading').style.display = 'none';
@@ -225,6 +206,7 @@
     }
 
     function showProducts() {
+        currentView = 'PRODUCTS';
         document.getElementById('title').innerText = "Jupiter Store";
         document.getElementById('backBtn').style.display = 'none';
         document.getElementById('productGrid').style.display = 'grid';
@@ -235,11 +217,20 @@
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
-        // Group unique products by Name/Title (e.g. Spotify, Netflix)
+        // Filter out supplier names and group by product name only
         const uniqueProductsMap = new Map();
         rawData.forEach((prod) => {
-            const prodName = getProp(prod, ["name", "title"]);
-            if (prodName && !uniqueProductsMap.has(prodName)) {
+            const prodName = getProp(prod, ["name", "title"]) || '';
+            const lowerName = prodName.toLowerCase();
+            // Strict ignore for supplier/metadata rows
+            if (!prodName || 
+                lowerName.includes("supplier") || 
+                lowerName.includes("mainia") || 
+                lowerName === "name" || 
+                lowerName === "title") {
+                return;
+            }
+            if (!uniqueProductsMap.has(prodName)) {
                 uniqueProductsMap.set(prodName, prod);
             }
         });
@@ -250,17 +241,19 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            // FIRST PAGE UI: ONLY product name, NO duration, NO MMK price tags
+            // Show ONLY product name on First UI
             card.innerHTML = `
                 <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${prodName}</h3>
             `;
-            card.onclick = () => showCategoriesOrDetail(prodName);
+            card.onclick = () => showVariants(prodName);
             container.appendChild(card);
         });
     }
 
-    function showCategoriesOrDetail(prodName) {
+    function showVariants(prodName) {
+        currentView = 'VARIANTS';
+        lastSelectedProductName = prodName;
         const matchedItems = rawData.filter(i => getProp(i, ["name", "title"]) === prodName);
 
         if (matchedItems.length > 0) {
@@ -284,7 +277,7 @@
 
                 const card = document.createElement('div');
                 card.className = 'card';
-                // SECOND PAGE UI: individual / family variants with duration and MMK price
+                // Second UI displays individual variants with plan, duration, price, note
                 card.innerHTML = `
                     <img src="${logoSrc}" alt="${itemCat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                     <h3>${itemCat}</h3>
@@ -298,6 +291,7 @@
     }
 
     function showDetail(product) {
+        currentView = 'DETAIL';
         selectedProduct = product;
         document.getElementById('title').innerText = "Confirm Order";
         document.getElementById('productGrid').style.display = 'none';
@@ -339,6 +333,14 @@
             tg.MainButton.offClick(sendOrder);
             tg.MainButton.onClick(sendOrder);
         } catch(e){}
+    }
+
+    function goBack() {
+        if (currentView === 'DETAIL') {
+            showVariants(lastSelectedProductName);
+        } else if (currentView === 'VARIANTS') {
+            showProducts();
+        }
     }
 
     async function sendOrder() {
@@ -399,4 +401,3 @@
 </script>
 </body>
 </html>
-```eof
