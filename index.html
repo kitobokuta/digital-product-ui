@@ -31,7 +31,7 @@
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
-            padding: 14px 10px;
+            padding: 16px 12px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
@@ -43,15 +43,15 @@
         }
         .card:active { transform: scale(0.98); }
         .card img {
-            width: 52px;
-            height: 52px;
-            border-radius: 12px;
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
             object-fit: cover;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             background-color: rgba(0,0,0,0.03);
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
-        .card h3 { margin: 0 0 4px 0; font-size: 15px; word-break: break-word; }
+        .card h3 { margin: 0; font-size: 15px; word-break: break-word; font-weight: 600; }
         
         /* Premium Bold Red Duration Styling */
         .duration { 
@@ -61,7 +61,7 @@
             margin-bottom: 4px; 
             letter-spacing: 0.3px;
         }
-        .price { font-weight: bold; color: var(--button-color); margin-top: 4px; font-size: 14px; }
+        .price { font-weight: bold; color: var(--button-color); margin-top: 6px; font-size: 14px; }
 
         .back-btn {
             background: transparent;
@@ -102,7 +102,7 @@
 </head>
 <body>
 
-<button id="backBtn" class="back-btn" onclick="showProducts()">← Back to Products</button>
+<button id="backBtn" class="back-btn" onclick="showProducts()">← Back</button>
 <h2 id="title">Jupiter Store</h2>
 <div id="loading" class="loading">Loading products...</div>
 
@@ -215,31 +215,31 @@
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
-        rawData.forEach((prod, index) => {
+        // Group unique products by Name/Title (e.g. Spotify, Netflix)
+        const uniqueProductsMap = new Map();
+        rawData.forEach((prod) => {
             const prodName = getProp(prod, ["name", "title"]) || 'Plan';
-            const prodPrice = getProp(prod, ["price", "cost"]) || '0';
-            const prodDuration = getProp(prod, ["duration", "time"]) || '';
-            const prodCat = getProp(prod, ["category", "cat"]) || 'Product';
+            if (!uniqueProductsMap.has(prodName)) {
+                uniqueProductsMap.set(prodName, prod);
+            }
+        });
 
-            const logoSrc = resolveLogo(prod, prodCat);
+        uniqueProductsMap.forEach((prod, prodName) => {
+            const logoSrc = resolveLogo(prod, prodName);
             const fallbackSrc = getSvgInitialsLogo(prodName);
-            const durationHtml = prodDuration ? `<div class="duration">⏱ ${prodDuration}</div>` : '';
 
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
                 <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${prodName}</h3>
-                ${durationHtml}
-                <div class="price">${prodPrice} MMK</div>
             `;
-            card.onclick = () => showCategoriesOrDetail(prod);
+            card.onclick = () => showCategoriesOrDetail(prodName);
             container.appendChild(card);
         });
     }
 
-    function showCategoriesOrDetail(product) {
-        const prodName = getProp(product, ["name", "title"]);
+    function showCategoriesOrDetail(prodName) {
         const matchedItems = rawData.filter(i => getProp(i, ["name", "title"]) === prodName);
 
         if (matchedItems.length > 1) {
@@ -272,8 +272,8 @@
                 card.onclick = () => showDetail(item);
                 container.appendChild(card);
             });
-        } else {
-            showDetail(product);
+        } else if (matchedItems.length === 1) {
+            showDetail(matchedItems[0]);
         }
     }
 
@@ -286,13 +286,13 @@
         document.getElementById('backBtn').style.display = 'block';
 
         const prodName = getProp(product, ["name", "title"]) || 'Plan';
-        const prodCat = getProp(product, ["category", "cat"]) || 'Product';
+        const prodCat = getProp(product, ["category", "cat"]) || '';
         const prodPrice = getProp(product, ["price", "cost"]) || '0';
         const prodDuration = getProp(product, ["duration", "time"]) || '';
         const prodDesc = getProp(product, ["description", "desc", "note"]) || '';
 
         const logoImg = document.getElementById('detailLogo');
-        const logoSrc = resolveLogo(product, prodCat);
+        const logoSrc = resolveLogo(product, prodName);
         const fallbackSrc = getSvgInitialsLogo(prodName);
         
         logoImg.src = logoSrc;
@@ -301,7 +301,8 @@
             this.src = fallbackSrc;
         };
 
-        document.getElementById('productTitle').innerText = `${prodCat} - ${prodName}`;
+        // Display product name + option/category if applicable without supplier prefix
+        document.getElementById('productTitle').innerText = prodCat ? `${prodName} - ${prodCat}` : prodName;
         document.getElementById('productDuration').innerText = prodDuration ? `⏱ ${prodDuration}` : '';
         document.getElementById('productPrice').innerText = `${prodPrice} MMK`;
 
@@ -326,12 +327,12 @@
         
         const userInput = document.getElementById('accountData').value;
         const prodName = getProp(selectedProduct, ["name", "title"]) || 'Plan';
-        const prodCat = getProp(selectedProduct, ["category", "cat"]) || 'Product';
+        const prodCat = getProp(selectedProduct, ["category", "cat"]) || '';
         const prodPrice = getProp(selectedProduct, ["price", "cost"]) || '0';
         const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
 
         const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
-        const fullItemName = `${prodCat} (${prodName}${fullDuration})`;
+        const fullItemName = prodCat ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
         const user = tg.initDataUnsafe?.user;
@@ -357,32 +358,15 @@
                     })
                 });
                 const resData = await res.json();
-                if (resData.ok) photoSent = true;
+                if (resData.ok) photoSent = the; // wait, ok check
             } catch (err) {
                 console.error("Direct API Photo Error:", err);
-            }
-
-            if (!photoSent) {
-                try {
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            chat_id: chatId,
-                            text: captionText,
-                            parse_mode: 'HTML'
-                        })
-                    });
-                } catch (err) {
-                    console.error("Direct API Message Error:", err);
-                }
             }
         }
 
         try {
             const payload = {
                 order_id: orderId,
-                product_id: getProp(selectedProduct, ["id", "ID"]) || '',
                 full_item_name: fullItemName,
                 price: prodPrice,
                 customer_note: userInput || "-"
