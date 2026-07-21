@@ -51,9 +51,10 @@
             background-color: rgba(0,0,0,0.03);
             box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
-        .card h3 { margin: 0; font-size: 15px; word-break: break-word; font-weight: 600; }
+        /* First page: Only Product Name */
+        .card h3 { margin: 0; font-size: 16px; word-break: break-word; font-weight: 600; }
         
-        /* Sub-tier styling for second UI */
+        /* Second tier styling */
         .duration { 
             font-size: 11px; 
             font-weight: 700; 
@@ -188,12 +189,31 @@
             const response = await fetch(timestampUrl, { redirect: "follow" });
             if (!response.ok) throw new Error("Network response was not ok");
             
-            rawData = await response.json();
-            console.log("Fetched Raw Data:", rawData);
+            const fetched = await response.json();
+            console.log("Fetched Raw Data:", fetched);
 
-            if (!Array.isArray(rawData) || rawData.length === 0) {
+            if (!Array.isArray(fetched) || fetched.length === 0) {
                 document.getElementById('loading').innerText = "No products found in Google Sheet!";
                 return;
+            }
+
+            // Filter out metadata, title rows, and header text rows like "Product ID", "Mainia", etc.
+            rawData = fetched.filter(item => {
+                const name = getProp(item, ["name", "title"]);
+                const price = getProp(item, ["price", "cost"]);
+                if (!name) return false;
+                const lowerName = name.toLowerCase();
+                // Exclude rows that are spreadsheet titles or column headers
+                if (lowerName.includes("catalog") || lowerName.includes("database") || lowerName.includes("product id") || lowerName.includes("supplier") || lowerName.includes("mainia")) {
+                    return false;
+                }
+                // Must have a valid price or be a product row
+                return true;
+            });
+
+            if (rawData.length === 0) {
+                // Fallback to all if filtering was too strict
+                rawData = fetched;
             }
 
             document.getElementById('loading').style.display = 'none';
@@ -215,11 +235,11 @@
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
 
-        // Group unique products by Name/Title (e.g., Spotify, Netflix)
+        // Group unique products by Name/Title (e.g. Spotify, Netflix)
         const uniqueProductsMap = new Map();
         rawData.forEach((prod) => {
-            const prodName = getProp(prod, ["name", "title"]) || 'Plan';
-            if (!uniqueProductsMap.has(prodName)) {
+            const prodName = getProp(prod, ["name", "title"]);
+            if (prodName && !uniqueProductsMap.has(prodName)) {
                 uniqueProductsMap.set(prodName, prod);
             }
         });
@@ -230,7 +250,7 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            // First page UI shows ONLY product name, without duration or MMK price tags
+            // FIRST PAGE UI: ONLY product name, NO duration, NO MMK price tags
             card.innerHTML = `
                 <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 <h3>${prodName}</h3>
@@ -264,7 +284,7 @@
 
                 const card = document.createElement('div');
                 card.className = 'card';
-                // Second UI displays individual variants (e.g. Individual / Family) with duration and price
+                // SECOND PAGE UI: individual / family variants with duration and MMK price
                 card.innerHTML = `
                     <img src="${logoSrc}" alt="${itemCat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
                     <h3>${itemCat}</h3>
@@ -379,3 +399,4 @@
 </script>
 </body>
 </html>
+```eof
