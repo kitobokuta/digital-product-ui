@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="my">
 <head>
     <meta charset="UTF-8">
@@ -129,7 +129,7 @@
     try { tg.expand(); } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbxMeStCoq9d9TMpzpDs8_DK05VTp0h1FC6JeLTV7qwPXCeG1RmOb05EC8kZSwvyJh_C/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyyrtXomYwO-izUAc7WtDmer5224cqD_AFi11C24KeQ86hbCsfg8lQJ-iNSUMKS5JJJ/exec";
     const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
 
     let rawData = [];
@@ -200,7 +200,7 @@
             showProducts();
         } catch (error) {
             console.error("Fetch error:", error);
-            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script Deploy (New Version) ပြန်လုပ်ပေးရန် လိုအပ်ပါသည်။</span>";
+            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script URL သို့မဟုတ် Deploy အခြေအနေ ပြန်လည်စစ်ဆေးပါ။</span>";
         }
     }
 
@@ -344,7 +344,7 @@
         const userInput = document.getElementById('accountData').value;
         const prodName = getProp(selectedProduct, ["name", "title"]) || 'Plan';
         const prodCat = getProp(selectedProduct, ["category", "cat"]) || '';
-        const prodPrice = getProp(selectedPrice, ["price", "cost"]) || '0';
+        const prodPrice = getProp(selectedProduct, ["price", "cost"]) || '0';
         const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
 
         const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
