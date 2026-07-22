@@ -7,10 +7,9 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0b0e14;
+            --bg-color: #07090e;
             --text-color: #ffffff;
             --hint-color: #8b9bb4;
-            --card-border: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(100,110,130,0.2) 50%, rgba(20,25,35,0.8) 100%);
             --accent-red: #ff4757;
             --button-color: #2481cc;
         }
@@ -31,17 +30,16 @@
             min-height: 100vh;
         }
 
-        /* Header cosmic style */
         .store-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             position: relative;
         }
         .planet-icon {
-            width: 70px;
+            width: 75px;
             height: auto;
             margin-bottom: -12px;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+            filter: drop-shadow(0 0 12px rgba(255,255,255,0.4));
         }
         h1.store-title {
             font-family: "Cinzel", "Times New Roman", serif;
@@ -63,12 +61,11 @@
             font-weight: 600;
         }
 
-        /* Back Button */
         .back-btn {
             background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.25);
             color: #ffffff;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
             padding: 8px 16px;
             border-radius: 20px;
@@ -80,18 +77,16 @@
 
         .loading { text-align: center; padding: 50px 0; color: var(--hint-color); font-size: 14px; }
         
-        /* Grid Layout */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
 
-        /* Metallic Sci-Fi Cards */
         .card {
             position: relative;
             background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
             border-radius: 14px;
-            padding: 16px 10px;
+            padding: 18px 10px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.25);
             border: 1px solid #30363d;
             transition: transform 0.15s ease, border-color 0.15s ease;
             display: flex;
@@ -101,7 +96,6 @@
         }
         .card:active { transform: scale(0.97); border-color: #58a6ff; }
 
-        /* Number Badge Top Left */
         .card-number {
             position: absolute;
             top: 8px;
@@ -112,24 +106,23 @@
             letter-spacing: 0.5px;
         }
 
-        /* Circular Logo Frame */
         .card-img-wrap {
-            width: 58px;
-            height: 58px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 6px;
+            margin-top: 4px;
             margin-bottom: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
             overflow: hidden;
         }
         .card img {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -157,7 +150,6 @@
             font-size: 12px; 
         }
 
-        /* Crown icon at bottom of card */
         .card-footer-ornament {
             margin-top: 8px;
             font-size: 10px;
@@ -171,7 +163,6 @@
             color: #30363d;
         }
 
-        /* Detail View Card */
         .detail-view { 
             display: none; 
             background: linear-gradient(145deg, #161b22 0%, #0d1117 100%); 
@@ -223,9 +214,8 @@
         }
         .input-group input:focus { border-color: #58a6ff; }
 
-        /* Footer Trust Badges bar */
         .trust-footer {
-            margin-top: 20px;
+            margin-top: 24px;
             background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
             border: 1px solid #30363d;
             border-radius: 12px;
@@ -236,6 +226,7 @@
             font-size: 9px;
             color: #8b9bb4;
             text-align: center;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.5);
         }
         .trust-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .trust-item span { font-size: 13px; }
@@ -296,8 +287,17 @@
     try { tg.expand(); } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbyyrtXomYwO-izUAc7WtDmer5224cqD_AFi11C24KeQ86hbCsfg8lQJ-iNSUMKS5JJJ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycby2yoSqv0S7d3vliAKKyZ7J6rqB1vEMvPji6lg18eGWBcUp1an5KDdxN5NS5u75MjAn/exec";
     const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
+
+    const FALLBACK_PRODUCTS = [
+        { product_id: "P1", name: "CapCut Pro", category: "Pro 1 Month", duration: "30 Days", price: "4500", description: "Full Pro Access", logo: "" },
+        { product_id: "P2", name: "Spotify Premium", category: "Individual 1 Month", duration: "30 Days", price: "3500", description: "Upgrade your own account", logo: "" },
+        { product_id: "P3", name: "Canva Pro", category: "1 Year Team Invite", duration: "365 Days", price: "5000", description: "Join via team link", logo: "" },
+        { product_id: "P4", name: "Channel Boost", category: "Standard Package", duration: "Permanent", price: "8000", description: "Increase channel views", logo: "" },
+        { product_id: "P5", name: "Jump VPN", category: "1 Month VIP", duration: "30 Days", price: "3000", description: "High speed secure VPN", logo: "" },
+        { product_id: "P6", name: "Netflix Premium", category: "1 Month Profile", duration: "30 Days", price: "4500", description: "Ultra HD 4K", logo: "" }
+    ];
 
     let rawData = [];
     let selectedProduct = null;
@@ -356,18 +356,28 @@
             const response = await fetch(timestampUrl, { redirect: "follow" });
             if (!response.ok) throw new Error("Network response was not ok");
             
-            rawData = await response.json();
+            const jsonRes = await response.json();
+            
+            if (Array.isArray(jsonRes) && jsonRes.length > 0) {
+                rawData = jsonRes;
+            } else if (jsonRes && jsonRes.error) {
+                console.warn("GAS Error:", jsonRes.error);
+                rawData = FALLBACK_PRODUCTS;
+            } else {
+                rawData = FALLBACK_PRODUCTS;
+            }
 
             if (!Array.isArray(rawData) || rawData.length === 0) {
-                document.getElementById('loading').innerText = "No products found in Google Sheet!";
-                return;
+                rawData = FALLBACK_PRODUCTS;
             }
 
             document.getElementById('loading').style.display = 'none';
             showProducts();
         } catch (error) {
-            console.error("Fetch error:", error);
-            document.getElementById('loading').innerHTML = "⚠️ Error loading data!<br><span style='font-size:12px; color:var(--hint-color);'>Google Apps Script URL သို့မဟုတ် Deploy အခြေအနေ ပြန်လည်စစ်ဆေးပါ။</span>";
+            console.warn("Fetch error, using fallback catalog:", error);
+            rawData = FALLBACK_PRODUCTS;
+            document.getElementById('loading').style.display = 'none';
+            showProducts();
         }
     }
 
@@ -520,7 +530,7 @@
         const prodName = getProp(selectedProduct, ["name", "title"]) || 'Plan';
         const prodCat = getProp(selectedProduct, ["category", "cat"]) || '';
         const prodPrice = getProp(selectedProduct, ["price", "cost"]) || '0';
-        const prodDuration = getProp(selectedProfile = selectedProduct, ["duration", "time"]) || getProp(selectedProduct, ["duration", "time"]) || '';
+        const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
 
         const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
         const fullItemName = (prodCat && prodCat !== prodName) ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
