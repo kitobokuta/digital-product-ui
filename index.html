@@ -1,4 +1,3 @@
-<!-- STREAMING_CHUNK:Initializing HTML structure and metadata... -->
 <!DOCTYPE html>
 <html lang="my">
 <head>
@@ -235,7 +234,6 @@
 </head>
 <body>
 
-<!-- STREAMING_CHUNK:Rendering header layout... -->
 <div class="store-header">
     <svg class="planet-icon" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
         <ellipse cx="100" cy="65" rx="90" ry="25" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="4" transform="rotate(-15 100 65)"/>
@@ -259,7 +257,6 @@
 <div id="productGrid" class="grid"></div>
 <div id="categoryGrid" class="grid" style="display: none;"></div>
 
-<!-- STREAMING_CHUNK:Rendering product detail and checkout view... -->
 <div id="detailView" class="detail-view">
     <div>
         <div class="detail-img-wrap">
@@ -286,7 +283,6 @@
 </div>
 
 <script>
-    /* STREAMING_CHUNK:Defining store logic and data fetchers... */
     const tg = window.Telegram.WebApp;
     try { tg.expand(); } catch(e){}
 
@@ -385,7 +381,6 @@
         }
     }
 
-    /* STREAMING_CHUNK:Implementing UI rendering and interaction handlers... */
     function showProducts() {
         currentView = 'PRODUCTS';
         document.getElementById('backBtn').style.display = 'none';
@@ -585,4 +580,4 @@
     fetchProducts();
 </script>
 </body>
-</html> 
+</html>
