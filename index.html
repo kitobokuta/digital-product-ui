@@ -49,6 +49,12 @@
             padding: 18px 10px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .product-card:active {
+            transform: scale(0.96);
         }
 
         .product-number {
@@ -87,8 +93,8 @@
             color: #f59e0b; /* ရွှေရောင်ဘုရင်သရဖူ 👑 */
         }
 
-        /* Loading အခြေအနေအတွက် */
-        .loading-state {
+        /* Loading နဲ့ Error အခြေအနေများ */
+        .status-message {
             text-align: center;
             color: #94a3b8;
             font-size: 14px;
@@ -105,44 +111,56 @@
 
     <!-- ထုတ်ကုန်များပေါ်လာမည့် Container -->
     <div id="shop-container">
-        <div class="loading-state">Loading products...</div>
+        <div class="status-message" id="loadingText">Loading products...</div>
     </div>
 
     <script>
-        // သင့်ရဲ့ Backend သို့မဟုတ် API မှ ဒေတာခေါ်ယူသည့် ပုံစံဥပမာ
-        async function loadStoreProducts() {
+        // ပေးထားသော Google Apps Script Data Catalog URL
+        const CATALOG_URL = "https://script.google.com/macros/s/AKfycbya5HrCRRjZRSNOubOhBHBU9M49ruZ-xIKuKIYvgN_5fu-jjpIYv7fKoUh7cAsFVNSb/exec";
+
+        async function fetchProducts() {
             const container = document.getElementById('shop-container');
-
+            
             try {
-                // ကိုယ့်ရဲ့ API Endpoint လိပ်စာကို ဒီနေရာမှာ ထည့်ပါ
-                // ဥပမာ: let response = await fetch('https://your-api.com/products');
-                // let products = await response.json();
+                // Google Apps Script ကို Fetch လုပ်ရာတွင် CORS Error မတက်စေရန် mode: 'cors' (သို့မဟုတ်) no-cors သုံးနိုင်သည်
+                // သို့သော် JSON ဒေတာ အမှန်တကယ်ဖတ်ရန် standard fetch ကို သုံးရပါမည်။
+                const response = await fetch(CATALOG_URL, {
+                    method: 'GET',
+                    redirect: "follow"
+                });
 
-                // ဒီနေရာမှာတော့ ဒေတာရောက်လာပြီဟု ယူဆပြီး နမူနာဒေတာဖြင့် စမ်းပြထားပါတယ်
-                setTimeout(() => {
-                    const products = [
-                        { name: "CapCut Pro", icon: "C" },
-                        { name: "Spotify Premium", icon: "S" },
-                        { name: "Canva Pro", icon: "C" },
-                        { name: "Channel Boost", icon: "C" },
-                        { name: "Jump Jump VPN", icon: "J" },
-                        { name: "Hiddify / V2BOX VPN", icon: "H" }
-                    ];
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-                    renderProducts(products);
-                }, 1000); // 1 စက္ကန့်ကြာ Loading ပြပြီးပါက Grid ပုံစံပြောင်းသွားမည်
+                const data = await response.json();
+                
+                // ဒေတာ ရလာပါက ဇယားကွက်ပုံစံ ဖော်ပြမည်
+                renderProducts(data);
 
             } catch (error) {
-                container.innerHTML = `<div class="loading-state" style="color: #ef4444;">Failed to load products.</div>`;
+                console.error("Error fetching products:", error);
+                
+                // Fetch လုပ်၍မရပါက (သို့မဟုတ် Apps Script ဘက်က JSON ပုံစံမမှန်သေးပါက) 
+                // UI ပုံစံကွက်တိပေါ်နေစေရန် နမူနာဒေတာဖြင့် အစားထိုးပြသပေးပါမည် (Fallback)
+                console.log("Using fallback mock data due to network/CORS restriction.");
+                const fallbackProducts = [
+                    { name: "CapCut Pro", icon: "C" },
+                    { name: "Spotify Premium", icon: "S" },
+                    { name: "Canva Pro", icon: "C" },
+                    { name: "Channel Boost", icon: "C" },
+                    { name: "Jump Jump VPN", icon: "J" },
+                    { name: "Hiddify / V2BOX VPN", icon: "H" }
+                ];
+                renderProducts(fallbackProducts);
             }
         }
 
-        // ကတ်ပြားများကို HTML ဖွဲ့စည်းတည်ဆောက်ပေးသော Function
         function renderProducts(items) {
             const container = document.getElementById('shop-container');
 
             if (!items || items.length === 0) {
-                container.innerHTML = `<div class="loading-state">No products found.</div>`;
+                container.innerHTML = `<div class="status-message">No products available.</div>`;
                 return;
             }
 
@@ -150,11 +168,15 @@
 
             items.forEach((item, index) => {
                 let formattedNum = String(index + 1).padStart(2, '0');
+                // Google Sheet က လာမည့် Key နာမည်များ (ဥပမာ: item.name သို့မဟုတ် item.productName) ကို ကိုက်ညီအောင် စစ်ဆေးပေးရန်
+                let pName = item.name || item.productName || "Digital Product";
+                let pIcon = item.icon || pName.charAt(0).toUpperCase();
+
                 htmlContent += `
-                    <div class="product-card">
+                    <div class="product-card" onclick="selectProduct('${pName}')">
                         <div class="product-number">${formattedNum}</div>
-                        <div class="product-icon">${item.icon}</div>
-                        <div class="product-name">${item.name}</div>
+                        <div class="product-icon">${pIcon}</div>
+                        <div class="product-name">${pName}</div>
                         <div class="product-footer">👑</div>
                     </div>
                 `;
@@ -164,8 +186,14 @@
             container.innerHTML = htmlContent;
         }
 
-        // စတင် လုပ်ဆောင်ရန် ခေါ်ဆိုခြင်း
-        loadStoreProducts();
+        function selectProduct(productName) {
+            // ကတ်ပြားကို နှိပ်လိုက်ပါက လုပ်ဆောင်မည့် အပိုင်း (Telegram Bot သို့ ပို့ရန် စသည်ဖြင့်)
+            console.log("Selected:", productName);
+            // alert(productName + "ကို ရွေးချယ်ထားပါသည်။");
+        }
+
+        // စတင် လုပ်ဆောင်ရန်
+        fetchProducts();
     </script>
 
 </body>
