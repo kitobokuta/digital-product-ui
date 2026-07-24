@@ -242,7 +242,7 @@
 
         .sub-info .sub-duration {
             font-size: 11px;
-            color: #f87171; /* အနီရောင် (Red) */
+            color: #f87171;
             background: rgba(248, 113, 113, 0.1);
             padding: 2px 6px;
             border-radius: 4px;
@@ -253,7 +253,7 @@
 
         .sub-info .sub-price {
             font-size: 12px;
-            color: #4ade80; /* အစိမ်းရောင် (Green) */
+            color: #4ade80;
             font-weight: 700;
         }
 
@@ -291,20 +291,9 @@
             text-align: right;
         }
 
-        /* Summary specific colors */
-        #summary-duration {
-            color: #f87171; /* အနီရောင် */
-        }
-
-        #summary-price {
-            color: #4ade80; /* အစိမ်းရောင် */
-            font-weight: 700;
-        }
-
-        #summary-note {
-            color: var(--text-color);
-            font-weight: 500;
-        }
+        #summary-duration { color: #f87171; }
+        #summary-price { color: #4ade80; font-weight: 700; }
+        #summary-note { color: var(--text-color); font-weight: 500; }
 
         .input-group {
             position: relative;
@@ -426,7 +415,6 @@
                 <span class="info-label">Price:</span>
                 <span class="info-value" id="summary-price">-</span>
             </div>
-            <!-- Note / Condition Column -->
             <div class="info-row">
                 <span class="info-label">Note / Condition:</span>
                 <span class="info-value" id="summary-note">-</span>
@@ -451,10 +439,9 @@
         tg.expand();
         tg.ready();
 
-        // Google Apps Script Deploy လုပ်ထားသော Web App URL ကို ဒီနေရာမှာ ထည့်ပေးပါ
-        const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwiEn9cFblQqV5RBbyaK3n3v31HTcGKMS2uj-fe6vo/dev";
+        // သင်ပေးထားသော Web App URL အသစ်
+        const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyHOjBEQfMcmejjpcBlttv1Cls6M27DJtAUvo5oPmRMV2H3Iu9H6hwYGG5/exec";
 
-        // Dynamic Data သိမ်းဆည်းမည့် Array
         let productsDatabase = [];
 
         let selectedProductData = {
@@ -466,16 +453,21 @@
             note: ''
         };
 
-        // Google Sheet မှ Data များ Fetch လုပ်ပေးမည့် Function
         async function fetchProductsFromSheet() {
             try {
-                const response = await fetch(GOOGLE_SHEET_API_URL);
+                // Apps Script Redirects များကို လိုက်ဆွဲနိုင်အောင် redirect: 'follow' ထည့်ထားသည်
+                const response = await fetch(GOOGLE_SHEET_API_URL, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                
                 productsDatabase = await response.json();
                 renderMainProducts();
             } catch (error) {
-                console.error("Sheet Data ယူရာတွင် အမှားရှိနေပါသည်:", error);
+                console.error("Fetch error:", error);
+                const grid = document.getElementById('mainProductGrid');
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #f87171; font-size: 12px;">Data ခေါ်ယူ၍ မရပါ။ Google Sheet ထဲတွင် Data ရှိမရှိ ပြန်စစ်ပါ။</div>';
             } finally {
-                // Loader ပိတ်ခြင်း
                 const loader = document.getElementById("loader");
                 loader.style.opacity = "0";
                 setTimeout(() => { loader.style.display = "none"; }, 400);
@@ -485,6 +477,12 @@
         function renderMainProducts() {
             const grid = document.getElementById('mainProductGrid');
             grid.innerHTML = '';
+            
+            if (!productsDatabase || productsDatabase.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); font-size: 13px;">ကုန်ပစ္စည်းများ မရှိသေးပါ။</div>';
+                return;
+            }
+
             const uniqueNames = [...new Set(productsDatabase.map(p => p.name))];
 
             uniqueNames.forEach(name => {
@@ -501,7 +499,7 @@
             });
         }
 
-        window.addEventListener("load", () => {
+        document.addEventListener("DOMContentLoaded", () => {
             fetchProductsFromSheet();
         });
 
@@ -575,7 +573,7 @@
             const orderData = {
                 order_id: "ORD-" + Math.floor(100000000 + Math.random() * 900000000),
                 full_item_name: `${selectedProductData.name} - ${selectedProductData.type} (${selectedProductData.duration})`,
-                price: selectedProductData.priceText.replace(/[^0-9]/g, ''),
+                price: String(selectedProductData.priceText).replace(/[^0-9]/g, ''),
                 cost_price: selectedProductData.costPrice,
                 product_note: selectedProductData.note,
                 customer_note: customerNote
