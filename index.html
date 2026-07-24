@@ -32,13 +32,19 @@
             letter-spacing: 1px;
         }
 
-        /* ပထမပုံစံအတိုင်း ၂ ကော်လံ Grid ဒီဇိုင်း */
+        /* Responsive Grid: ဖုန်းမှာ ၂ ကော်လံ၊ Laptop/Desktop မှာ ၃ သို့မဟုတ် ၄ ကော်လံ အလိုအလျောက်ပြောင်းမည် */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            max-width: 450px;
+            gap: 15px;
+            max-width: 900px;
             margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         /* ကတ်ပြားဒီဇိုင်း */
@@ -46,54 +52,87 @@
             background-color: #111827;
             border: 1px solid #1f2937;
             border-radius: 16px;
-            padding: 18px 10px;
-            text-align: center;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-            cursor: pointer;
-            transition: transform 0.2s;
         }
 
-        .product-card:active {
-            transform: scale(0.96);
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         .product-number {
             font-size: 11px;
             color: #64748b;
-            text-align: left;
-            margin-bottom: 10px;
-            padding-left: 6px;
+        }
+
+        .product-footer {
+            font-size: 12px;
+            color: #f59e0b;
         }
 
         .product-icon {
-            width: 48px;
-            height: 48px;
+            width: 45px;
+            height: 45px;
             background: radial-gradient(circle, #1e293b 0%, #0b0f19 100%);
             border: 2px solid #334155;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 12px auto;
+            margin: 0 auto 10px auto;
             font-size: 18px;
             font-weight: bold;
             color: #ffffff;
-            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1);
         }
 
         .product-name {
             font-size: 13px;
             font-weight: 600;
-            margin-bottom: 10px;
+            text-align: center;
+            margin-bottom: 8px;
             color: #f1f5f9;
         }
 
-        .product-footer {
-            font-size: 12px;
-            color: #f59e0b; /* ရွှေရောင်ဘုရင်သရဖူ 👑 */
+        /* Price နဲ့ Type ပေါ်မည့်နေရာ */
+        .product-details {
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 10px;
+            background: #0b0f19;
+            padding: 6px;
+            border-radius: 8px;
         }
 
-        /* Loading နဲ့ Error အခြေအနေများ */
+        .product-price {
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Order Now ခလုတ် */
+        .order-btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .order-btn:hover {
+            background-color: #1d4ed8;
+        }
+
         .status-message {
             text-align: center;
             color: #94a3b8;
@@ -115,15 +154,12 @@
     </div>
 
     <script>
-        // ပေးထားသော Google Apps Script Data Catalog URL
         const CATALOG_URL = "https://script.google.com/macros/s/AKfycbya5HrCRRjZRSNOubOhBHBU9M49ruZ-xIKuKIYvgN_5fu-jjpIYv7fKoUh7cAsFVNSb/exec";
 
         async function fetchProducts() {
             const container = document.getElementById('shop-container');
             
             try {
-                // Google Apps Script ကို Fetch လုပ်ရာတွင် CORS Error မတက်စေရန် mode: 'cors' (သို့မဟုတ်) no-cors သုံးနိုင်သည်
-                // သို့သော် JSON ဒေတာ အမှန်တကယ်ဖတ်ရန် standard fetch ကို သုံးရပါမည်။
                 const response = await fetch(CATALOG_URL, {
                     method: 'GET',
                     redirect: "follow"
@@ -134,23 +170,19 @@
                 }
 
                 const data = await response.json();
-                
-                // ဒေတာ ရလာပါက ဇယားကွက်ပုံစံ ဖော်ပြမည်
                 renderProducts(data);
 
             } catch (error) {
                 console.error("Error fetching products:", error);
                 
-                // Fetch လုပ်၍မရပါက (သို့မဟုတ် Apps Script ဘက်က JSON ပုံစံမမှန်သေးပါက) 
-                // UI ပုံစံကွက်တိပေါ်နေစေရန် နမူနာဒေတာဖြင့် အစားထိုးပြသပေးပါမည် (Fallback)
-                console.log("Using fallback mock data due to network/CORS restriction.");
+                // Fetch လုပ်၍မရပါက Price, Type, Order Now ခလုတ်များပါဝင်သော နမူနာဒေတာဖြင့် ပြသရန်
                 const fallbackProducts = [
-                    { name: "CapCut Pro", icon: "C" },
-                    { name: "Spotify Premium", icon: "S" },
-                    { name: "Canva Pro", icon: "C" },
-                    { name: "Channel Boost", icon: "C" },
-                    { name: "Jump Jump VPN", icon: "J" },
-                    { name: "Hiddify / V2BOX VPN", icon: "H" }
+                    { name: "CapCut Pro", icon: "C", type: "1 Month", price: "5,000 MMK" },
+                    { name: "Spotify Premium", icon: "S", type: "Individual", price: "4,500 MMK" },
+                    { name: "Canva Pro", icon: "C", type: "1 Year", price: "3,500 MMK" },
+                    { name: "Channel Boost", icon: "C", type: "Standard", price: "6,000 MMK" },
+                    { name: "Jump Jump VPN", icon: "J", type: "VIP", price: "3,000 MMK" },
+                    { name: "Hiddify / V2BOX", icon: "H", type: "Unlimited", price: "4,000 MMK" }
                 ];
                 renderProducts(fallbackProducts);
             }
@@ -168,16 +200,26 @@
 
             items.forEach((item, index) => {
                 let formattedNum = String(index + 1).padStart(2, '0');
-                // Google Sheet က လာမည့် Key နာမည်များ (ဥပမာ: item.name သို့မဟုတ် item.productName) ကို ကိုက်ညီအောင် စစ်ဆေးပေးရန်
                 let pName = item.name || item.productName || "Digital Product";
                 let pIcon = item.icon || pName.charAt(0).toUpperCase();
+                let pType = item.type || item.productType || "Standard";
+                let pPrice = item.price || "Check Price";
 
                 htmlContent += `
-                    <div class="product-card" onclick="selectProduct('${pName}')">
-                        <div class="product-number">${formattedNum}</div>
-                        <div class="product-icon">${pIcon}</div>
-                        <div class="product-name">${pName}</div>
-                        <div class="product-footer">👑</div>
+                    <div class="product-card">
+                        <div>
+                            <div class="card-top">
+                                <div class="product-number">${formattedNum}</div>
+                                <div class="product-footer">👑</div>
+                            </div>
+                            <div class="product-icon">${pIcon}</div>
+                            <div class="product-name">${pName}</div>
+                            <div class="product-details">
+                                Type: <b>${pType}</b><br>
+                                Price: <span class="product-price">${pPrice}</span>
+                            </div>
+                        </div>
+                        <button class="order-btn" onclick="orderProduct('${pName}', '${pType}', '${pPrice}')">Order Now</button>
                     </div>
                 `;
             });
@@ -186,13 +228,11 @@
             container.innerHTML = htmlContent;
         }
 
-        function selectProduct(productName) {
-            // ကတ်ပြားကို နှိပ်လိုက်ပါက လုပ်ဆောင်မည့် အပိုင်း (Telegram Bot သို့ ပို့ရန် စသည်ဖြင့်)
-            console.log("Selected:", productName);
-            // alert(productName + "ကို ရွေးချယ်ထားပါသည်။");
+        function orderProduct(name, type, price) {
+            // Order Now နှိပ်လိုက်ပါက လုပ်ဆောင်မည့် အပိုင်း (Telegram Bot သို့မဟုတ် Checkout သို့ ပို့ရန်)
+            alert(`${name} (${type}) - ${price} ကို ဝယ်ယူရန် ရွေးချယ်ထားပါသည်။`);
         }
 
-        // စတင် လုပ်ဆောင်ရန်
         fetchProducts();
     </script>
 
