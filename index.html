@@ -45,7 +45,7 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s ease;
         }
 
         .jupiter-container {
@@ -396,33 +396,58 @@
         tg.ready();
 
         // Updated Apps Script Web App URL
-        const API_URL = "https://script.google.com/macros/s/AKfycbzosy3Kdbp4lwFgZ86supFm0NafFvgrwTABb2YsXFsUVRXNIgrkFYJ2-cX2SdH1adnD/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbw07DhrNftbV9uo-3ZVSWySN31F30kgLS9jVFuC6aELCjShEj5pO8BNK4JMZZdKIQ9f/exec";
 
         let productsDatabase = [];
         let selectedItemData = {};
 
+        function hideLoader() {
+            const loader = document.getElementById("loader");
+            if (loader && loader.style.display !== "none") {
+                loader.style.opacity = "0";
+                setTimeout(() => { loader.style.display = "none"; }, 300);
+            }
+        }
+
         async function fetchSheetData() {
+            // Instant load using cached data if available
+            const cachedData = localStorage.getItem("jupiter_cache_data");
+            if (cachedData) {
+                try {
+                    productsDatabase = JSON.parse(cachedData);
+                    renderMainProducts();
+                    hideLoader();
+                } catch (e) {}
+            }
+
+            // Safety timeout to ensure loading screen never hangs (max 1.0 second)
+            const safetyTimer = setTimeout(() => {
+                hideLoader();
+            }, 1000);
+
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 
-                productsDatabase = data.map(item => ({
-                    id: item.id || "PROD-000",
-                    name: item.name || "Unknown",
-                    plan: item.plan || "Standard",
-                    duration: item.duration || "1 Month",
-                    priceText: item.priceText || "0 MMK",
-                    costPrice: item.costPrice || 0,
-                    note: item.note || "-"
-                }));
+                if (Array.isArray(data) && data.length > 0) {
+                    productsDatabase = data.map(item => ({
+                        id: item.id || "PROD-000",
+                        name: item.name || "Digital Product",
+                        plan: item.plan || "Standard",
+                        duration: item.duration || "1 Month",
+                        priceText: item.priceText || "0 MMK",
+                        costPrice: item.costPrice || 0,
+                        note: item.note || "-"
+                    }));
 
-                renderMainProducts();
+                    localStorage.setItem("jupiter_cache_data", JSON.stringify(productsDatabase));
+                    renderMainProducts();
+                }
             } catch (error) {
                 console.error("Error loading data from Google Sheet:", error);
             } finally {
-                const loader = document.getElementById("loader");
-                loader.style.opacity = "0";
-                setTimeout(() => { loader.style.display = "none"; }, 400);
+                clearTimeout(safetyTimer);
+                hideLoader();
             }
         }
 
@@ -514,7 +539,7 @@
             const orderData = {
                 order_id: "ORD-" + Math.floor(100000000 + Math.random() * 900000000),
                 full_item_name: `${selectedItemData.name} - ${selectedItemData.plan} (${selectedItemData.duration})`,
-                price: selectedItemData.priceText.replace(/[^0-9]/g, ''),
+                price: typeof selectedItemData.priceText === 'string' ? selectedItemData.priceText.replace(/[^0-9]/g, '') : "0",
                 cost_price: selectedItemData.costPrice,
                 customer_note: customerNote
             };
