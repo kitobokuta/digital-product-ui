@@ -11,6 +11,7 @@
             font-family: sans-serif;
             margin: 0;
             padding: 15px;
+            padding-bottom: 60px; /* အောက်ဆုံးက Fixed Bar နဲ့ မထပ်စေရန် */
         }
 
         .store-header {
@@ -32,12 +33,12 @@
             letter-spacing: 1px;
         }
 
-        /* Responsive Grid: ဖုန်းမှာ ၂ ကော်လံ၊ Laptop/Desktop မှာ ၃ သို့မဟုတ် ၄ ကော်လံ အလိုအလျောက်ပြောင်းမည် */
+        /* Products Grid (Phone & Laptop Responsive) */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            max-width: 900px;
+            gap: 12px;
+            max-width: 600px;
             margin: 0 auto;
         }
 
@@ -47,45 +48,41 @@
             }
         }
 
-        /* ကတ်ပြားဒီဇိုင်း */
+        /* Product Card Design */
         .product-card {
             background-color: #111827;
             border: 1px solid #1f2937;
             border-radius: 16px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
+            padding: 18px 10px;
+            text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
         }
 
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+        .product-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
         }
 
         .product-number {
             font-size: 11px;
             color: #64748b;
-        }
-
-        .product-footer {
-            font-size: 12px;
-            color: #f59e0b;
+            text-align: left;
+            margin-bottom: 10px;
+            padding-left: 6px;
         }
 
         .product-icon {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             background: radial-gradient(circle, #1e293b 0%, #0b0f19 100%);
             border: 2px solid #334155;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 10px auto;
+            margin: 0 auto 12px auto;
             font-size: 18px;
             font-weight: bold;
             color: #ffffff;
@@ -94,38 +91,111 @@
         .product-name {
             font-size: 13px;
             font-weight: 600;
-            text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #f1f5f9;
         }
 
-        /* Price နဲ့ Type ပေါ်မည့်နေရာ */
-        .product-details {
-            font-size: 11px;
-            color: #94a3b8;
-            text-align: center;
-            margin-bottom: 10px;
-            background: #0b0f19;
-            padding: 6px;
-            border-radius: 8px;
+        .product-footer {
+            font-size: 12px;
+            color: #f59e0b;
         }
 
-        .product-price {
+        /* Form Container (Product နှိပ်မှ ပေါ်လာမည့် Category / Checkout Form) */
+        .order-form-container {
+            display: none;
+            max-width: 450px;
+            margin: 20px auto;
+            background-color: #111827;
+            border: 1px solid #374151;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .order-form-container h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #60a5fa;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            background-color: #070a13;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            color: #ffffff;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        /* မှိန်မှိန်ပြမည့် Placeholder (စာရေးလိုက်တာနဲ့ ပျောက်သွားမည်) */
+        .form-group input::placeholder {
+            color: #475569;
+            font-style: italic;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .note-box {
+            font-size: 11px;
+            color: #f59e0b;
+            background: #1e1b4b;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid #f59e0b;
+        }
+
+        .price-tag {
             color: #10b981;
             font-weight: bold;
         }
 
-        /* Order Now ခလုတ် */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .back-btn {
+            background-color: #374151;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 30%;
+        }
+
         .order-btn {
             background-color: #2563eb;
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 8px;
+            padding: 10px;
             font-size: 12px;
             font-weight: bold;
             cursor: pointer;
-            width: 100%;
+            width: 70%;
             transition: background 0.2s;
         }
 
@@ -133,11 +203,32 @@
             background-color: #1d4ed8;
         }
 
-        .status-message {
+        /* အောက်ဆုံးတွင် Fixed ထားမည့် Features Bar (ပုံပါအတိုင်း) */
+        .store-features-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #0b0f19;
+            border-top: 1px solid #1f2937;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 5px;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .feature-item {
             text-align: center;
+            font-size: 9px;
             color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+
+        .feature-item span {
+            display: block;
             font-size: 14px;
-            margin-top: 50px;
+            margin-bottom: 2px;
         }
     </style>
 </head>
@@ -148,92 +239,163 @@
         <p>✦ PREMIUM DIGITAL PRODUCTS ✦</p>
     </div>
 
-    <!-- ထုတ်ကုန်များပေါ်လာမည့် Container -->
-    <div id="shop-container">
-        <div class="status-message" id="loadingText">Loading products...</div>
+    <!-- ပထမဆုံးပေါ်မည့် ကတ်ပြားများ Container -->
+    <div id="catalog-container" class="products-grid">
+        <!-- JS ဖြင့် အလိုအလျောက် ဖြည့်ပေးမည် -->
+    </div>
+
+    <!-- ကတ်ပြားနှိပ်မှ ပေါ်လာမည့် Form Container (Category, Price, Type, Note & Inputs) -->
+    <div id="form-container" class="order-form-container">
+        <h3 id="selected-title">Product Order</h3>
+        
+        <div class="note-box" id="product-info-box">
+            <div>Type: <span id="display-type" class="price-tag">1 Month</span></div>
+            <div>Price: <span id="display-price" class="price-tag">5,000 MMK</span></div>
+            <div style="margin-top: 5px; color: #cbd5e1;" id="display-note">ℹ️ Note: ဝင်ရောက်အသုံးပြုပုံ ညွှန်ကြားချက်...</div>
+        </div>
+        
+        <form id="purchaseForm" onsubmit="submitOrder(event)">
+            <div class="form-group">
+                <label>Select Package Type</label>
+                <select id="productType" onchange="updatePrice()">
+                    <option value="1 Month">1 Month - 5,000 MMK</option>
+                    <option value="1 Year">1 Year - 15,000 MMK</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number (ငွေလွှဲနံပါတ် သို့မဟုတ် ဆက်သွယ်ရန်)</label>
+                <input type="text" id="phoneNo" placeholder="ဥပမာ - 09912345678" required>
+            </div>
+
+            <div class="form-group">
+                <label>Gmail Address</label>
+                <input type="email" id="gmail" placeholder="ဥပမာ - user@gmail.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>Username / Account Name</label>
+                <input type="text" id="username" placeholder="ဥပမာ - @username သို့မဟုတ် အမည်" required>
+            </div>
+
+            <div class="btn-group">
+                <button type="button" class="back-btn" onclick="goBack()">Back</button>
+                <button type="submit" class="order-btn">Order Now</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- အောက်ဆုံးတွင် Fixed ပြန်ထည့်ပေးထားသော Features Bar -->
+    <div class="store-features-bar">
+        <div class="feature-item">
+            <span>🛡️</span> 100% SAFE & SECURE
+        </div>
+        <div class="feature-item">
+            <span>⚡</span> INSTANT DELIVERY
+        </div>
+        <div class="feature-item">
+            <span>🎖️</span> PREMIUM QUALITY
+        </div>
+        <div class="feature-item">
+            <span>🎧</span> 24/7 SUPPORT
+        </div>
     </div>
 
     <script>
-        const CATALOG_URL = "https://script.google.com/macros/s/AKfycbya5HrCRRjZRSNOubOhBHBU9M49ruZ-xIKuKIYvgN_5fu-jjpIYv7fKoUh7cAsFVNSb/exec";
+        // ထုတ်ကုန်စာရင်းအချက်အလက်များ
+        const products = [
+            { id: 1, name: "CapCut Pro", icon: "C", price: "5,000 MMK", note: "CapCut Pro ဖြင့် ဗီဒီယိုများကို ရေစာမပါဘဲ အလွယ်တကူ တည်းဖြတ်နိုင်ပါပြီ။" },
+            { id: 2, name: "Spotify Premium", icon: "S", price: "4,500 MMK", note: "ကြော်ငြာမပါဘဲ သီချင်းများကို စိတ်ကြိုက်နားဆင်နိုင်ပါသည်။" },
+            { id: 3, name: "Canva Pro", icon: "C", price: "3,500 MMK", note: "Design ပုံစံအမျိုးမျိုးကို Pro ဖြင့် အသုံးပြုနိုင်ပါသည်။" },
+            { id: 4, name: "Channel Boost", icon: "C", price: "6,000 MMK", note: "သင်၏ Channel ကို အမြန်ဆုံး ကြီးထွားလာစေရန် လုပ်ဆောင်ပေးမည်။" },
+            { id: 5, name: "Jump Jump VPN", icon: "J", price: "3,000 MMK", note: "အင်တာနက်လိုင်း အမြန်ဆုံးနှင့် အလုံခြုံဆုံး အသုံးပြုရန်။" },
+            { id: 6, name: "Hiddify / V2BOX VPN", icon: "H", price: "4,000 MMK", note: "High-Speed Proxy ဖြင့် လွတ်လပ်စွာ Browsing လုပ်ပါ။" }
+        ];
 
-        async function fetchProducts() {
-            const container = document.getElementById('shop-container');
-            
-            try {
-                const response = await fetch(CATALOG_URL, {
-                    method: 'GET',
-                    redirect: "follow"
-                });
+        const catalogContainer = document.getElementById('catalog-container');
+        const formContainer = document.getElementById('form-container');
+        const selectedTitle = document.getElementById('selected-title');
+        const displayPrice = document.getElementById('display-price');
+        const displayNote = document.getElementById('display-note');
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+        let currentProductData = null;
 
-                const data = await response.json();
-                renderProducts(data);
-
-            } catch (error) {
-                console.error("Error fetching products:", error);
-                
-                // Fetch လုပ်၍မရပါက Price, Type, Order Now ခလုတ်များပါဝင်သော နမူနာဒေတာဖြင့် ပြသရန်
-                const fallbackProducts = [
-                    { name: "CapCut Pro", icon: "C", type: "1 Month", price: "5,000 MMK" },
-                    { name: "Spotify Premium", icon: "S", type: "Individual", price: "4,500 MMK" },
-                    { name: "Canva Pro", icon: "C", type: "1 Year", price: "3,500 MMK" },
-                    { name: "Channel Boost", icon: "C", type: "Standard", price: "6,000 MMK" },
-                    { name: "Jump Jump VPN", icon: "J", type: "VIP", price: "3,000 MMK" },
-                    { name: "Hiddify / V2BOX", icon: "H", type: "Unlimited", price: "4,000 MMK" }
-                ];
-                renderProducts(fallbackProducts);
-            }
-        }
-
-        function renderProducts(items) {
-            const container = document.getElementById('shop-container');
-
-            if (!items || items.length === 0) {
-                container.innerHTML = `<div class="status-message">No products available.</div>`;
-                return;
-            }
-
-            let htmlContent = '<div class="products-grid">';
-
-            items.forEach((item, index) => {
-                let formattedNum = String(index + 1).padStart(2, '0');
-                let pName = item.name || item.productName || "Digital Product";
-                let pIcon = item.icon || pName.charAt(0).toUpperCase();
-                let pType = item.type || item.productType || "Standard";
-                let pPrice = item.price || "Check Price";
-
-                htmlContent += `
-                    <div class="product-card">
-                        <div>
-                            <div class="card-top">
-                                <div class="product-number">${formattedNum}</div>
-                                <div class="product-footer">👑</div>
-                            </div>
-                            <div class="product-icon">${pIcon}</div>
-                            <div class="product-name">${pName}</div>
-                            <div class="product-details">
-                                Type: <b>${pType}</b><br>
-                                Price: <span class="product-price">${pPrice}</span>
-                            </div>
-                        </div>
-                        <button class="order-btn" onclick="orderProduct('${pName}', '${pType}', '${pPrice}')">Order Now</button>
+        // Catalog ကို စတင်ဖော်ပြရန်
+        function renderCatalog() {
+            let html = '';
+            products.forEach((item, index) => {
+                let numStr = String(index + 1).padStart(2, '0');
+                html += `
+                    <div class="product-card" onclick='selectProduct(${JSON.stringify(item)})'>
+                        <div class="product-number">${numStr}</div>
+                        <div class="product-icon">${item.icon}</div>
+                        <div class="product-name">${item.name}</div>
+                        <div class="product-footer">👑</div>
                     </div>
                 `;
             });
-
-            htmlContent += '</div>';
-            container.innerHTML = htmlContent;
+            catalogContainer.innerHTML = html;
         }
 
-        function orderProduct(name, type, price) {
-            // Order Now နှိပ်လိုက်ပါက လုပ်ဆောင်မည့် အပိုင်း (Telegram Bot သို့မဟုတ် Checkout သို့ ပို့ရန်)
-            alert(`${name} (${type}) - ${price} ကို ဝယ်ယူရန် ရွေးချယ်ထားပါသည်။`);
+        // ကတ်ပြားတစ်ခုကို နှိပ်လိုက်သောအခါ Form သို့ ကူးပြောင်းရန်
+        function selectProduct(item) {
+            currentProductData = item;
+            selectedTitle.innerText = `Order: ${item.name}`;
+            displayPrice.innerText = item.price;
+            displayNote.innerText = `ℹ️ Note: ${item.note}`;
+            
+            // Catalog ကိုဖျောက်ပြီး Form ကိုပြမည်
+            catalogContainer.style.display = 'none';
+            formContainer.style.display = 'block';
+
+            // Web App က အောက်သို့ အလိုအလျောက် ဆင်းသွားစေရန် (Scroll down)
+            window.scrollTo({ top: 150, behavior: 'smooth' });
         }
 
-        fetchProducts();
+        // Back ခလုတ်နှိပ်လျှင် ပုံစံဟောင်းသို့ ပြန်သွားရန်
+        function goBack() {
+            formContainer.style.display = 'none';
+            catalogContainer.style.display = 'grid';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Package အမျိုးအစား ပြောင်းလဲသည့်အခါ ဈေးနှုန်းကို တွက်ချက်ပြသရန်
+        function updatePrice() {
+            const typeVal = document.getElementById('productType').value;
+            if(typeVal === '1 Year' && currentProductData) {
+                displayPrice.innerText = "15,000 MMK";
+            } else if(currentProductData) {
+                displayPrice.innerText = currentProductData.price;
+            }
+        }
+
+        // Order Now နှိပ်လိုက်သောအခါ Python Bot ဘက်သို့ ဒေတာပေးပို့ပြီး အောက်သို့ ဆင်းသွားမည့် ပုံစံ
+        function submitOrder(event) {
+            event.preventDefault();
+
+            const orderData = {
+                product: currentProductData ? currentProductData.name : "Unknown",
+                type: document.getElementById('productType').value,
+                price: displayPrice.innerText,
+                phone: document.getElementById('phoneNo').value,
+                gmail: document.getElementById('gmail').value,
+                username: document.getElementById('username').value
+            };
+
+            console.log("Sending order data to Python Bot:", orderData);
+
+            // Web App ကို အောက်ဆုံးသို့ အပြည့်ဆင်းသွားစေပြီး Python Bot ဆက်လုပ်ရန် Trigger ပေးမည်
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+
+            alert(`Order Successful! Python Bot ထံသို့ အချက်အလက်များ ပေးပို့ပြီးပါပြီ။`);
+            
+            // Form ကို ရှင်းလင်းပြီး ပထမစာမျက်နှာသို့ ပြန်သွားမည်
+            document.getElementById('purchaseForm').reset();
+            goBack();
+        }
+
+        // စတင်ချိန်တွင် Catalog ကို ဖော်ပြရန်
+        renderCatalog();
     </script>
 
 </body>
