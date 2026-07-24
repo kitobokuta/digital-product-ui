@@ -452,7 +452,6 @@
             note: ''
         };
 
-        // Redirect ကို သေချာ handle လုပ်နိုင်သော fetch function
         async function fetchProductsFromSheet() {
             try {
                 const response = await fetch(GOOGLE_SHEET_API_URL, {
@@ -464,11 +463,30 @@
                     throw new Error('Network response error');
                 }
 
-                productsDatabase = await response.json();
+                const rawData = await response.json();
+                
+                // Row 1 ကနေ 4 အထိကို ပယ်ဖျက်ပြီး Row 5 မှစ၍ ဖတ်ပါသည် (Row Index 4 မှစတင်ခြင်း)
+                const validRows = rawData.slice(4);
+
+                // Field Mapping များကို မှန်ကန်အောင် ပြင်ဆင်ထားပါသည်
+                productsDatabase = validRows.map(item => {
+                    return {
+                        name: item.name || item.product_name || item.Name || '',
+                        type: item.type || item.plan || item.Type || '',
+                        duration: item.duration || item.Duration || '',
+                        // Selling Price ကို အဓိက PriceText အဖြစ်သတ်မှတ်ပါသည်
+                        priceText: item.selling_price || item.sellingPrice || item.priceText || item.Price || '0 Ks',
+                        // Cost Price ကို သီးသန့်ဖတ်ယူပါသည်
+                        costPrice: item.cost_price || item.costPrice || 0,
+                        // Note / Condition Column အား အမှန်ဖတ်ယူပါသည်
+                        note: item.note || item.condition || item.note_condition || item.Note || '-'
+                    };
+                }).filter(p => p.name !== '');
+
                 renderMainProducts();
             } catch (error) {
                 console.error("Sheet Data ယူရာတွင် အမှားရှိနေပါသည်:", error);
-                alert("Data ခေါ်ယူ၍ မရပါ၊ Apps Script Deploy လုပ်တာ 'Anyone' ပေးထားလား ပြန်စစ်ပေးပါ။");
+                alert("Data ခေါ်ယူ၍ မရပါ။ Apps Script Deploy ပြုလုပ်ရာတွင် 'Anyone' ပေးထားခြင်းရှိမရှိ စစ်ဆေးပေးပါ။");
             } finally {
                 const loader = document.getElementById("loader");
                 loader.style.opacity = "0";
