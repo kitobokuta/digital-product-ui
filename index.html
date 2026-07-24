@@ -6,12 +6,12 @@
     <title>Jupiter Store</title>
     <style>
         body {
-            background-color: #070a13;
-            color: #ffffff;
+            background-color: #0b0f17;
+            color: #e2e8f0;
             font-family: sans-serif;
             margin: 0;
             padding: 15px;
-            padding-bottom: 60px; /* အောက်ဆုံးက Fixed Bar နဲ့ မထပ်စေရန် */
+            padding-bottom: 70px;
         }
 
         .store-header {
@@ -24,6 +24,7 @@
             font-size: 24px;
             letter-spacing: 1.5px;
             font-weight: 800;
+            color: #ffffff;
         }
 
         .store-header p {
@@ -48,10 +49,10 @@
             }
         }
 
-        /* Product Card Design */
+        /* Product Card Design (Black & Silver Theme) */
         .product-card {
-            background-color: #111827;
-            border: 1px solid #1f2937;
+            background-color: #121824;
+            border: 1px solid #1e293b;
             border-radius: 16px;
             padding: 18px 10px;
             text-align: center;
@@ -61,7 +62,7 @@
         }
 
         .product-card:hover {
-            border-color: #3b82f6;
+            border-color: #64748b;
             transform: translateY(-2px);
         }
 
@@ -76,7 +77,7 @@
         .product-icon {
             width: 48px;
             height: 48px;
-            background: radial-gradient(circle, #1e293b 0%, #0b0f19 100%);
+            background: radial-gradient(circle, #1e293b 0%, #0b0f17 100%);
             border: 2px solid #334155;
             border-radius: 50%;
             display: flex;
@@ -100,13 +101,13 @@
             color: #f59e0b;
         }
 
-        /* Form Container (Product နှိပ်မှ ပေါ်လာမည့် Category / Checkout Form) */
+        /* Form Container (Second / Third UI) */
         .order-form-container {
             display: none;
             max-width: 450px;
             margin: 20px auto;
-            background-color: #111827;
-            border: 1px solid #374151;
+            background-color: #121824;
+            border: 1px solid #1e293b;
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
@@ -115,13 +116,13 @@
         .order-form-container h3 {
             margin-top: 0;
             font-size: 16px;
-            color: #60a5fa;
+            color: #cbd5e1;
             text-align: center;
             margin-bottom: 15px;
         }
 
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
         .form-group label {
@@ -131,9 +132,29 @@
             margin-bottom: 5px;
         }
 
-        .form-group input, .form-group select {
+        /* Select box with custom clean down arrow */
+        .form-group select {
             width: 100%;
-            background-color: #070a13;
+            background-color: #0b0f17;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px;
+            color: #ffffff;
+            font-size: 13px;
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%2394a3b8' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position-x: 98%;
+            background-position-y: center;
+            cursor: pointer;
+        }
+
+        .form-group input {
+            width: 100%;
+            background-color: #0b0f17;
             border: 1px solid #334155;
             border-radius: 8px;
             padding: 10px;
@@ -142,29 +163,29 @@
             box-sizing: border-box;
         }
 
-        /* မှိန်မှိန်ပြမည့် Placeholder (စာရေးလိုက်တာနဲ့ ပျောက်သွားမည်) */
-        .form-group input::placeholder {
-            color: #475569;
-            font-style: italic;
-        }
-
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #2563eb;
+            border-color: #64748b;
         }
 
+        /* Note Box (Black & Silver Theme) */
         .note-box {
             font-size: 11px;
-            color: #f59e0b;
-            background: #1e1b4b;
-            padding: 10px;
+            color: #cbd5e1;
+            background: #0b0f17;
+            border: 1px solid #1e293b;
+            padding: 12px;
             border-radius: 8px;
-            margin-bottom: 12px;
-            border-left: 3px solid #f59e0b;
+            margin-bottom: 15px;
         }
 
         .price-tag {
             color: #10b981;
+            font-weight: bold;
+        }
+
+        .duration-tag {
+            color: #ef4444;
             font-weight: bold;
         }
 
@@ -175,8 +196,8 @@
         }
 
         .back-btn {
-            background-color: #374151;
-            color: white;
+            background-color: #1e293b;
+            color: #cbd5e1;
             border: none;
             border-radius: 8px;
             padding: 10px;
@@ -187,9 +208,9 @@
         }
 
         .order-btn {
-            background-color: #2563eb;
+            background-color: #334155;
             color: white;
-            border: none;
+            border: 1px solid #475569;
             border-radius: 8px;
             padding: 10px;
             font-size: 12px;
@@ -200,17 +221,17 @@
         }
 
         .order-btn:hover {
-            background-color: #1d4ed8;
+            background-color: #475569;
         }
 
-        /* အောက်ဆုံးတွင် Fixed ထားမည့် Features Bar (ပုံပါအတိုင်း) */
+        /* Fixed Footer Features Bar */
         .store-features-bar {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: #0b0f19;
-            border-top: 1px solid #1f2937;
+            background-color: #0b0f17;
+            border-top: 1px solid #1e293b;
             display: flex;
             justify-content: space-around;
             padding: 8px 5px;
@@ -230,6 +251,13 @@
             font-size: 14px;
             margin-bottom: 2px;
         }
+
+        .loading-state {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
@@ -239,43 +267,32 @@
         <p>✦ PREMIUM DIGITAL PRODUCTS ✦</p>
     </div>
 
-    <!-- ပထမဆုံးပေါ်မည့် ကတ်ပြားများ Container -->
+    <!-- Product Catalog Grid -->
     <div id="catalog-container" class="products-grid">
-        <!-- JS ဖြင့် အလိုအလျောက် ဖြည့်ပေးမည် -->
+        <div class="loading-state">Loading products from sheet...</div>
     </div>
 
-    <!-- ကတ်ပြားနှိပ်မှ ပေါ်လာမည့် Form Container (Category, Price, Type, Note & Inputs) -->
+    <!-- Order Form Container (Second & Third UI) -->
     <div id="form-container" class="order-form-container">
-        <h3 id="selected-title">Product Order</h3>
+        <h3 id="selected-title">Order Product</h3>
         
         <div class="note-box" id="product-info-box">
-            <div>Type: <span id="display-type" class="price-tag">1 Month</span></div>
-            <div>Price: <span id="display-price" class="price-tag">5,000 MMK</span></div>
-            <div style="margin-top: 5px; color: #cbd5e1;" id="display-note">ℹ️ Note: ဝင်ရောက်အသုံးပြုပုံ ညွှန်ကြားချက်...</div>
+            <div><span class="duration-tag">⏱️ <span id="display-duration">1 Month</span></span></div>
+            <div style="margin-top: 4px;">Price: <span id="display-price" class="price-tag">5,000 MMK</span></div>
+            <div style="margin-top: 8px; color: #94a3b8;" id="display-note">ℹ️ Note: ညွှန်ကြားချက်...</div>
         </div>
         
         <form id="purchaseForm" onsubmit="submitOrder(event)">
             <div class="form-group">
                 <label>Select Package Type</label>
-                <select id="productType" onchange="updatePrice()">
-                    <option value="1 Month">1 Month - 5,000 MMK</option>
-                    <option value="1 Year">1 Year - 15,000 MMK</option>
+                <select id="productType" onchange="updatePackageDetails()">
+                    <!-- JS ဖြင့် Data ထည့်မည် -->
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Phone Number (ငွေလွှဲနံပါတ် သို့မဟုတ် ဆက်သွယ်ရန်)</label>
-                <input type="text" id="phoneNo" placeholder="ဥပမာ - 09912345678" required>
-            </div>
-
-            <div class="form-group">
-                <label>Gmail Address</label>
-                <input type="email" id="gmail" placeholder="ဥပမာ - user@gmail.com" required>
-            </div>
-
-            <div class="form-group">
-                <label>Username / Account Name</label>
-                <input type="text" id="username" placeholder="ဥပမာ - @username သို့မဟုတ် အမည်" required>
+                <label>Gmail Address (Optional)</label>
+                <input type="email" id="gmail" placeholder="user@gmail.com">
             </div>
 
             <div class="btn-group">
@@ -285,117 +302,135 @@
         </form>
     </div>
 
-    <!-- အောက်ဆုံးတွင် Fixed ပြန်ထည့်ပေးထားသော Features Bar -->
+    <!-- Fixed Features Bar -->
     <div class="store-features-bar">
-        <div class="feature-item">
-            <span>🛡️</span> 100% SAFE & SECURE
-        </div>
-        <div class="feature-item">
-            <span>⚡</span> INSTANT DELIVERY
-        </div>
-        <div class="feature-item">
-            <span>🎖️</span> PREMIUM QUALITY
-        </div>
-        <div class="feature-item">
-            <span>🎧</span> 24/7 SUPPORT
-        </div>
+        <div class="feature-item"><span>🛡️</span> 100% SAFE & SECURE</div>
+        <div class="feature-item"><span>⚡</span> INSTANT DELIVERY</div>
+        <div class="feature-item"><span>🎖️</span> PREMIUM QUALITY</div>
+        <div class="feature-item"><span>🎧</span> 24/7 SUPPORT</div>
     </div>
 
     <script>
-        // ထုတ်ကုန်စာရင်းအချက်အလက်များ
-        const products = [
-            { id: 1, name: "CapCut Pro", icon: "C", price: "5,000 MMK", note: "CapCut Pro ဖြင့် ဗီဒီယိုများကို ရေစာမပါဘဲ အလွယ်တကူ တည်းဖြတ်နိုင်ပါပြီ။" },
-            { id: 2, name: "Spotify Premium", icon: "S", price: "4,500 MMK", note: "ကြော်ငြာမပါဘဲ သီချင်းများကို စိတ်ကြိုက်နားဆင်နိုင်ပါသည်။" },
-            { id: 3, name: "Canva Pro", icon: "C", price: "3,500 MMK", note: "Design ပုံစံအမျိုးမျိုးကို Pro ဖြင့် အသုံးပြုနိုင်ပါသည်။" },
-            { id: 4, name: "Channel Boost", icon: "C", price: "6,000 MMK", note: "သင်၏ Channel ကို အမြန်ဆုံး ကြီးထွားလာစေရန် လုပ်ဆောင်ပေးမည်။" },
-            { id: 5, name: "Jump Jump VPN", icon: "J", price: "3,000 MMK", note: "အင်တာနက်လိုင်း အမြန်ဆုံးနှင့် အလုံခြုံဆုံး အသုံးပြုရန်။" },
-            { id: 6, name: "Hiddify / V2BOX VPN", icon: "H", price: "4,000 MMK", note: "High-Speed Proxy ဖြင့် လွတ်လပ်စွာ Browsing လုပ်ပါ။" }
-        ];
+        const CATALOG_URL = "https://script.google.com/macros/s/AKfycbya5HrCRRjZRSNOubOhBHBU9M49ruZ-xIKuKIYvgN_5fu-jjpIYv7fKoUh7cAsFVNSb/exec";
+        
+        let allProductsData = {};
+        let currentVariants = [];
 
         const catalogContainer = document.getElementById('catalog-container');
         const formContainer = document.getElementById('form-container');
         const selectedTitle = document.getElementById('selected-title');
+        const displayDuration = document.getElementById('display-duration');
         const displayPrice = document.getElementById('display-price');
         const displayNote = document.getElementById('display-note');
+        const productTypeSelect = document.getElementById('productType');
 
-        let currentProductData = null;
+        async function fetchCatalog() {
+            try {
+                const response = await fetch(CATALOG_URL, { method: 'GET', redirect: "follow" });
+                const data = await response.json();
+                
+                // Group products by Name (ဥပမာ - CapCut အမျိုးအစား ၅ ခုရှိလျှင် တစ်စုတည်းစုရန်)
+                allProductsData = {};
+                data.forEach(item => {
+                    let name = item.name || item.productName || "Product";
+                    if (!allProductsData[name]) {
+                        allProductsData[name] = [];
+                    }
+                    allProductsData[name].push(item);
+                });
 
-        // Catalog ကို စတင်ဖော်ပြရန်
+                renderCatalog();
+            } catch (error) {
+                console.error("Error loading sheet data:", error);
+                catalogContainer.innerHTML = `<div class="loading-state" style="color: #ef4444;">Failed to load catalog data.</div>`;
+            }
+        }
+
         function renderCatalog() {
             let html = '';
-            products.forEach((item, index) => {
-                let numStr = String(index + 1).padStart(2, '0');
+            let index = 1;
+            
+            for (let productName in allProductsData) {
+                let numStr = String(index).padStart(2, '0');
+                let firstItem = allProductsData[productName][0];
+                let pIcon = firstItem.icon || productName.charAt(0).toUpperCase();
+
                 html += `
-                    <div class="product-card" onclick='selectProduct(${JSON.stringify(item)})'>
+                    <div class="product-card" onclick="selectProduct('${productName}')">
                         <div class="product-number">${numStr}</div>
-                        <div class="product-icon">${item.icon}</div>
-                        <div class="product-name">${item.name}</div>
+                        <div class="product-icon">${pIcon}</div>
+                        <div class="product-name">${productName}</div>
                         <div class="product-footer">👑</div>
                     </div>
                 `;
-            });
+                index++;
+            }
             catalogContainer.innerHTML = html;
         }
 
-        // ကတ်ပြားတစ်ခုကို နှိပ်လိုက်သောအခါ Form သို့ ကူးပြောင်းရန်
-        function selectProduct(item) {
-            currentProductData = item;
-            selectedTitle.innerText = `Order: ${item.name}`;
-            displayPrice.innerText = item.price;
-            displayNote.innerText = `ℹ️ Note: ${item.note}`;
-            
-            // Catalog ကိုဖျောက်ပြီး Form ကိုပြမည်
+        function selectProduct(productName) {
+            currentVariants = allProductsData[productName];
+            selectedTitle.innerText = `Order: ${productName}`;
+
+            // Populate Dropdown Options
+            let optionsHtml = '';
+            currentVariants.forEach((variant, idx) => {
+                let vType = variant.type || variant.duration || `Package ${idx + 1}`;
+                let vPrice = variant.price || "0 MMK";
+                optionsHtml += `<option value="${idx}">${vType} - ${vPrice}</option>`;
+            });
+            productTypeSelect.innerHTML = optionsHtml;
+
+            updatePackageDetails();
+
+            // Switch UI views
             catalogContainer.style.display = 'none';
             formContainer.style.display = 'block';
-
-            // Web App က အောက်သို့ အလိုအလျောက် ဆင်းသွားစေရန် (Scroll down)
-            window.scrollTo({ top: 150, behavior: 'smooth' });
+            window.scrollTo({ top: 100, behavior: 'smooth' });
         }
 
-        // Back ခလုတ်နှိပ်လျှင် ပုံစံဟောင်းသို့ ပြန်သွားရန်
+        function updatePackageDetails() {
+            let selectedIdx = productTypeSelect.value;
+            if (currentVariants[selectedIdx]) {
+                let variant = currentVariants[selectedIdx];
+                displayDuration.innerText = variant.type || variant.duration || "Standard";
+                displayPrice.innerText = variant.price || "0 MMK";
+                displayNote.innerText = `ℹ️ Note: ${variant.note || "အချက်အလက်မရှိပါ။"}`;
+            }
+        }
+
         function goBack() {
             formContainer.style.display = 'none';
             catalogContainer.style.display = 'grid';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Package အမျိုးအစား ပြောင်းလဲသည့်အခါ ဈေးနှုန်းကို တွက်ချက်ပြသရန်
-        function updatePrice() {
-            const typeVal = document.getElementById('productType').value;
-            if(typeVal === '1 Year' && currentProductData) {
-                displayPrice.innerText = "15,000 MMK";
-            } else if(currentProductData) {
-                displayPrice.innerText = currentProductData.price;
-            }
-        }
-
-        // Order Now နှိပ်လိုက်သောအခါ Python Bot ဘက်သို့ ဒေတာပေးပို့ပြီး အောက်သို့ ဆင်းသွားမည့် ပုံစံ
         function submitOrder(event) {
             event.preventDefault();
 
+            let selectedIdx = productTypeSelect.value;
+            let chosenVariant = currentVariants[selectedIdx];
+
             const orderData = {
-                product: currentProductData ? currentProductData.name : "Unknown",
-                type: document.getElementById('productType').value,
-                price: displayPrice.innerText,
-                phone: document.getElementById('phoneNo').value,
-                gmail: document.getElementById('gmail').value,
-                username: document.getElementById('username').value
+                product: chosenVariant.name || chosenVariant.productName,
+                type: chosenVariant.type || chosenVariant.duration,
+                price: chosenVariant.price,
+                gmail: document.getElementById('gmail').value || "Not provided"
             };
 
-            console.log("Sending order data to Python Bot:", orderData);
+            console.log("Submitting order to Python Bot:", orderData);
 
-            // Web App ကို အောက်ဆုံးသို့ အပြည့်ဆင်းသွားစေပြီး Python Bot ဆက်လုပ်ရန် Trigger ပေးမည်
+            // Web App က အောက်ဆုံးသို့ တန်းကျသွားခြင်း (Scroll to bottom)
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 
-            alert(`Order Successful! Python Bot ထံသို့ အချက်အလက်များ ပေးပို့ပြီးပါပြီ။`);
+            alert("Order submitted successfully! Python bot will process your request.");
             
-            // Form ကို ရှင်းလင်းပြီး ပထမစာမျက်နှာသို့ ပြန်သွားမည်
             document.getElementById('purchaseForm').reset();
             goBack();
         }
 
-        // စတင်ချိန်တွင် Catalog ကို ဖော်ပြရန်
-        renderCatalog();
+        // စတင်ချိန်တွင် Google Sheet ဒေတာများကို ဖတ်ယူရန်
+        fetchCatalog();
     </script>
 
 </body>
