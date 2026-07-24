@@ -451,77 +451,11 @@
         tg.expand();
         tg.ready();
 
-        // Database items containing the specific note/condition text
-        const productsDatabase = [
-            { id: "PROD-MN-001", name: "CapCut Pro", type: "Private Account", duration: "1 Month", priceText: "14,500 MMK", costPrice: 10500, note: "3 devices" },
-            { id: "PROD-MN-002", name: "CapCut Pro", type: "Private (5 accounts)", duration: "1 Month", priceText: "57,500 MMK", costPrice: 47500, note: "3 devices" },
-            { id: "PROD-MN-003", name: "CapCut Pro", type: "Private (10 accounts)", duration: "1 Month", priceText: "100,000 MMK", costPrice: 90000, note: "3 devices" },
-            { id: "PROD-MN-004", name: "CapCut Pro", type: "Private Account", duration: "6 Months", priceText: "81,000 MMK", costPrice: 73000, note: "3 devices" },
-            { id: "PROD-MN-005", name: "CapCut Pro", type: "Shared Account", duration: "1 Month", priceText: "8,000 MMK", costPrice: 4000, note: "1 device only/device မချိန်းရ" },
-            { id: "PROD-MN-006", name: "Spotify Premium", type: "Family Plan", duration: "1 Month", priceText: "9,500 MMK", costPrice: 5500, note: "ကိုယ်ပိုင် Mail ဖြင့် Invite လုပ်ပေးသည်။" },
-            { id: "PROD-MN-007", name: "Spotify Premium", type: "Family Plan", duration: "6 Months", priceText: "36,000 MMK", costPrice: 25000, note: "Location နိုင်ငံတူညီရပါမည်။" },
-            { id: "PROD-MN-008", name: "Spotify Premium", type: "Family Plan", duration: "12 Months", priceText: "57,000 MMK", costPrice: 45000, note: "တစ်နှစ်စာ အထူးဈေးနှုန်း။" },
-            { id: "PROD-MN-009", name: "Spotify Premium", type: "Individual Plan", duration: "3 Months", priceText: "31,500 MMK", costPrice: 22500, note: "Individual သီးသန့်အကောင့်။" },
-            { id: "PROD-MN-010", name: "Spotify Premium", type: "Individual Plan", duration: "6 Months", priceText: "63,000 MMK", costPrice: 53000, note: "Individual သီးသန့်အကောင့်။" },
-            { id: "PROD-MN-011", name: "Spotify Premium", type: "Individual Plan", duration: "12 Months", priceText: "94,000 MMK", costPrice: 84000, note: "Individual သီးသန့်အကောင့်။" },
-            { id: "PROD-MN-012", name: "Canva Pro", type: "Business Pro", duration: "1 Month", priceText: "11,000 MMK", costPrice: 8000, note: "Business Team Pro အဖြစ် သုံးရမည်။" },
-            { id: "PROD-MN-013", name: "Canva Pro", type: "Edu Pro", duration: "1 Year", priceText: "4,000 MMK", costPrice: 2500, note: "Education Link ဖြင့် Join ရမည်။" },
-            { id: "PROD-MN-014", name: "Channel Boost", type: "Level Boost", duration: "3 Months", priceText: "2,100 MMK", costPrice: 1700, note: "Telegram Channel Boost သက်တမ်း။" },
-            { id: "PROD-MN-015", name: "Channel Boost", type: "Level Boost", duration: "6 Months", priceText: "2,600 MMK", costPrice: 2200, note: "Telegram Channel Boost သက်တမ်း။" },
-            { id: "PROD-MN-016", name: "Channel Boost", type: "Level Boost", duration: "1 Year", priceText: "3,000 MMK", costPrice: 2600, note: "Telegram Channel Boost သက်တမ်း။" },
-            { id: "PROD-MN-017", name: "Jump Jump VPN", type: "Shared (1 Device)", duration: "1 Month", priceText: "12,000 MMK", costPrice: 10000, note: "1 Device သုံးရန်။" },
-            { id: "PROD-MN-018", name: "Jump Jump VPN", type: "Shared (2 Devices)", duration: "1 Month", priceText: "23,000 MMK", costPrice: 19000, note: "2 Devices သုံးရန်။" },
-            { id: "PROD-MN-019", name: "Hiddify / V2BOX", type: "Standard", duration: "1 Month", priceText: "5,500 MMK", costPrice: 4500, note: "Config ဖိုင် တိုက်ရိုက်ထုတ်ပေးသည်။" },
-            { id: "PROD-MN-020", name: "Hiddify / V2BOX", type: "Standard", duration: "3 Months", priceText: "16,000 MMK", costPrice: 13000, note: "3 လစာ Config ဖိုင်။" },
-            { id: "PROD-MN-021", name: "Express VPN", type: "1 Device", duration: "1 Month", priceText: "4,000 MMK", costPrice: 2500, note: "1 Device သုံးရန်။" },
-            { id: "PROD-MN-022", name: "Express VPN", type: "Whole Account (8 Devices)", duration: "1 Month", priceText: "19,500 MMK", costPrice: 18000, note: "အကောင့်အပြည့်အစုံ ရမည်။" },
-            { id: "PROD-MN-023", name: "Proton VPN", type: "Shared Account", duration: "1 Month", priceText: "4,000 MMK", costPrice: 2500, note: "Shared အကောင့်။" },
-            { id: "PROD-MN-024", name: "Proton VPN", type: "Full Account", duration: "1 Month", priceText: "16,500 MMK", costPrice: 15000, note: "Full Account သီးသန့်။" },
-            { id: "PROD-MN-025", name: "Super Duolingo", type: "Standard", duration: "1 Month", priceText: "7,500 MMK", costPrice: 4000, note: "Duolingo Super Plan။" },
-            { id: "PROD-MN-026", name: "Super Duolingo", type: "Standard", duration: "1 Year", priceText: "70,000 MMK", costPrice: 50000, note: "Duolingo 1 Year Plan။" },
-            { id: "PROD-MN-027", name: "Quillbot Premium", type: "Shared Account", duration: "3 Months", priceText: "18,000 MMK", costPrice: 12000, note: "Paraphrasing tool premium။" },
-            { id: "PROD-MN-028", name: "ChatGPT Plus", type: "Official Private", duration: "1 Month", priceText: "100,000 MMK", costPrice: 90000, note: "တရားဝင် Private အကောင့်။" },
-            { id: "PROD-MN-029", name: "ChatGPT Plus", type: "Shared Account", duration: "1 Month", priceText: "23,000 MMK", costPrice: 19000, note: "Shared Plus အကောင့်။" },
-            { id: "PROD-MN-030", name: "ChatGPT Go", type: "Private Account", duration: "1 Month", priceText: "29,000 MMK", costPrice: 26000, note: "Private Account။" },
-            { id: "PROD-MN-031", name: "Meitu VIP", type: "VIP", duration: "1 Month", priceText: "18,000 MMK", costPrice: 15000, note: "Meitu VIP 1 လ။" },
-            { id: "PROD-MN-032", name: "Meitu VIP", type: "SVIP", duration: "7 Days", priceText: "5,600 MMK", costPrice: 4500, note: "Meitu SVIP 7 ရက်။" },
-            { id: "PROD-MN-033", name: "Meitu VIP", type: "SVIP", duration: "1 Month", priceText: "30,500 MMK", costPrice: 27500, note: "Meitu SVIP 1 လ။" },
-            { id: "PROD-MN-034", name: "Wink VIP", type: "Standard", duration: "1 Month", priceText: "8,500 MMK", costPrice: 5500, note: "Wink VIP 1 လ။" },
-            { id: "PROD-MN-035", name: "Wink VIP", type: "Standard", duration: "1 Year", priceText: "50,000 MMK", costPrice: 38000, note: "Wink VIP 1 နှစ်။" },
-            { id: "PROD-MN-036", name: "Grammarly Pro", type: "Official Private", duration: "1 Month", priceText: "30,000 MMK", costPrice: 25000, note: "Grammarly Official Private။" },
-            { id: "PROD-MN-037", name: "Grammarly Pro", type: "Shared Account", duration: "3 Months", priceText: "41,000 MMK", costPrice: 35000, note: "Shared 3 လစာ။" },
-            { id: "PROD-MN-038", name: "Zoom Pro", type: "Standard", duration: "14 Days", priceText: "7,500 MMK", costPrice: 5000, note: "Zoom Pro 14 ရက်။" },
-            { id: "PROD-MN-039", name: "Zoom Pro", type: "Standard", duration: "28 Days", priceText: "13,000 MMK", costPrice: 9000, note: "Zoom Pro 28 ရက်။" },
-            { id: "PROD-MN-040", name: "Zoom Pro", type: "Own Mail", duration: "1 Month", priceText: "18,000 MMK", costPrice: 15000, note: "ကိုယ့်အီးမေးလ်ဖြင့် ပြုလုပ်ပေးသည်။" },
-            { id: "PROD-MN-041", name: "Telegram Account", type: "Fresh Account", duration: "Permanent", priceText: "2,500 MMK", costPrice: 1500, note: "Session + JSON format ဖြင့် ပို့ပေးသည်။" },
-            { id: "PROD-MN-042", name: "PicsArt Pro", type: "Shared Account", duration: "6 Months", priceText: "33,000 MMK", costPrice: 28000, note: "PicsArt Shared 6 လ။" },
-            { id: "PROD-MN-043", name: "Alight Motion", type: "Official Private", duration: "1 Year", priceText: "9,000 MMK", costPrice: 3000, note: "Official Private 1 နှစ်။" },
-            { id: "PROD-MN-044", name: "TON Coin", type: "Crypto Transfer", duration: "Instant (Per 1 TON)", priceText: "8,000 MMK", costPrice: 7800, note: "Wallet လိပ်စာသို့ ချက်ချင်းရောက်သည်။" },
-            { id: "PROD-MN-045", name: "Telegram SMS Fee", type: "Instant Fee", duration: "Instant", priceText: "11,500 MMK", costPrice: 8500, note: "SMS Verification Fee။" },
-            { id: "PROD-MN-046", name: "Telegram Star", type: "Package 50", duration: "Instant", priceText: "3,800 MMK", costPrice: 3700, note: "Stars 50 ခု။" },
-            { id: "PROD-MN-047", name: "Telegram Star", type: "Package 100", duration: "Instant", priceText: "7,600 MMK", costPrice: 7400, note: "Stars 100 ခု။" },
-            { id: "PROD-MN-048", name: "Telegram Star", type: "Package 500", duration: "Instant", priceText: "38,000 MMK", costPrice: 37000, note: "Stars 500 ခု။" },
-            { id: "PROD-MN-049", name: "Telegram Star", type: "Package 1000", duration: "Instant", priceText: "76,000 MMK", costPrice: 74000, note: "Stars 1000 ခု။" },
-            { id: "PROD-MN-050", name: "Telegram Star", type: "Package 5000", duration: "Instant", priceText: "380,000 MMK", costPrice: 370000, note: "Stars 5000 ခု။" },
-            { id: "PROD-MN-051", name: "Telegram Premium", type: "Official", duration: "3 Months", priceText: "49,000 MMK", costPrice: 47500, note: "Gift Link ဖြင့် ပို့ပေးသည်။" },
-            { id: "PROD-MN-052", name: "Telegram Premium", type: "Official", duration: "6 Months", priceText: "67,000 MMK", costPrice: 66000, note: "Gift Link ဖြင့် ပို့ပေးသည်။" },
-            { id: "PROD-MN-053", name: "Telegram Premium", type: "Official", duration: "12 Months", priceText: "120,000 MMK", costPrice: 118000, note: "Gift Link ဖြင့် ပို့ပေးသည်။" },
-            { id: "PROD-MN-054", name: "Netflix Premium", type: "Shared Account", duration: "1 Month", priceText: "12,000 MMK", costPrice: 9000, note: "Profile တစ်ခုစာ သုံးရန်။" },
-            { id: "PROD-MN-055", name: "Netflix Premium", type: "Private (No TV)", duration: "1 Month", priceText: "20,000 MMK", costPrice: 15000, note: "ဖုန်းနှင့် တက်ဘလက်အတွက်သာ။" },
-            { id: "PROD-MN-056", name: "Netflix Premium", type: "Private (With TV)", duration: "1 Month", priceText: "21,500 MMK", costPrice: 16500, note: "TV ပါ သုံးနိုင်သော Private အကောင့်။" },
-            { id: "PROD-MN-057", name: "Steam Wallet", type: "Gift Card", duration: "5 Dollars", priceText: "27,500 MMK", costPrice: 25000, note: "Steam Code ဖြင့် ပို့ပေးသည်။" },
-            { id: "PROD-MN-058", name: "Steam Wallet", type: "Gift Card", duration: "25 Dollars", priceText: "132,500 MMK", costPrice: 122000, note: "Steam Code ဖြင့် ပို့ပေးသည်။" },
-            { id: "PROD-MN-059", name: "Steam Wallet", type: "Gift Card", duration: "50 Dollars", priceText: "269,000 MMK", costPrice: 244000, note: "Steam Code ဖြင့် ပို့ပေးသည်။" },
-            { id: "PROD-MN-064", name: "YouTube Premium", type: "Standard", duration: "1 Month", priceText: "12,500 MMK", costPrice: 8000, note: "Family Invite ဖြင့် လုပ်ပေးသည်။" },
-            { id: "PROD-MN-065", name: "Disney Plus", type: "Standard", duration: "1 Month", priceText: "20,000 MMK", costPrice: 14000, note: "Disney+ Standard Plan။" },
-            { id: "PROD-MN-066", name: "Microsoft 365", type: "Standard", duration: "1 Month", priceText: "9,500 MMK", costPrice: 6500, note: "Office 365 Account။" },
-            { id: "PROD-MN-068", name: "Microsoft 365", type: "Standard", duration: "Lifetime", priceText: "60,000 MMK", costPrice: 42000, note: "Lifetime Account။" },
-            { id: "PROD-MN-070", name: "Gemini Pro", type: "Standard", duration: "1 Month", priceText: "7,000 MMK", costPrice: 4000, note: "Gemini Advanced / Pro Plan။" },
-            { id: "PROD-MN-073", name: "Viber Plus", type: "Standard", duration: "1 Month", priceText: "13,500 MMK", costPrice: 10500, note: "Viber Plus 1 လ။" },
-            { id: "PROD-MN-074", name: "Viber Plus", type: "Standard", duration: "3 Months", priceText: "25,000 MMK", costPrice: 20500, note: "Viber Plus 3 လ။" },
-            { id: "PROD-MN-075", name: "Viber Plus", type: "Standard", duration: "6 Months", priceText: "40,500 MMK", costPrice: 34500, note: "Viber Plus 6 လ။" },
-            { id: "PROD-MN-076", name: "Viber Plus", type: "Standard", duration: "12 Months", priceText: "62,500 MMK", costPrice: 56500, note: "Viber Plus 1 နှစ်။" }
-        ];
+        // Google Apps Script Deploy URL ထည့်သွင်းပြီး
+        const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyTtKOUNrHxpN61m9MzHbEwJyvL1rR8Ct0GeJ5173A2DG4sS5waDzyD7BBEegkPn-VI/exec";
+
+        // Dynamic Data သိမ်းဆည်းမည့် Array
+        let productsDatabase = [];
 
         let selectedProductData = {
             name: '',
@@ -531,6 +465,22 @@
             costPrice: 0,
             note: ''
         };
+
+        // Google Sheet မှ Data များ Fetch လုပ်ပေးမည့် Function
+        async function fetchProductsFromSheet() {
+            try {
+                const response = await fetch(GOOGLE_SHEET_API_URL);
+                productsDatabase = await response.json();
+                renderMainProducts();
+            } catch (error) {
+                console.error("Sheet Data ယူရာတွင် အမှားရှိနေပါသည်:", error);
+            } finally {
+                // Loader ပိတ်ခြင်း
+                const loader = document.getElementById("loader");
+                loader.style.opacity = "0";
+                setTimeout(() => { loader.style.display = "none"; }, 400);
+            }
+        }
 
         function renderMainProducts() {
             const grid = document.getElementById('mainProductGrid');
@@ -552,12 +502,7 @@
         }
 
         window.addEventListener("load", () => {
-            renderMainProducts();
-            setTimeout(() => {
-                const loader = document.getElementById("loader");
-                loader.style.opacity = "0";
-                setTimeout(() => { loader.style.display = "none"; }, 400);
-            }, 600);
+            fetchProductsFromSheet();
         });
 
         function openSubProducts(productName) {
@@ -636,8 +581,6 @@
                 customer_note: customerNote
             };
 
-        // တောင်းဆိုချက်အရ orderData တွင် product_note အနေဖြင့် database ထဲက note ကို ပေးပို့မည်ဖြစ်ပြီး
-        // ၎င်းကို Telegram Bot ဘက်သို့ ပို့ဆောင်မည်ဖြစ်သည်။
             tg.sendData(JSON.stringify(orderData));
             tg.close();
         }
