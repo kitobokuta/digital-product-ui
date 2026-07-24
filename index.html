@@ -146,19 +146,17 @@
                 <div class="card-footer-ornament">👑</div>
             `;
             card.onclick = () => {
-                scrollPositions.PRODUCTS = window.scrollY; // လက်ရှိ နေရာကို သိမ်းမည်
+                scrollPositions.PRODUCTS = window.scrollY;
                 showVariants(prodName);
             };
             container.appendChild(card);
             index++;
         });
 
-        // ပုံမှန်အိမ်ပြန်ရောက်တဲ့အခါ သိမ်းထားတဲ့ scroll ဆီ ပြန်သွားမည်
         window.scrollTo(0, scrollPositions.PRODUCTS);
     }
 
     function showVariants(prodName) {
-        // Detail ထဲကနေ Back နှိပ်လာရင် Variants ရဲ့ အရင်နေရာကို သိမ်းမည်
         if (currentView === 'DETAIL') {
             scrollPositions.VARIANTS = window.scrollY;
         }
@@ -203,7 +201,6 @@
             });
         }
 
-        // Variants View ရောက်ရင် သိမ်းထားတဲ့ scroll ဆီ ပြန်ချပေးမည်
         window.scrollTo(0, scrollPositions.VARIANTS);
     }
 
@@ -250,7 +247,6 @@
             tg.MainButton.onClick(sendOrder);
         } catch(e){}
 
-        // Detail ထဲ ဝင်လိုက်ရင် အပေါ်ဆုံးကို ပို့ပေးမယ် (သို့မဟုတ် လိုသလို ချိန်နိုင်သည်)
         window.scrollTo(0, 0);
     }
 
@@ -296,7 +292,7 @@
                         parse_mode: 'HTML'
                     })
                 });
-            } (err) {
+            } catch (err) {
                 console.error("Direct API Photo Error:", err);
             }
         }
