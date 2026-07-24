@@ -288,6 +288,7 @@
 
         .info-value {
             font-weight: 600;
+            text-align: right;
         }
 
         /* Summary specific colors */
@@ -301,7 +302,8 @@
         }
 
         #summary-note {
-            color: #fbbf24; /* အဝါရောင် သို့မဟုတ် လိုအပ်သလို */
+            color: var(--text-color);
+            font-weight: 500;
         }
 
         .input-group {
@@ -424,7 +426,7 @@
                 <span class="info-label">Price:</span>
                 <span class="info-value" id="summary-price">-</span>
             </div>
-            <!-- Note / Condition Column Added -->
+            <!-- Note / Condition Column -->
             <div class="info-row">
                 <span class="info-label">Note / Condition:</span>
                 <span class="info-value" id="summary-note">-</span>
@@ -449,7 +451,7 @@
         tg.expand();
         tg.ready();
 
-        // Database with added note/condition field support
+        // Database items containing the specific note/condition text
         const productsDatabase = [
             { id: "PROD-MN-001", name: "CapCut Pro", type: "Private Account", duration: "1 Month", priceText: "14,500 MMK", costPrice: 10500, note: "Mail အသစ်ဖြင့် လုပ်ဆောင်ပေးပါသည်။" },
             { id: "PROD-MN-002", name: "CapCut Pro", type: "Private (5 accounts)", duration: "1 Month", priceText: "57,500 MMK", costPrice: 47500, note: "Team အကောင့်စနစ်ဖြင့် အသုံးပြုနိုင်ပါသည်။" },
@@ -634,6 +636,8 @@
                 customer_note: customerNote
             };
 
+        // တောင်းဆိုချက်အရ orderData တွင် product_note အနေဖြင့် database ထဲက note ကို ပေးပို့မည်ဖြစ်ပြီး
+        // ၎င်းကို Telegram Bot ဘက်သို့ ပို့ဆောင်မည်ဖြစ်သည်။
             tg.sendData(JSON.stringify(orderData));
             tg.close();
         }
