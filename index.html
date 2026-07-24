@@ -1,585 +1,172 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jupiter Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg-color: #07090e;
-            --text-color: #ffffff;
-            --hint-color: #8b9bb4;
-            --accent-red: #ff4757;
-            --button-color: #2481cc;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(white, rgba(255,255,255,0.2) 2px, transparent 40px),
-                radial-gradient(white, rgba(255,255,255,0.15) 1px, transparent 30px),
-                radial-gradient(rgba(255,255,255,0.1) 2px, transparent 40px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            background-position: 0 0, 40px 60px, 130px 270px;
-            color: var(--text-color);
+            background-color: #070a13;
+            color: #ffffff;
+            font-family: sans-serif;
             margin: 0;
-            padding: 16px;
-            box-sizing: border-box;
-            min-height: 100vh;
+            padding: 15px;
         }
 
         .store-header {
             text-align: center;
-            margin-bottom: 24px;
-            position: relative;
+            margin-bottom: 25px;
         }
-        .planet-icon {
-            width: 75px;
-            height: auto;
-            margin-bottom: -12px;
-            filter: drop-shadow(0 0 12px rgba(255,255,255,0.4));
+
+        .store-header h2 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            letter-spacing: 1.5px;
+            font-weight: 800;
         }
-        h1.store-title {
-            font-family: "Cinzel", "Times New Roman", serif;
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: 2px;
+
+        .store-header p {
             margin: 0;
-            background: linear-gradient(180deg, #ffffff 20%, #b0bec5 60%, #546e7a 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
-        }
-        .store-subtitle {
-            font-size: 10px;
-            letter-spacing: 3px;
-            color: #b0bec5;
-            text-transform: uppercase;
-            margin-top: 4px;
-            font-weight: 600;
+            font-size: 11px;
+            color: #94a3b8;
+            letter-spacing: 1px;
         }
 
-        .back-btn {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.25);
-            color: #ffffff;
-            font-size: 13px;
-            cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 20px;
-            margin-bottom: 16px;
-            display: none;
-            font-weight: 500;
-            backdrop-filter: blur(5px);
+        /* ပထမပုံစံအတိုင်း ၂ ကော်လံ Grid ဒီဇိုင်း */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            max-width: 450px;
+            margin: 0 auto;
         }
 
-        .loading { text-align: center; padding: 50px 0; color: var(--hint-color); font-size: 14px; }
-        
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 30px; }
-
-        .card {
-            position: relative;
-            background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
-            border-radius: 14px;
+        /* ကတ်ပြားဒီဇိုင်း */
+        .product-card {
+            background-color: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 16px;
             padding: 18px 10px;
             text-align: center;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.25);
-            border: 1px solid #30363d;
-            transition: transform 0.15s ease, border-color 0.15s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
         }
-        .card:active { transform: scale(0.97); border-color: #58a6ff; }
 
-        .card-number {
-            position: absolute;
-            top: 8px;
-            left: 10px;
+        .product-number {
             font-size: 11px;
-            font-weight: 800;
-            color: #8b9bb4;
-            letter-spacing: 0.5px;
-        }
-
-        .card-img-wrap {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
-            border: 2px solid rgba(255,255,255,0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 4px;
-            margin-bottom: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.1);
-            overflow: hidden;
-        }
-        .card img {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .card h3 {
-            margin: 0;
-            font-size: 13px;
-            font-weight: 700;
-            color: #f0f6fc;
-            word-break: break-word;
-            line-height: 1.3;
-        }
-
-        .duration { 
-            font-size: 10px; 
-            font-weight: 700; 
-            color: var(--accent-red); 
-            margin-top: 4px; 
-            letter-spacing: 0.3px;
-        }
-        .price { 
-            font-weight: 800; 
-            color: #58a6ff; 
-            margin-top: 4px; 
-            font-size: 12px; 
-        }
-
-        .card-footer-ornament {
-            margin-top: 8px;
-            font-size: 10px;
-            color: #8b9bb4;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .detail-view { 
-            display: none; 
-            background: linear-gradient(145deg, #161b22 0%, #0d1117 100%); 
-            padding: 24px 16px; 
-            border-radius: 16px; 
-            border: 1px solid #30363d;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            text-align: center;
-        }
-        .detail-img-wrap {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
-            border: 3px solid rgba(255,255,255,0.3);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.6);
-            overflow: hidden;
-        }
-        .detail-img-wrap img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
-
-        .note-box {
-            background-color: rgba(255, 193, 7, 0.1);
-            border-left: 4px solid #ffc107;
-            color: #ffecb3;
-            padding: 12px;
-            font-size: 12px;
-            border-radius: 6px;
-            margin: 16px 0;
+            color: #64748b;
             text-align: left;
-            line-height: 1.4;
+            margin-bottom: 10px;
+            padding-left: 6px;
         }
 
-        .input-group { margin-top: 16px; text-align: left; }
-        .input-group label { font-size: 11px; color: var(--hint-color); display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: #ffffff;
-            box-sizing: border-box;
-            font-size: 14px;
-            outline: none;
-        }
-        .input-group input:focus { border-color: #58a6ff; }
-
-        .trust-footer {
-            margin-top: 24px;
-            background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 10px 8px;
+        .product-icon {
+            width: 48px;
+            height: 48px;
+            background: radial-gradient(circle, #1e293b 0%, #0b0f19 100%);
+            border: 2px solid #334155;
+            border-radius: 50%;
             display: flex;
-            justify-content: space-around;
             align-items: center;
-            font-size: 9px;
-            color: #8b9bb4;
-            text-align: center;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1);
         }
-        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-        .trust-item span { font-size: 13px; }
+
+        .product-name {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+        }
+
+        .product-footer {
+            font-size: 12px;
+            color: #f59e0b; /* ရွှေရောင်ဘုရင်သရဖူ 👑 */
+        }
+
+        /* Loading အခြေအနေအတွက် */
+        .loading-state {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 50px;
+        }
     </style>
 </head>
 <body>
 
-<div class="store-header">
-    <svg class="planet-icon" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="100" cy="65" rx="90" ry="25" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="4" transform="rotate(-15 100 65)"/>
-        <circle cx="100" cy="65" r="45" fill="url(#planetGrad)" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-        <ellipse cx="100" cy="65" rx="90" ry="25" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="4" stroke-dasharray="100 300" transform="rotate(-15 100 65)"/>
-        <defs>
-            <radialGradient id="planetGrad" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stop-color="#cfd8dc"/>
-                <stop offset="50%" stop-color="#78909c"/>
-                <stop offset="100%" stop-color="#263238"/>
-            </radialGradient>
-        </defs>
-    </svg>
-    <h1 class="store-title">JUPITER STORE</h1>
-    <div class="store-subtitle">✦ PREMIUM DIGITAL PRODUCTS ✦</div>
-</div>
-
-<button id="backBtn" class="back-btn" onclick="goBack()">← Back</button>
-<div id="loading" class="loading">Loading products from Google Sheet...</div>
-
-<div id="productGrid" class="grid"></div>
-<div id="categoryGrid" class="grid" style="display: none;"></div>
-
-<div id="detailView" class="detail-view">
-    <div>
-        <div class="detail-img-wrap">
-            <img id="detailLogo" src="" alt="Logo">
-        </div>
-        <h3 id="productTitle" style="margin: 4px 0; font-size: 16px; color:#f0f6fc;"></h3>
-        <div id="productDuration" class="duration" style="font-size: 12px; margin-top: 4px;"></div>
-        <div id="productPrice" class="price" style="font-size: 18px; margin-top: 6px;"></div>
+    <div class="store-header">
+        <h2>JUPITER STORE</h2>
+        <p>✦ PREMIUM DIGITAL PRODUCTS ✦</p>
     </div>
 
-    <div id="noteBox" class="note-box" style="display:none;"></div>
-    
-    <div class="input-group">
-        <label for="accountData">Account ID / Email / Phone / Remarks:</label>
-        <input type="text" id="accountData" placeholder="ဝယ်ယူမည့် အကောင့်အချက်အလက်ထည့်ပါ...">
+    <!-- ထုတ်ကုန်များပေါ်လာမည့် Container -->
+    <div id="shop-container">
+        <div class="loading-state">Loading products...</div>
     </div>
-</div>
 
-<div class="trust-footer">
-    <div class="trust-item"><span>🛡️</span> 100% SAFE & SECURE</div>
-    <div class="trust-item"><span>⚡</span> INSTANT DELIVERY</div>
-    <div class="trust-item"><span>🎖️</span> PREMIUM QUALITY</div>
-    <div class="trust-item"><span>🎧</span> 24/7 SUPPORT</div>
-</div>
+    <script>
+        // သင့်ရဲ့ Backend သို့မဟုတ် API မှ ဒေတာခေါ်ယူသည့် ပုံစံဥပမာ
+        async function loadStoreProducts() {
+            const container = document.getElementById('shop-container');
 
-<script>
-    const tg = window.Telegram.WebApp;
-    try { tg.expand(); } catch(e){}
+            try {
+                // ကိုယ့်ရဲ့ API Endpoint လိပ်စာကို ဒီနေရာမှာ ထည့်ပါ
+                // ဥပမာ: let response = await fetch('https://your-api.com/products');
+                // let products = await response.json();
 
-    const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbxcdzIBPmwGxxI5CTDyaEfe7oulF8ckk_pR1-BenxLPs2lh1wnGposGdyJOCb63o1Z4/exec";
-    const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
+                // ဒီနေရာမှာတော့ ဒေတာရောက်လာပြီဟု ယူဆပြီး နမူနာဒေတာဖြင့် စမ်းပြထားပါတယ်
+                setTimeout(() => {
+                    const products = [
+                        { name: "CapCut Pro", icon: "C" },
+                        { name: "Spotify Premium", icon: "S" },
+                        { name: "Canva Pro", icon: "C" },
+                        { name: "Channel Boost", icon: "C" },
+                        { name: "Jump Jump VPN", icon: "J" },
+                        { name: "Hiddify / V2BOX VPN", icon: "H" }
+                    ];
 
-    const FALLBACK_PRODUCTS = [
-        { product_id: "P1", name: "CapCut Pro", category: "Pro 1 Month", duration: "30 Days", price: "4500", description: "Full Pro Access", logo: "" },
-        { product_id: "P2", name: "Spotify Premium", category: "Individual 1 Month", duration: "30 Days", price: "3500", description: "Upgrade your own account", logo: "" },
-        { product_id: "P3", name: "Canva Pro", category: "1 Year Team Invite", duration: "365 Days", price: "5000", description: "Join via team link", logo: "" }
-    ];
+                    renderProducts(products);
+                }, 1000); // 1 စက္ကန့်ကြာ Loading ပြပြီးပါက Grid ပုံစံပြောင်းသွားမည်
 
-    let rawData = [];
-    let selectedProduct = null;
-    let currentView = 'PRODUCTS';
-    let lastSelectedProductName = '';
-
-    function getProp(obj, keys) {
-        if (!obj) return "";
-        for (let k of keys) {
-            for (let prop in obj) {
-                // Normalize keys by removing spaces, underscores, and dashes for robust matching
-                const cleanProp = prop.toLowerCase().replace(/[\s_\-]/g, "");
-                const cleanKey = k.toLowerCase().replace(/[\s_\-]/g, "");
-                if (cleanProp === cleanKey) {
-                    let val = obj[prop];
-                    if (val !== undefined && val !== null && String(val).trim() !== "") {
-                        return String(val).trim();
-                    }
-                }
+            } catch (error) {
+                container.innerHTML = `<div class="loading-state" style="color: #ef4444;">Failed to load products.</div>`;
             }
         }
-        return "";
-    }
 
-    function getSvgInitialsLogo(text) {
-        const initial = (text || "J").trim().charAt(0).toUpperCase();
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-            <rect width="100" height="100" rx="50" fill="url(#metalGrad)"/>
-            <defs>
-                <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#374151"/>
-                    <stop offset="100%" stop-color="#111827"/>
-                </linearGradient>
-            </defs>
-            <text x="50%" y="54%" font-family="-apple-system, Roboto, sans-serif" font-weight="bold" font-size="44" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initial}</text>
-        </svg>`;
-        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-    }
+        // ကတ်ပြားများကို HTML ဖွဲ့စည်းတည်ဆောက်ပေးသော Function
+        function renderProducts(items) {
+            const container = document.getElementById('shop-container');
 
-    function resolveLogo(item, categoryName) {
-        if (!item) return getSvgInitialsLogo(categoryName);
-        let logoVal = getProp(item, ["logo", "image", "img", "photo"]);
-        if (logoVal !== "") {
-            if (logoVal.startsWith("http://") || logoVal.startsWith("https://") || logoVal.startsWith("data:")) {
-                return logoVal;
-            }
-            if (!logoVal.startsWith("images/")) {
-                logoVal = "images/" + logoVal;
-            }
-            return logoVal;
-        }
-        const titleForInitial = getProp(item, ["productname", "name", "title"]) || categoryName || "Product";
-        return getSvgInitialsLogo(titleForInitial);
-    }
-
-    async function fetchProducts() {
-        try {
-            const timestampUrl = API_URL + (API_URL.includes("?") ? "&" : "?") + "_t=" + new Date().getTime();
-            const response = await fetch(timestampUrl, { redirect: "follow" });
-            if (!response.ok) throw new Error("Network response was not ok");
-            
-            const jsonRes = await response.json();
-            
-            // Handle different possible JSON output structures from Google Apps Script
-            if (Array.isArray(jsonRes)) {
-                rawData = jsonRes;
-            } else if (jsonRes && Array.isArray(jsonRes.data)) {
-                rawData = jsonRes.data;
-            } else if (jsonRes && Array.isArray(jsonRes.products)) {
-                rawData = jsonRes.products;
-            } else {
-                rawData = FALLBACK_PRODUCTS;
-            }
-
-            if (!Array.isArray(rawData) || rawData.length === 0) {
-                rawData = FALLBACK_PRODUCTS;
-            }
-
-            document.getElementById('loading').style.display = 'none';
-            showProducts();
-        } catch (error) {
-            rawData = FALLBACK_PRODUCTS;
-            document.getElementById('loading').style.display = 'none';
-            showProducts();
-        }
-    }
-
-    function showProducts() {
-        currentView = 'PRODUCTS';
-        document.getElementById('backBtn').style.display = 'none';
-        document.getElementById('productGrid').style.display = 'grid';
-        document.getElementById('categoryGrid').style.display = 'none';
-        document.getElementById('detailView').style.display = 'none';
-        try { tg.MainButton.hide(); } catch(e){}
-
-        const container = document.getElementById('productGrid');
-        container.innerHTML = '';
-
-        const uniqueProductsMap = new Map();
-        rawData.forEach((prod) => {
-            const prodName = getProp(prod, ["productname", "name", "title"]) || '';
-            const lowerName = prodName.toLowerCase();
-            const status = getProp(prod, ["status"]) || 'Active';
-            
-            if (!prodName || 
-                lowerName.includes("supplier") || 
-                lowerName.includes("mainia") || 
-                lowerName === "name" || 
-                lowerName === "title" || 
-                lowerName === "product name") {
+            if (!items || items.length === 0) {
+                container.innerHTML = `<div class="loading-state">No products found.</div>`;
                 return;
             }
 
-            // Keep only active products if status column exists and is not active
-            if (status && status.toLowerCase() !== "active" && status.toLowerCase() !== "true" && status !== "") {
-                // optionally skip or keep based on preference, let's include if empty or active
-            }
+            let htmlContent = '<div class="products-grid">';
 
-            if (!uniqueProductsMap.has(prodName)) {
-                uniqueProductsMap.set(prodName, prod);
-            }
-        });
-
-        let index = 1;
-        uniqueProductsMap.forEach((prod, prodName) => {
-            const logoSrc = resolveLogo(prod, prodName);
-            const fallbackSrc = getSvgInitialsLogo(prodName);
-
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-number">${index < 10 ? '0' + index : index}</div>
-                <div class="card-img-wrap">
-                    <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
-                </div>
-                <h3>${prodName}</h3>
-                <div class="card-footer-ornament">👑</div>
-            `;
-            card.onclick = () => showVariants(prodName);
-            container.appendChild(card);
-            index++;
-        });
-    }
-
-    function showVariants(prodName) {
-        currentView = 'VARIANTS';
-        lastSelectedProductName = prodName;
-        const matchedItems = rawData.filter(i => getProp(i, ["productname", "name", "title"]) === prodName);
-
-        if (matchedItems.length > 0) {
-            document.getElementById('backBtn').style.display = 'block';
-            document.getElementById('productGrid').style.display = 'none';
-            document.getElementById('categoryGrid').style.display = 'grid';
-            document.getElementById('detailView').style.display = 'none';
-            try { tg.MainButton.hide(); } catch(e){}
-
-            const container = document.getElementById('categoryGrid');
-            container.innerHTML = '';
-
-            matchedItems.forEach((item, index) => {
-                const itemCat = getProp(item, ["plantype", "plan", "type", "category", "cat"]) || prodName;
-                const itemPrice = getProp(item, ["sellingprice", "price", "costprice", "cost"]) || '0';
-                const itemDuration = getProp(item, ["duration", "time"]) || '';
-                const logoSrc = resolveLogo(item, itemCat);
-                const fallbackSrc = getSvgInitialsLogo(itemCat);
-                const durationHtml = itemDuration ? `<div class="duration">⏱ ${itemDuration}</div>` : '';
-                const cardNum = (index + 1) < 10 ? '0' + (index + 1) : (index + 1);
-
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="card-number">${cardNum}</div>
-                    <div class="card-img-wrap">
-                        <img src="${logoSrc}" alt="${itemCat}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+            items.forEach((item, index) => {
+                let formattedNum = String(index + 1).padStart(2, '0');
+                htmlContent += `
+                    <div class="product-card">
+                        <div class="product-number">${formattedNum}</div>
+                        <div class="product-icon">${item.icon}</div>
+                        <div class="product-name">${item.name}</div>
+                        <div class="product-footer">👑</div>
                     </div>
-                    <h3>${itemCat}</h3>
-                    ${durationHtml}
-                    <div class="price">${itemPrice} MMK</div>
-                    <div class="card-footer-ornament">👑</div>
                 `;
-                card.onclick = () => showDetail(item);
-                container.appendChild(card);
             });
-        }
-    }
 
-    function showDetail(product) {
-        currentView = 'DETAIL';
-        selectedProduct = product;
-        document.getElementById('productGrid').style.display = 'none';
-        document.getElementById('categoryGrid').style.display = 'none';
-        document.getElementById('detailView').style.display = 'block';
-        document.getElementById('backBtn').style.display = 'block';
-
-        const prodName = getProp(product, ["productname", "name", "title"]) || 'Plan';
-        const prodCat = getProp(product, ["plantype", "plan", "type", "category", "cat"]) || '';
-        const prodPrice = getProp(product, ["sellingprice", "price", "costprice", "cost"]) || '0';
-        const prodDuration = getProp(product, ["duration", "time"]) || '';
-        const prodDesc = getProp(product, ["notecondition", "note", "description", "desc"]) || '';
-
-        const logoImg = document.getElementById('detailLogo');
-        const logoSrc = resolveLogo(product, prodName);
-        const fallbackSrc = getSvgInitialsLogo(prodName);
-        
-        logoImg.src = logoSrc;
-        logoImg.onerror = function() {
-            this.onerror = null;
-            this.src = fallbackSrc;
-        };
-
-        document.getElementById('productTitle').innerText = prodCat && prodCat !== prodName ? `${prodName} - ${prodCat}` : prodName;
-        document.getElementById('productDuration').innerText = prodDuration ? `⏱ ${prodDuration}` : '';
-        document.getElementById('productPrice').innerText = `${prodPrice} MMK`;
-
-        const noteBox = document.getElementById('noteBox');
-        if (prodDesc && String(prodDesc).trim() !== "") {
-            noteBox.innerHTML = `📌 <b>Condition / Note:</b><br>${prodDesc}`;
-            noteBox.style.display = 'block';
-        } else {
-            noteBox.style.display = 'none';
+            htmlContent += '</div>';
+            container.innerHTML = htmlContent;
         }
 
-        try {
-            tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
-            tg.MainButton.show();
-            tg.MainButton.offClick(sendOrder);
-            tg.MainButton.onClick(sendOrder);
-        } catch(e){}
-    }
+        // စတင် လုပ်ဆောင်ရန် ခေါ်ဆိုခြင်း
+        loadStoreProducts();
+    </script>
 
-    function goBack() {
-        if (currentView === 'DETAIL') {
-            showVariants(lastSelectedProductName);
-        } else if (currentView === 'VARIANTS') {
-            showProducts();
-        }
-    }
-
-    async function sendOrder() {
-        if (!selectedProduct) return;
-        
-        const userInput = document.getElementById('accountData').value;
-        const prodName = getProp(selectedProduct, ["productname", "name", "title"]) || 'Plan';
-        const prodCat = getProp(selectedProduct, ["plantype", "plan", "type", "category", "cat"]) || '';
-        const prodPrice = getProp(selectedProduct, ["sellingprice", "price", "costprice", "cost"]) || '0';
-        const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
-
-        const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
-        const fullItemName = (prodCat && prodCat !== prodName) ? `${prodName} (${prodCat}${fullDuration})` : `${prodName}${fullDuration}`;
-        const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
-
-        const user = tg.initDataUnsafe?.user;
-        const chatId = user?.id;
-
-        const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
-                            `<b>Item:</b> ${fullItemName}\n` +
-                            `<b>Price:</b> ${prodPrice} MMK\n` +
-                            `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
-                            `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
-
-        if (chatId) {
-            try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        photo: QR_IMAGE_URL,
-                        caption: captionText,
-                        parse_mode: 'HTML'
-                    })
-                });
-            } catch (err) {}
-        }
-
-        try {
-            const payload = {
-                order_id: orderId,
-                full_item_name: fullItemName,
-                price: prodPrice,
-                customer_note: userInput || "-"
-            };
-            tg.sendData(JSON.stringify(payload));
-        } catch (e) {}
-
-        try { tg.close(); } catch(e){}
-    }
-
-    fetchProducts();
-</script>
 </body>
 </html>
