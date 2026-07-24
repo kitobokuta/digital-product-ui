@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jupiter Store</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             background-color: #0b0f17;
@@ -34,7 +36,7 @@
             letter-spacing: 1px;
         }
 
-        /* Products Grid (Phone & Laptop Responsive) */
+        /* Products Grid */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -49,7 +51,6 @@
             }
         }
 
-        /* Product Card Design (Black & Silver Theme) */
         .product-card {
             background-color: #121824;
             border: 1px solid #1e293b;
@@ -101,7 +102,7 @@
             color: #f59e0b;
         }
 
-        /* Form Container (Second / Third UI) */
+        /* Form Container */
         .order-form-container {
             display: none;
             max-width: 450px;
@@ -132,7 +133,6 @@
             margin-bottom: 5px;
         }
 
-        /* Select box with custom clean down arrow */
         .form-group select {
             width: 100%;
             background-color: #0b0f17;
@@ -168,7 +168,6 @@
             border-color: #64748b;
         }
 
-        /* Note Box (Black & Silver Theme) */
         .note-box {
             font-size: 11px;
             color: #cbd5e1;
@@ -252,11 +251,44 @@
             margin-bottom: 2px;
         }
 
-        .loading-state {
+        /* Jupiter Planet Loading Animation */
+        .loader-container {
             text-align: center;
+            margin-top: 60px;
+        }
+
+        .jupiter-planet {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #d97706, #b45309, #78350f);
+            border-radius: 50%;
+            margin: 0 auto 15px auto;
+            position: relative;
+            box-shadow: inset -8px -4px 15px rgba(0,0,0,0.7), 0 0 15px rgba(217, 119, 6, 0.3);
+            animation: rotatePlanet 4s linear infinite;
+        }
+
+        .jupiter-planet::after {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: -10px;
+            width: 70px;
+            height: 14px;
+            border: 3px solid rgba(254, 243, 199, 0.4);
+            border-radius: 50%;
+            transform: rotate(-15deg);
+        }
+
+        @keyframes rotatePlanet {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
             color: #94a3b8;
-            font-size: 14px;
-            margin-top: 50px;
+            font-size: 12px;
+            letter-spacing: 1px;
         }
     </style>
 </head>
@@ -269,17 +301,20 @@
 
     <!-- Product Catalog Grid -->
     <div id="catalog-container" class="products-grid">
-        <div class="loading-state">Loading products from sheet...</div>
+        <div class="loader-container">
+            <div class="jupiter-planet"></div>
+            <div class="loading-text">LOADING JUPITER PLANET...</div>
+        </div>
     </div>
 
-    <!-- Order Form Container (Second & Third UI) -->
+    <!-- Order Form Container -->
     <div id="form-container" class="order-form-container">
         <h3 id="selected-title">Order Product</h3>
         
         <div class="note-box" id="product-info-box">
             <div><span class="duration-tag">⏱️ <span id="display-duration">1 Month</span></span></div>
-            <div style="margin-top: 4px;">Price: <span id="display-price" class="price-tag">5,000 MMK</span></div>
-            <div style="margin-top: 8px; color: #94a3b8;" id="display-note">ℹ️ Note: ညွှန်ကြားချက်...</div>
+            <div style="margin-top: 4px;">Price: <span id="display-price" class="price-tag">0 MMK</span></div>
+            <div style="margin-top: 8px; color: #94a3b8;" id="display-displayNote">ℹ️ Note: အချက်အလက်မရှိပါ။</div>
         </div>
         
         <form id="purchaseForm" onsubmit="submitOrder(event)">
@@ -321,7 +356,7 @@
         const selectedTitle = document.getElementById('selected-title');
         const displayDuration = document.getElementById('display-duration');
         const displayPrice = document.getElementById('display-price');
-        const displayNote = document.getElementById('display-note');
+        const displayNote = document.getElementById('display-displayNote');
         const productTypeSelect = document.getElementById('productType');
 
         async function fetchCatalog() {
@@ -329,7 +364,6 @@
                 const response = await fetch(CATALOG_URL, { method: 'GET', redirect: "follow" });
                 const data = await response.json();
                 
-                // Group products by Name (ဥပမာ - CapCut အမျိုးအစား ၅ ခုရှိလျှင် တစ်စုတည်းစုရန်)
                 allProductsData = {};
                 data.forEach(item => {
                     let name = item.name || item.productName || "Product";
@@ -342,7 +376,7 @@
                 renderCatalog();
             } catch (error) {
                 console.error("Error loading sheet data:", error);
-                catalogContainer.innerHTML = `<div class="loading-state" style="color: #ef4444;">Failed to load catalog data.</div>`;
+                catalogContainer.innerHTML = `<div class="loader-container"><div class="loading-text" style="color: #ef4444;">Failed to load catalog data.</div></div>`;
             }
         }
 
@@ -372,7 +406,6 @@
             currentVariants = allProductsData[productName];
             selectedTitle.innerText = `Order: ${productName}`;
 
-            // Populate Dropdown Options
             let optionsHtml = '';
             currentVariants.forEach((variant, idx) => {
                 let vType = variant.type || variant.duration || `Package ${idx + 1}`;
@@ -383,10 +416,9 @@
 
             updatePackageDetails();
 
-            // Switch UI views
             catalogContainer.style.display = 'none';
             formContainer.style.display = 'block';
-            window.scrollTo({ top: 100, behavior: 'smooth' });
+            // Scroll မလုပ်ဘဲ လက်ရှိနေရာမှာ જ နေစေရန် ဖယ်ရှားထားသည်
         }
 
         function updatePackageDetails() {
@@ -402,7 +434,6 @@
         function goBack() {
             formContainer.style.display = 'none';
             catalogContainer.style.display = 'grid';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function submitOrder(event) {
@@ -415,21 +446,20 @@
                 product: chosenVariant.name || chosenVariant.productName,
                 type: chosenVariant.type || chosenVariant.duration,
                 price: chosenVariant.price,
-                gmail: document.getElementById('gmail').value || "Not provided"
+                gmail: document.getElementById('gmail').value || ""
             };
 
-            console.log("Submitting order to Python Bot:", orderData);
+            // Telegram Bot ထံသို့ တိုက်ရိုက်ဒေတာပို့ပြီး QR Code တန်းထုတ်စေရန်
+            if (window.Telegram && window.Telegram.WebApp) {
+                window.Telegram.WebApp.sendData(JSON.stringify(orderData));
+            } else {
+                console.log("Order Data (Web):", orderData);
+            }
 
-            // Web App က အောက်ဆုံးသို့ တန်းကျသွားခြင်း (Scroll to bottom)
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-
-            alert("Order submitted successfully! Python bot will process your request.");
-            
             document.getElementById('purchaseForm').reset();
             goBack();
         }
 
-        // စတင်ချိန်တွင် Google Sheet ဒေတာများကို ဖတ်ယူရန်
         fetchCatalog();
     </script>
 
