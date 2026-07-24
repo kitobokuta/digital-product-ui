@@ -158,10 +158,6 @@
             align-items: center;
             gap: 6px;
         }
-        .card-footer-ornament::before, .card-footer-ornament::after {
-            content: "—";
-            color: #30363d;
-        }
 
         .detail-view { 
             display: none; 
@@ -293,10 +289,7 @@
     const FALLBACK_PRODUCTS = [
         { product_id: "P1", name: "CapCut Pro", category: "Pro 1 Month", duration: "30 Days", price: "4500", description: "Full Pro Access", logo: "" },
         { product_id: "P2", name: "Spotify Premium", category: "Individual 1 Month", duration: "30 Days", price: "3500", description: "Upgrade your own account", logo: "" },
-        { product_id: "P3", name: "Canva Pro", category: "1 Year Team Invite", duration: "365 Days", price: "5000", description: "Join via team link", logo: "" },
-        { product_id: "P4", name: "Channel Boost", category: "Standard Package", duration: "Permanent", price: "8000", description: "Increase channel views", logo: "" },
-        { product_id: "P5", name: "Jump VPN", category: "1 Month VIP", duration: "30 Days", price: "3000", description: "High speed secure VPN", logo: "" },
-        { product_id: "P6", name: "Netflix Premium", category: "1 Month Profile", duration: "30 Days", price: "4500", description: "Ultra HD 4K", logo: "" }
+        { product_id: "P3", name: "Canva Pro", category: "1 Year Team Invite", duration: "365 Days", price: "5000", description: "Join via team link", logo: "" }
     ];
 
     let rawData = [];
@@ -308,7 +301,10 @@
         if (!obj) return "";
         for (let k of keys) {
             for (let prop in obj) {
-                if (prop.toLowerCase() === k.toLowerCase()) {
+                // Normalize keys by removing spaces, underscores, and dashes for robust matching
+                const cleanProp = prop.toLowerCase().replace(/[\s_\-]/g, "");
+                const cleanKey = k.toLowerCase().replace(/[\s_\-]/g, "");
+                if (cleanProp === cleanKey) {
                     let val = obj[prop];
                     if (val !== undefined && val !== null && String(val).trim() !== "") {
                         return String(val).trim();
@@ -346,7 +342,7 @@
             }
             return logoVal;
         }
-        const titleForInitial = getProp(item, ["name", "title"]) || categoryName || "Product";
+        const titleForInitial = getProp(item, ["productname", "name", "title"]) || categoryName || "Product";
         return getSvgInitialsLogo(titleForInitial);
     }
 
@@ -358,10 +354,13 @@
             
             const jsonRes = await response.json();
             
-            if (Array.isArray(jsonRes) && jsonRes.length > 0) {
+            // Handle different possible JSON output structures from Google Apps Script
+            if (Array.isArray(jsonRes)) {
                 rawData = jsonRes;
-            } else if (jsonRes && jsonRes.error) {
-                rawData = FALLBACK_PRODUCTS;
+            } else if (jsonRes && Array.isArray(jsonRes.data)) {
+                rawData = jsonRes.data;
+            } else if (jsonRes && Array.isArray(jsonRes.products)) {
+                rawData = jsonRes.products;
             } else {
                 rawData = FALLBACK_PRODUCTS;
             }
@@ -392,15 +391,24 @@
 
         const uniqueProductsMap = new Map();
         rawData.forEach((prod) => {
-            const prodName = getProp(prod, ["name", "title"]) || '';
+            const prodName = getProp(prod, ["productname", "name", "title"]) || '';
             const lowerName = prodName.toLowerCase();
+            const status = getProp(prod, ["status"]) || 'Active';
+            
             if (!prodName || 
                 lowerName.includes("supplier") || 
                 lowerName.includes("mainia") || 
                 lowerName === "name" || 
-                lowerName === "title") {
+                lowerName === "title" || 
+                lowerName === "product name") {
                 return;
             }
+
+            // Keep only active products if status column exists and is not active
+            if (status && status.toLowerCase() !== "active" && status.toLowerCase() !== "true" && status !== "") {
+                // optionally skip or keep based on preference, let's include if empty or active
+            }
+
             if (!uniqueProductsMap.has(prodName)) {
                 uniqueProductsMap.set(prodName, prod);
             }
@@ -430,7 +438,7 @@
     function showVariants(prodName) {
         currentView = 'VARIANTS';
         lastSelectedProductName = prodName;
-        const matchedItems = rawData.filter(i => getProp(i, ["name", "title"]) === prodName);
+        const matchedItems = rawData.filter(i => getProp(i, ["productname", "name", "title"]) === prodName);
 
         if (matchedItems.length > 0) {
             document.getElementById('backBtn').style.display = 'block';
@@ -443,8 +451,8 @@
             container.innerHTML = '';
 
             matchedItems.forEach((item, index) => {
-                const itemCat = getProp(item, ["category", "cat"]) || prodName;
-                const itemPrice = getProp(item, ["price", "cost"]) || '0';
+                const itemCat = getProp(item, ["plantype", "plan", "type", "category", "cat"]) || prodName;
+                const itemPrice = getProp(item, ["sellingprice", "price", "costprice", "cost"]) || '0';
                 const itemDuration = getProp(item, ["duration", "time"]) || '';
                 const logoSrc = resolveLogo(item, itemCat);
                 const fallbackSrc = getSvgInitialsLogo(itemCat);
@@ -477,11 +485,11 @@
         document.getElementById('detailView').style.display = 'block';
         document.getElementById('backBtn').style.display = 'block';
 
-        const prodName = getProp(product, ["name", "title"]) || 'Plan';
-        const prodCat = getProp(product, ["category", "cat"]) || '';
-        const prodPrice = getProp(product, ["price", "cost"]) || '0';
+        const prodName = getProp(product, ["productname", "name", "title"]) || 'Plan';
+        const prodCat = getProp(product, ["plantype", "plan", "type", "category", "cat"]) || '';
+        const prodPrice = getProp(product, ["sellingprice", "price", "costprice", "cost"]) || '0';
         const prodDuration = getProp(product, ["duration", "time"]) || '';
-        const prodDesc = getProp(product, ["description", "desc", "note"]) || '';
+        const prodDesc = getProp(product, ["notecondition", "note", "description", "desc"]) || '';
 
         const logoImg = document.getElementById('detailLogo');
         const logoSrc = resolveLogo(product, prodName);
@@ -525,9 +533,9 @@
         if (!selectedProduct) return;
         
         const userInput = document.getElementById('accountData').value;
-        const prodName = getProp(selectedProduct, ["name", "title"]) || 'Plan';
-        const prodCat = getProp(selectedProduct, ["category", "cat"]) || '';
-        const prodPrice = getProp(selectedProduct, ["price", "cost"]) || '0';
+        const prodName = getProp(selectedProduct, ["productname", "name", "title"]) || 'Plan';
+        const prodCat = getProp(selectedProduct, ["plantype", "plan", "type", "category", "cat"]) || '';
+        const prodPrice = getProp(selectedProduct, ["sellingprice", "price", "costprice", "cost"]) || '0';
         const prodDuration = getProp(selectedProduct, ["duration", "time"]) || '';
 
         const fullDuration = prodDuration ? ` - ${prodDuration}` : '';
