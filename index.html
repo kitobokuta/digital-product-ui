@@ -1,467 +1,235 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jupiter Store</title>
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            background-color: #0b0f17;
-            color: #e2e8f0;
-            font-family: sans-serif;
-            margin: 0;
-            padding: 15px;
-            padding-bottom: 70px;
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #131b2e;
+            --accent-color: #ff9933;
+            --text-color: #ffffff;
+            --text-secondary: #94a3b8;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        /* Loading Screen - အလယ်တည့်တည့်နှင့် Graphic Animation ဆန်ဆန် */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+
+        .jupiter-container {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .jupiter-planet {
+            width: 55px;
+            height: 55px;
+            background: radial-gradient(circle at 30% 30%, #ff9933, #cc5500);
+            border-radius: 50%;
+            box-shadow: 0 0 25px rgba(255, 153, 51, 0.5);
+            z-index: 2;
+        }
+
+        .jupiter-ring {
+            position: absolute;
+            width: 95px;
+            height: 35px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            transform: rotate(-25deg);
+            animation: spinRing 1.8s linear infinite;
+            z-index: 3;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes spinRing {
+            0% { transform: rotate(-25deg) scale(1); opacity: 0.8; }
+            50% { transform: rotate(-25deg) scale(1.06); opacity: 1; }
+            100% { transform: rotate(-25deg) scale(1); opacity: 0.8; }
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Store Header */
         .store-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
+            padding-top: 10px;
         }
 
-        .store-header h2 {
-            margin: 0 0 5px 0;
-            font-size: 24px;
-            letter-spacing: 1.5px;
-            font-weight: 800;
-            color: #ffffff;
+        .store-header h1 {
+            font-size: 22px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
 
         .store-header p {
-            margin: 0;
-            font-size: 11px;
-            color: #94a3b8;
+            font-size: 12px;
+            color: var(--accent-color);
             letter-spacing: 1px;
         }
 
-        /* Products Grid */
-        .products-grid {
+        /* Product Grid */
+        .product-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        @media (min-width: 768px) {
-            .products-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
         }
 
         .product-card {
-            background-color: #121824;
-            border: 1px solid #1e293b;
-            border-radius: 16px;
-            padding: 18px 10px;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 16px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
             cursor: pointer;
             transition: transform 0.2s, border-color 0.2s;
         }
 
-        .product-card:hover {
-            border-color: #64748b;
-            transform: translateY(-2px);
-        }
-
-        .product-number {
-            font-size: 11px;
-            color: #64748b;
-            text-align: left;
-            margin-bottom: 10px;
-            padding-left: 6px;
+        .product-card:active {
+            transform: scale(0.97);
+            border-color: var(--accent-color);
         }
 
         .product-icon {
             width: 48px;
             height: 48px;
-            background: radial-gradient(circle, #1e293b 0%, #0b0f17 100%);
-            border: 2px solid #334155;
+            background: rgba(255, 153, 51, 0.1);
             border-radius: 50%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            margin: 0 auto 12px auto;
-            font-size: 18px;
+            align-items: center;
+            margin: 0 auto 10px;
+            color: var(--accent-color);
             font-weight: bold;
-            color: #ffffff;
+            font-size: 18px;
         }
 
         .product-name {
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #f1f5f9;
-        }
-
-        .product-footer {
-            font-size: 12px;
-            color: #f59e0b;
-        }
-
-        /* Form Container */
-        .order-form-container {
-            display: none;
-            max-width: 450px;
-            margin: 20px auto;
-            background-color: #121824;
-            border: 1px solid #1e293b;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-        }
-
-        .order-form-container h3 {
-            margin-top: 0;
-            font-size: 16px;
-            color: #cbd5e1;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 11px;
-            color: #94a3b8;
-            margin-bottom: 5px;
-        }
-
-        .form-group select {
-            width: 100%;
-            background-color: #0b0f17;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 10px;
-            color: #ffffff;
-            font-size: 13px;
-            box-sizing: border-box;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml;utf8,<svg fill='%2394a3b8' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-            background-repeat: no-repeat;
-            background-position-x: 98%;
-            background-position-y: center;
-            cursor: pointer;
-        }
-
-        .form-group input {
-            width: 100%;
-            background-color: #0b0f17;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 10px;
-            color: #ffffff;
-            font-size: 13px;
-            box-sizing: border-box;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #64748b;
-        }
-
-        .note-box {
-            font-size: 11px;
-            color: #cbd5e1;
-            background: #0b0f17;
-            border: 1px solid #1e293b;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .price-tag {
-            color: #10b981;
-            font-weight: bold;
-        }
-
-        .duration-tag {
-            color: #ef4444;
-            font-weight: bold;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .back-btn {
-            background-color: #1e293b;
-            color: #cbd5e1;
-            border: none;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 30%;
-        }
-
-        .order-btn {
-            background-color: #334155;
-            color: white;
-            border: 1px solid #475569;
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 70%;
-            transition: background 0.2s;
-        }
-
-        .order-btn:hover {
-            background-color: #475569;
-        }
-
-        /* Fixed Footer Features Bar */
-        .store-features-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #0b0f17;
-            border-top: 1px solid #1e293b;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 5px;
-            box-sizing: border-box;
-            z-index: 1000;
-        }
-
-        .feature-item {
-            text-align: center;
-            font-size: 9px;
-            color: #94a3b8;
-            letter-spacing: 0.5px;
-        }
-
-        .feature-item span {
-            display: block;
             font-size: 14px;
-            margin-bottom: 2px;
+            font-weight: 600;
+            margin-bottom: 6px;
         }
 
-        /* Jupiter Planet Loading Animation */
-        .loader-container {
-            text-align: center;
-            margin-top: 60px;
-        }
-
-        .jupiter-planet {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #d97706, #b45309, #78350f);
-            border-radius: 50%;
-            margin: 0 auto 15px auto;
-            position: relative;
-            box-shadow: inset -8px -4px 15px rgba(0,0,0,0.7), 0 0 15px rgba(217, 119, 6, 0.3);
-            animation: rotatePlanet 4s linear infinite;
-        }
-
-        .jupiter-planet::after {
-            content: '';
-            position: absolute;
-            top: 18px;
-            left: -10px;
-            width: 70px;
-            height: 14px;
-            border: 3px solid rgba(254, 243, 199, 0.4);
-            border-radius: 50%;
-            transform: rotate(-15deg);
-        }
-
-        @keyframes rotatePlanet {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #94a3b8;
+        .product-price {
             font-size: 12px;
-            letter-spacing: 1px;
+            color: var(--text-secondary);
         }
     </style>
 </head>
 <body>
 
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="jupiter-container">
+            <div class="jupiter-planet"></div>
+            <div class="jupiter-ring"></div>
+        </div>
+        <div class="loader-text">JUPITER STORE...</div>
+    </div>
+
+    <!-- Store Content -->
     <div class="store-header">
-        <h2>JUPITER STORE</h2>
+        <h1>JUPITER STORE</h1>
         <p>✦ PREMIUM DIGITAL PRODUCTS ✦</p>
     </div>
 
-    <!-- Product Catalog Grid -->
-    <div id="catalog-container" class="products-grid">
-        <div class="loader-container">
-            <div class="jupiter-planet"></div>
-            <div class="loading-text">LOADING JUPITER PLANET...</div>
+    <div class="product-grid" id="productGrid">
+        <!-- Products will be loaded dynamically or statically -->
+        <div class="product-card" onclick="selectProduct('CapCut Pro', '15000', 10000)">
+            <div class="product-icon">C</div>
+            <div class="product-name">CapCut Pro</div>
+            <div class="product-price">15,000 MMK</div>
         </div>
-    </div>
-
-    <!-- Order Form Container -->
-    <div id="form-container" class="order-form-container">
-        <h3 id="selected-title">Order Product</h3>
-        
-        <div class="note-box" id="product-info-box">
-            <div><span class="duration-tag">⏱️ <span id="display-duration">1 Month</span></span></div>
-            <div style="margin-top: 4px;">Price: <span id="display-price" class="price-tag">0 MMK</span></div>
-            <div style="margin-top: 8px; color: #94a3b8;" id="display-displayNote">ℹ️ Note: အချက်အလက်မရှိပါ။</div>
+        <div class="product-card" onclick="selectProduct('Spotify Premium', '12000', 8000)">
+            <div class="product-icon">S</div>
+            <div class="product-name">Spotify</div>
+            <div class="product-price">12,000 MMK</div>
         </div>
-        
-        <form id="purchaseForm" onsubmit="submitOrder(event)">
-            <div class="form-group">
-                <label>Select Package Type</label>
-                <select id="productType" onchange="updatePackageDetails()">
-                    <!-- JS ဖြင့် Data ထည့်မည် -->
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Gmail Address (Optional)</label>
-                <input type="email" id="gmail" placeholder="user@gmail.com">
-            </div>
-
-            <div class="btn-group">
-                <button type="button" class="back-btn" onclick="goBack()">Back</button>
-                <button type="submit" class="order-btn">Order Now</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Fixed Features Bar -->
-    <div class="store-features-bar">
-        <div class="feature-item"><span>🛡️</span> 100% SAFE & SECURE</div>
-        <div class="feature-item"><span>⚡</span> INSTANT DELIVERY</div>
-        <div class="feature-item"><span>🎖️</span> PREMIUM QUALITY</div>
-        <div class="feature-item"><span>🎧</span> 24/7 SUPPORT</div>
+        <div class="product-card" onclick="selectProduct('Canva Pro', '10000', 6000)">
+            <div class="product-icon">C</div>
+            <div class="product-name">Canva Pro</div>
+            <div class="product-price">10,000 MMK</div>
+        </div>
+        <div class="product-card" onclick="selectProduct('Channel Boost', '20000', 14000)">
+            <div class="product-icon">B</div>
+            <div class="product-name">Channel Boost</div>
+            <div class="product-price">20,000 MMK</div>
+        </div>
     </div>
 
     <script>
-        const CATALOG_URL = "https://script.google.com/macros/s/AKfycbya5HrCRRjZRSNOubOhBHBU9M49ruZ-xIKuKIYvgN_5fu-jjpIYv7fKoUh7cAsFVNSb/exec";
-        
-        let allProductsData = {};
-        let currentVariants = [];
+        const tg = window.Telegram.WebApp;
 
-        const catalogContainer = document.getElementById('catalog-container');
-        const formContainer = document.getElementById('form-container');
-        const selectedTitle = document.getElementById('selected-title');
-        const displayDuration = document.getElementById('display-duration');
-        const displayPrice = document.getElementById('display-price');
-        const displayNote = document.getElementById('display-displayNote');
-        const productTypeSelect = document.getElementById('productType');
+        // 1. Mini App ကို ဖန်သားပြင်အပြည့် (အပေါ်ဆုံးထိ) အလိုအလျောက် ဆွဲတင်ရန်
+        tg.expand();
+        tg.ready();
 
-        async function fetchCatalog() {
-            try {
-                const response = await fetch(CATALOG_URL, { method: 'GET', redirect: "follow" });
-                const data = await response.json();
-                
-                allProductsData = {};
-                data.forEach(item => {
-                    let name = item.name || item.productName || "Product";
-                    if (!allProductsData[name]) {
-                        allProductsData[name] = [];
-                    }
-                    allProductsData[name].push(item);
-                });
+        // 2. Loading Screen အလုပ်လုပ်ပုံ (Store Load ပြီးပါက ဝင်ဆံ့ရန်)
+        window.addEventListener("load", () => {
+            setTimeout(() => {
+                const loader = document.getElementById("loader");
+                loader.style.opacity = "0";
+                setTimeout(() => {
+                    loader.style.display = "none";
+                }, 400);
+            }, 600); // 0.6 စက္ကန့်ကြာပြီးနောက် Loader ပျောက်သွားမည်
+        });
 
-                renderCatalog();
-            } catch (error) {
-                console.error("Error loading sheet data:", error);
-                catalogContainer.innerHTML = `<div class="loader-container"><div class="loading-text" style="color: #ef4444;">Failed to load catalog data.</div></div>`;
-            }
-        }
-
-        function renderCatalog() {
-            let html = '';
-            let index = 1;
-            
-            for (let productName in allProductsData) {
-                let numStr = String(index).padStart(2, '0');
-                let firstItem = allProductsData[productName][0];
-                let pIcon = firstItem.icon || productName.charAt(0).toUpperCase();
-
-                html += `
-                    <div class="product-card" onclick="selectProduct('${productName}')">
-                        <div class="product-number">${numStr}</div>
-                        <div class="product-icon">${pIcon}</div>
-                        <div class="product-name">${productName}</div>
-                        <div class="product-footer">👑</div>
-                    </div>
-                `;
-                index++;
-            }
-            catalogContainer.innerHTML = html;
-        }
-
-        function selectProduct(productName) {
-            currentVariants = allProductsData[productName];
-            selectedTitle.innerText = `Order: ${productName}`;
-
-            let optionsHtml = '';
-            currentVariants.forEach((variant, idx) => {
-                let vType = variant.type || variant.duration || `Package ${idx + 1}`;
-                let vPrice = variant.price || "0 MMK";
-                optionsHtml += `<option value="${idx}">${vType} - ${vPrice}</option>`;
-            });
-            productTypeSelect.innerHTML = optionsHtml;
-
-            updatePackageDetails();
-
-            catalogContainer.style.display = 'none';
-            formContainer.style.display = 'block';
-            // Scroll မလုပ်ဘဲ လက်ရှိနေရာမှာ જ နေစေရန် ဖယ်ရှားထားသည်
-        }
-
-        function updatePackageDetails() {
-            let selectedIdx = productTypeSelect.value;
-            if (currentVariants[selectedIdx]) {
-                let variant = currentVariants[selectedIdx];
-                displayDuration.innerText = variant.type || variant.duration || "Standard";
-                displayPrice.innerText = variant.price || "0 MMK";
-                displayNote.innerText = `ℹ️ Note: ${variant.note || "အချက်အလက်မရှိပါ။"}`;
-            }
-        }
-
-        function goBack() {
-            formContainer.style.display = 'none';
-            catalogContainer.style.display = 'grid';
-        }
-
-        function submitOrder(event) {
-            event.preventDefault();
-
-            let selectedIdx = productTypeSelect.value;
-            let chosenVariant = currentVariants[selectedIdx];
-
+        // 3. ပစ္စည်းနှိပ်လိုက်ပါက Bot ထံသို့ Data ပို့ပေးမည့် Function
+        function selectProduct(itemName, price, costPrice) {
             const orderData = {
-                product: chosenVariant.name || chosenVariant.productName,
-                type: chosenVariant.type || chosenVariant.duration,
-                price: chosenVariant.price,
-                gmail: document.getElementById('gmail').value || ""
+                order_id: "ORD-" + Math.floor(100000000 + Math.random() * 900000000),
+                full_item_name: itemName,
+                price: price,
+                cost_price: costPrice,
+                customer_note: "Web App Order"
             };
 
-            // Telegram Bot ထံသို့ တိုက်ရိုက်ဒေတာပို့ပြီး QR Code တန်းထုတ်စေရန်
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.sendData(JSON.stringify(orderData));
-            } else {
-                console.log("Order Data (Web):", orderData);
-            }
-
-            document.getElementById('purchaseForm').reset();
-            goBack();
+            // Telegram Bot ထံသို့ Data ပို့ပြီး Mini App ပိတ်မည်
+            tg.sendData(JSON.stringify(orderData));
+            tg.close();
         }
-
-        fetchCatalog();
     </script>
-
 </body>
 </html>
