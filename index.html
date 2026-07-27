@@ -45,7 +45,7 @@
         }
         .store-subtitle { font-size: 9px; letter-spacing: 2px; color: #b0bec5; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
 
-        /* --- Mobile Optimized Tab Container --- */
+        /* --- Tab Switcher --- */
         .tab-container {
             display: flex;
             width: 100%;
@@ -114,6 +114,22 @@
         }
         .card:active { transform: scale(0.96); border-color: #58a6ff; }
 
+        /* Inactive Card Styling */
+        .card.is-inactive {
+            opacity: 0.6;
+            filter: grayscale(0.6);
+        }
+        .unavailable-badge {
+            background: #ff4757;
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
         .card-number { position: absolute; top: 6px; left: 8px; font-size: 10px; font-weight: 800; color: #8b9bb4; }
         .card-img-wrap {
             width: 54px; height: 54px; border-radius: 50%;
@@ -142,6 +158,18 @@
         }
         .detail-img-wrap img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
         .note-box { background-color: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; color: #ffecb3; padding: 10px; font-size: 11px; border-radius: 6px; margin: 14px 0; text-align: left; line-height: 1.4; }
+        
+        .unavailable-msg {
+            background-color: rgba(255, 71, 87, 0.15);
+            border: 1px solid #ff4757;
+            color: #ff6b81;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-top: 14px;
+        }
+
         .input-group { margin-top: 14px; text-align: left; }
         .input-group label { font-size: 10px; color: var(--hint-color); display: block; margin-bottom: 4px; }
         .input-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #ffffff; box-sizing: border-box; font-size: 13px; outline: none; }
@@ -172,7 +200,6 @@
     <div class="store-subtitle">✦ PREMIUM DIGITAL PRODUCTS ✦</div>
 </div>
 
-<!-- Fixed Responsive Tab Switcher -->
 <div id="tabContainer" class="tab-container">
     <button class="tab-btn active" id="tabPremium" onclick="switchTab('PREMIUM')">Premium</button>
     <button class="tab-btn" id="tabService" onclick="switchTab('SERVICE')">Log in Service</button>
@@ -197,7 +224,11 @@
 
     <div id="noteBox" class="note-box" style="display:none;"></div>
     
-    <div class="input-group">
+    <div id="unavailMsg" class="unavailable-msg" style="display:none;">
+        ⚠️ လက်ရှိ ပစ္စည်းပြတ်လပ်နေပါသည်။ (Unavailable)
+    </div>
+
+    <div id="inputForm" class="input-group">
         <label for="accountData">Account ID / Email / Phone / Remarks:</label>
         <input type="text" id="accountData" placeholder="ဝယ်ယူမည့် အကောင့်အချက်အလက်ထည့်ပါ...">
     </div>
@@ -245,7 +276,6 @@
         document.getElementById('tabService').classList.toggle('active', tabType === 'SERVICE');
         document.getElementById('tabGame').classList.toggle('active', tabType === 'GAME');
         
-        // Tab ပြောင်းလိုက်တိုင်း Clean Display ရစေရန် Grid များကို Reset လုပ်ပါသည်
         document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'none';
         showProducts();
@@ -286,7 +316,7 @@
             showProducts();
         } catch (error) {
             console.error("Fetch error:", error);
-            document.getElementById('loading').innerHTML = "Data ရယူ၍ မရနိုင်ပါ။ (Apps Script Deploy ပြန်လုပ်ပေးရန် လိုအပ်နိုင်ပါသည်)";
+            document.getElementById('loading').innerHTML = "Data ရယူ၍ မရနိုင်ပါ။";
         }
     }
 
@@ -311,7 +341,6 @@
             if (!prodName) return;
 
             let isMatched = false;
-            // Sheet tab တိတိကျကျ စစ်ဆေးပေးခြင်း
             if (currentTab === 'PREMIUM' && (sheetType === "Products Master Database" || sheetType === "Premium")) isMatched = true;
             if (currentTab === 'SERVICE' && sheetType === "Log in Service") isMatched = true;
             if (currentTab === 'GAME' && sheetType === "Game Items") isMatched = true;
@@ -368,11 +397,14 @@
                 const itemCat = getProp(item, ["category", "cat"]) || prodName;
                 const itemPrice = getProp(item, ["price", "cost"]) || '0';
                 const itemDuration = getProp(item, ["duration", "time"]) || '';
+                const itemStatus = (getProp(item, ["status", "stat"]) || 'Active').toLowerCase();
+                const isInactive = itemStatus === 'inactive';
+
                 const logoSrc = resolveLogo(item, itemCat);
                 const fallbackSrc = getSvgInitialsLogo(itemCat);
 
                 const card = document.createElement('div');
-                card.className = 'card';
+                card.className = `card ${isInactive ? 'is-inactive' : ''}`;
                 card.innerHTML = `
                     <div class="card-number">${(index + 1) < 10 ? '0' + (index + 1) : (index + 1)}</div>
                     <div class="card-img-wrap">
@@ -381,7 +413,7 @@
                     <h3>${itemCat}</h3>
                     ${itemDuration ? `<div class="duration">⏱ ${itemDuration}</div>` : ''}
                     <div class="price">${itemPrice} MMK</div>
-                    <div class="card-footer-ornament">👑</div>
+                    ${isInactive ? `<div class="unavailable-badge">UNAVAILABLE</div>` : `<div class="card-footer-ornament">👑</div>`}
                 `;
                 card.onclick = () => showDetail(item);
                 container.appendChild(card);
@@ -402,6 +434,10 @@
         const prodPrice = getProp(product, ["price", "cost"]);
         const prodDuration = getProp(product, ["duration", "time"]);
         const prodDesc = getProp(product, ["description", "desc"]);
+        
+        // Status Check
+        const prodStatus = (getProp(product, ["status", "stat"]) || 'Active').toLowerCase();
+        const isInactive = prodStatus === 'inactive';
 
         document.getElementById('detailLogo').src = resolveLogo(product, prodName);
         document.getElementById('productTitle').innerText = prodCat && prodCat !== prodName ? `${prodName} - ${prodCat}` : prodName;
@@ -416,12 +452,24 @@
             noteBox.style.display = 'none';
         }
 
-        try {
-            tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
-            tg.MainButton.show();
-            tg.MainButton.offClick(sendOrder);
-            tg.MainButton.onClick(sendOrder);
-        } catch(e){}
+        // Inactive ဖြစ်ရင် Button ဖျောက်ပြီး Form ပိတ်ထားမည်
+        const unavailMsg = document.getElementById('unavailMsg');
+        const inputForm = document.getElementById('inputForm');
+
+        if (isInactive) {
+            unavailMsg.style.display = 'block';
+            inputForm.style.display = 'none';
+            try { tg.MainButton.hide(); } catch(e){}
+        } else {
+            unavailMsg.style.display = 'none';
+            inputForm.style.display = 'block';
+            try {
+                tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
+                tg.MainButton.show();
+                tg.MainButton.offClick(sendOrder);
+                tg.MainButton.onClick(sendOrder);
+            } catch(e){}
+        }
     }
 
     function goBack() {
