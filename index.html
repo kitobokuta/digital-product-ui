@@ -28,6 +28,7 @@
             padding: 12px;
             box-sizing: border-box;
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .store-header { text-align: center; margin-bottom: 16px; position: relative; }
@@ -243,7 +244,10 @@
 
 <script>
     const tg = window.Telegram.WebApp;
-    try { tg.expand(); } catch(e){}
+    try { 
+        tg.ready();
+        tg.expand(); 
+    } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
     const API_URL = "https://script.google.com/macros/s/AKfycbzk1iBnjxqXUQe1_c1qN3mUcEpB2d6Pt7LlA3DEGjBAafW6TH3dW23zqiOjw-bbQJy_/exec";
@@ -276,8 +280,6 @@
         document.getElementById('tabService').classList.toggle('active', tabType === 'SERVICE');
         document.getElementById('tabGame').classList.toggle('active', tabType === 'GAME');
         
-        document.getElementById('categoryGrid').style.display = 'none';
-        document.getElementById('detailView').style.display = 'none';
         showProducts();
     }
 
@@ -385,10 +387,11 @@
 
         if (matchedItems.length > 0) {
             document.getElementById('tabContainer').style.display = 'none';
-            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('backBtn').style.display = 'inline-block';
             document.getElementById('productGrid').style.display = 'none';
             document.getElementById('categoryGrid').style.display = 'grid';
             document.getElementById('detailView').style.display = 'none';
+            try { tg.MainButton.hide(); } catch(e){}
 
             const container = document.getElementById('categoryGrid');
             container.innerHTML = '';
@@ -418,6 +421,7 @@
                 card.onclick = () => showDetail(item);
                 container.appendChild(card);
             });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
@@ -425,6 +429,7 @@
         currentView = 'DETAIL';
         selectedProduct = product;
         document.getElementById('tabContainer').style.display = 'none';
+        document.getElementById('backBtn').style.display = 'inline-block';
         document.getElementById('productGrid').style.display = 'none';
         document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'block';
@@ -435,7 +440,6 @@
         const prodDuration = getProp(product, ["duration", "time"]);
         const prodDesc = getProp(product, ["description", "desc"]);
         
-        // Status Check
         const prodStatus = (getProp(product, ["status", "stat"]) || 'Active').toLowerCase();
         const isInactive = prodStatus === 'inactive';
 
@@ -452,7 +456,6 @@
             noteBox.style.display = 'none';
         }
 
-        // Inactive ဖြစ်ရင် Button ဖျောက်ပြီး Form ပိတ်ထားမည်
         const unavailMsg = document.getElementById('unavailMsg');
         const inputForm = document.getElementById('inputForm');
 
@@ -470,11 +473,15 @@
                 tg.MainButton.onClick(sendOrder);
             } catch(e){}
         }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function goBack() {
-        if (currentView === 'DETAIL') showVariants(lastSelectedProductName);
-        else if (currentView === 'VARIANTS') showProducts();
+        if (currentView === 'DETAIL') {
+            showVariants(lastSelectedProductName);
+        } else if (currentView === 'VARIANTS') {
+            showProducts();
+        }
     }
 
     async function sendOrder() {
