@@ -428,14 +428,22 @@
     let currentTab = 'PREMIUM';
     let lastSelectedProductName = '';
 
-    // --- Screen click event to dismiss keyboard ---
+    // --- Screen click event & Return key handler to dismiss keyboard ---
     document.addEventListener('click', function(event) {
         const searchInput = document.getElementById('searchInput');
         const accountData = document.getElementById('accountData');
         
-        // အကယ်၍ ထိလိုက်တဲ့ နေရာသည် input box များ မဟုတ်လျှင် keyboard ဖျောက်ရန် blur လုပ်မည်
         if (event.target !== searchInput && event.target !== accountData) {
             if (document.activeElement === searchInput || document.activeElement === accountData) {
+                document.activeElement.blur();
+            }
+        }
+    });
+
+    // Handle Enter / Return key on inputs to dismiss keyboard
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            if (document.activeElement) {
                 document.activeElement.blur();
             }
         }
