@@ -428,6 +428,19 @@
     let currentTab = 'PREMIUM';
     let lastSelectedProductName = '';
 
+    // --- Screen click event to dismiss keyboard ---
+    document.addEventListener('click', function(event) {
+        const searchInput = document.getElementById('searchInput');
+        const accountData = document.getElementById('accountData');
+        
+        // အကယ်၍ ထိလိုက်တဲ့ နေရာသည် input box များ မဟုတ်လျှင် keyboard ဖျောက်ရန် blur လုပ်မည်
+        if (event.target !== searchInput && event.target !== accountData) {
+            if (document.activeElement === searchInput || document.activeElement === accountData) {
+                document.activeElement.blur();
+            }
+        }
+    });
+
     function getProp(obj, keys) {
         if (!obj) return "";
         for (let k of keys) {
@@ -527,7 +540,6 @@
                     }
                 }
             } else {
-                // When searching, match across ALL tabs using startsWith
                 if (nameLower.startsWith(query)) {
                     if (!uniqueProductsMap.has(prodName)) {
                         uniqueProductsMap.set(prodName, prod);
@@ -537,7 +549,7 @@
         });
 
         if (uniqueProductsMap.size === 0) {
-            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">No products found!...</div>`;
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">ရှာဖွေမှုနှင့် ကိုက်ညီသော ပစ္စည်းများ မရှိပါ</div>`;
             return;
         }
 
@@ -558,7 +570,6 @@
                 <div class="card-footer-ornament">👑</div>
             `;
             
-            // When a product card is clicked from search, automatically switch to its correct tab and show its variants
             card.onclick = () => {
                 const sheetType = getProp(prod, ["sheet_type", "type"]);
                 let targetTab = 'PREMIUM';
