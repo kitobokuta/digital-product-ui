@@ -29,23 +29,16 @@
             box-sizing: border-box;
             min-height: 100vh;
             -webkit-tap-highlight-color: transparent;
-            animation: fadeInBody 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeIn 0.4s ease-out;
         }
 
-        @keyframes fadeInBody {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes smoothFadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .store-header { text-align: center; margin-bottom: 16px; position: relative; }
-        .planet-icon { width: 75px; height: auto; margin-bottom: -10px; filter: drop-shadow(0 0 15px rgba(139, 155, 180, 0.5)); transform: rotate(30deg); transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .planet-icon:hover { transform: rotate(210deg) scale(1.05); }
-        
+        .planet-icon { width: 75px; height: auto; margin-bottom: -10px; filter: drop-shadow(0 0 15px rgba(139, 155, 180, 0.5)); transform: rotate(30deg); }
         h1.store-title {
             font-family: "Cinzel", "Times New Roman", serif;
             font-size: 26px;
@@ -63,7 +56,6 @@
         .search-container {
             margin-bottom: 14px;
             position: relative;
-            transition: all 0.3s ease;
         }
         .search-input {
             width: 100%;
@@ -75,13 +67,12 @@
             font-size: 13px;
             box-sizing: border-box;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
         }
         .search-input:focus {
             border-color: #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.35), inset 0 2px 4px rgba(0,0,0,0.6);
-            transform: translateY(-1px);
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25), inset 0 2px 4px rgba(0,0,0,0.6);
         }
         .search-icon {
             position: absolute;
@@ -91,10 +82,6 @@
             font-size: 14px;
             color: var(--hint-color);
             pointer-events: none;
-            transition: color 0.3s ease;
-        }
-        .search-input:focus ~ .search-icon {
-            color: #3b82f6;
         }
 
         /* --- Ultra-Smooth Tab Switcher --- */
@@ -124,22 +111,22 @@
             transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
                         background 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
                         box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                        transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+                        transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             text-align: center;
             white-space: nowrap;
             z-index: 2;
         }
         .tab-btn:hover {
             color: #ffffff;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.03);
         }
         .tab-btn:active {
-            transform: scale(0.94);
+            transform: scale(0.96);
         }
         .tab-btn.active {
             background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
             color: #ffffff;
-            box-shadow: 0 4px 18px rgba(59, 130, 246, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
             border: 1px solid rgba(147, 197, 253, 0.4);
             text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
@@ -152,7 +139,7 @@
             margin-bottom: 16px;
         }
         .back-btn {
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: #ffffff;
             font-size: 12px;
@@ -160,22 +147,18 @@
             padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .back-btn:hover {
-            background: rgba(30, 41, 59, 0.95);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: all 0.2s ease;
         }
         .back-btn:active {
-            transform: scale(0.92);
+            transform: scale(0.95);
+            background: rgba(30, 41, 59, 0.95);
         }
 
-        /* --- Loading Graphic --- */
+        /* --- Jupiter 3D Side-Perspective Orbit Loading Graphic --- */
         .loading-container {
             display: flex;
             flex-direction: column;
@@ -252,27 +235,23 @@
             cursor: pointer;
             box-shadow: 0 6px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
             border: 1px solid #30363d;
-            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, box-shadow 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-            animation: cardAppear 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+            animation: cardAppear 0.35s ease backwards;
         }
         @keyframes cardAppear {
-            from { opacity: 0; transform: translateY(14px) scale(0.96); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .card:hover {
-            border-color: rgba(88, 166, 255, 0.6);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.25);
-            transform: translateY(-3px);
+            border-color: rgba(88, 166, 255, 0.5);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.25);
         }
-        .card:active { 
-            transform: scale(0.94) translateY(0); 
-            border-color: #58a6ff; 
-        }
+        .card:active { transform: scale(0.95); border-color: #58a6ff; }
 
         .card.is-inactive {
             opacity: 0.6;
@@ -296,33 +275,31 @@
             border: 2px solid rgba(255,255,255,0.2);
             display: flex; align-items: center; justify-content: center;
             margin-top: 4px; margin-bottom: 8px; overflow: hidden;
-            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease;
+            transition: transform 0.3s ease;
         }
         .card:hover .card-img-wrap {
-            transform: scale(1.08) rotate(3deg);
-            border-color: rgba(255,255,255,0.5);
+            transform: scale(1.05);
+            border-color: rgba(255,255,255,0.4);
         }
         .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .card h3 { margin: 0; font-size: 12px; font-weight: 700; color: #f0f6fc; word-break: break-word; line-height: 1.2; }
         .duration { font-size: 10px; font-weight: 700; color: var(--accent-red); margin-top: 4px; }
         .price { font-weight: 800; color: #58a6ff; margin-top: 4px; font-size: 11px; }
 
-        .card-footer-ornament { margin-top: 6px; font-size: 9px; color: #8b9bb4; display: flex; align-items: center; gap: 4px; transition: color 0.3s ease; }
-        .card:hover .card-footer-ornament { color: #58a6ff; }
+        .card-footer-ornament { margin-top: 6px; font-size: 9px; color: #8b9bb4; display: flex; align-items: center; gap: 4px; }
         .card-footer-ornament::before, .card-footer-ornament::after { content: "—"; color: #30363d; }
 
         .detail-view { 
             display: none; background: linear-gradient(145deg, #161b22 0%, #0d1117.5 100%); 
             padding: 20px 14px; border-radius: 14px; border: 1px solid #30363d; text-align: center;
-            animation: smoothFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
         }
         .detail-img-wrap {
             width: 70px; height: 70px; border-radius: 50%;
             background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
             border: 3px solid rgba(255,255,255,0.3); display: inline-flex;
             align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .detail-img-wrap img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
         .note-box { background-color: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; color: #ffecb3; padding: 10px; font-size: 11px; border-radius: 6px; margin: 14px 0; text-align: left; line-height: 1.4; }
@@ -339,24 +316,14 @@
         }
 
         .input-group { margin-top: 14px; text-align: left; }
-        .input-group label { font-size: 10px; color: var(--hint-color); display: block; margin-bottom: 3px; font-weight: 600; }
-        .input-group input { 
-            width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #30363d; 
-            background: #0d1117; color: #ffffff; box-sizing: border-box; font-size: 13px; 
-            outline: none; transition: all 0.25s ease; margin-bottom: 8px; 
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
-        }
-        .input-group input:focus { 
-            border-color: #3b82f6; 
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.3), inset 0 2px 4px rgba(0,0,0,0.4);
-            transform: translateY(-1px);
-        }
+        .input-group label { font-size: 10px; color: var(--hint-color); display: block; margin-bottom: 4px; }
+        .input-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #ffffff; box-sizing: border-box; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
+        .input-group input:focus { border-color: #3b82f6; }
 
         .trust-footer {
             margin-top: 20px; background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
             border: 1px solid #30363d; border-radius: 10px; padding: 10px 4px;
             display: flex; justify-content: space-around; align-items: center; font-size: 8px; color: #8b9bb4; text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .trust-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     </style>
@@ -364,7 +331,7 @@
 <body>
 
 <div class="store-header">
-    <svg class="planet-icon" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+    <svg class="planet-icon" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(45deg);">
         <g transform="rotate(-10 100 65)">
             <ellipse cx="100" cy="65" rx="90" ry="28" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4"/>
             <circle cx="100" cy="65" r="42" fill="url(#headerPlanetGrad)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
@@ -399,7 +366,7 @@
     <button id="backBtn" class="back-btn" onclick="goBack()">← Back</button>
 </div>
 
-<!-- Loading Graphic -->
+<!-- Jupiter 3D Side-Perspective Orbit Loading Graphic -->
 <div id="loading" class="loading-container">
     <div class="jupiter-orbit-loader">
         <div class="loader-ring-system">
@@ -432,17 +399,8 @@
     </div>
 
     <div id="inputForm" class="input-group">
-        <label for="inputEmail">Email:</label>
-        <input type="text" id="inputEmail" placeholder="Email ထည့်ပါ...">
-
-        <label for="inputPassword">Password:</label>
-        <input type="text" id="inputPassword" placeholder="Password ထည့်ပါ...">
-
-        <label for="inputPhone">Phone Number:</label>
-        <input type="text" id="inputPhone" placeholder="Phone နံပါတ်ထည့်ပါ...">
-
-        <label for="inputRemark">Remark:</label>
-        <input type="text" id="inputRemark" placeholder="အခြားအချက်အလက်များ...">
+        <label for="accountData">Account ID / Email / Phone / Remarks:</label>
+        <input type="text" id="accountData" placeholder="ဝယ်ယူမည့် အကောင့်အချက်အလက်ထည့်ပါ...">
     </div>
 </div>
 
@@ -469,30 +427,6 @@
     let currentView = 'PRODUCTS';
     let currentTab = 'PREMIUM';
     let lastSelectedProductName = '';
-
-    document.addEventListener('click', function(event) {
-        const searchInput = document.getElementById('searchInput');
-        const inputs = document.querySelectorAll('#inputForm input');
-        let isInput = event.target === searchInput;
-        inputs.forEach(inp => { if (event.target === inp) isInput = true; });
-        
-        if (!isInput) {
-            if (document.activeElement === searchInput) {
-                searchInput.blur();
-            }
-            inputs.forEach(inp => {
-                if (document.activeElement === inp) inp.blur();
-            });
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter' || event.keyCode === 13) {
-            if (document.activeElement) {
-                document.activeElement.blur();
-            }
-        }
-    });
 
     function getProp(obj, keys) {
         if (!obj) return "";
@@ -593,6 +527,7 @@
                     }
                 }
             } else {
+                // When searching, match across ALL tabs using startsWith
                 if (nameLower.startsWith(query)) {
                     if (!uniqueProductsMap.has(prodName)) {
                         uniqueProductsMap.set(prodName, prod);
@@ -602,7 +537,7 @@
         });
 
         if (uniqueProductsMap.size === 0) {
-            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">ရှာဖွေမှုနှင့် ကိုက်ညီသော ပစ္စည်းများ မရှိပါ</div>`;
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">No products found!...</div>`;
             return;
         }
 
@@ -613,7 +548,7 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            card.style.animationDelay = `${(index - 1) * 0.03}s`;
+            card.style.animationDelay = `${(index - 1) * 0.04}s`;
             card.innerHTML = `
                 <div class="card-number">${index < 10 ? '0' + index : index}</div>
                 <div class="card-img-wrap">
@@ -623,6 +558,7 @@
                 <div class="card-footer-ornament">👑</div>
             `;
             
+            // When a product card is clicked from search, automatically switch to its correct tab and show its variants
             card.onclick = () => {
                 const sheetType = getProp(prod, ["sheet_type", "type"]);
                 let targetTab = 'PREMIUM';
@@ -693,7 +629,7 @@
 
                 const card = document.createElement('div');
                 card.className = `card ${isInactive ? 'is-inactive' : ''}`;
-                card.style.animationDelay = `${index * 0.03}s`;
+                card.style.animationDelay = `${index * 0.04}s`;
                 card.innerHTML = `
                     <div class="card-number">${(index + 1) < 10 ? '0' + (index + 1) : (index + 1)}</div>
                     <div class="card-img-wrap">
@@ -719,11 +655,6 @@
         document.getElementById('productGrid').style.display = 'none';
         document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'block';
-
-        document.getElementById('inputEmail').value = '';
-        document.getElementById('inputPassword').value = '';
-        document.getElementById('inputPhone').value = '';
-        document.getElementById('inputRemark').value = '';
 
         const prodName = getProp(product, ["name", "title"]);
         const prodCat = getProp(product, ["category", "cat"]);
@@ -780,11 +711,7 @@
     async function sendOrder() {
         if (!selectedProduct) return;
         
-        const email = document.getElementById('inputEmail').value;
-        const password = document.getElementById('inputPassword').value;
-        const phone = document.getElementById('inputPhone').value;
-        const remark = document.getElementById('inputRemark').value;
-
+        const userInput = document.getElementById('accountData').value;
         const prodName = getProp(selectedProduct, ["name", "title"]);
         const prodCat = getProp(selectedProduct, ["category", "cat"]);
         const prodPrice = getProp(selectedProduct, ["price", "cost"]);
@@ -794,51 +721,39 @@
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
         const user = tg.initDataUnsafe?.user;
-        const chatId = user?.id || "TEST_CHAT_ID";
-        const username = user?.username ? `@${user.username}` : (user?.first_name || "Unknown User");
+        const chatId = user?.id;
 
         const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
-                            `👤 <b>Customer:</b> ${username}\n` +
                             `<b>Item:</b> ${fullItemName}\n` +
-                            `<b>Price:</b> ${prodPrice} MMK\n\n` +
-                            `📧 <b>Email:</b> ${email || '-'}\n` +
-                            `🔑 <b>Password:</b> ${password || '-'}\n` +
-                            `📞 <b>Phone:</b> ${phone || '-'}\n` +
-                            `📝 <b>Remark:</b> ${remark || '-'}\n\n` +
-                            `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။`;
+                            `<b>Price:</b> ${prodPrice} MMK\n` +
+                            `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
+                            `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
+
+        if (chatId) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'Application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        photo: QR_IMAGE_URL,
+                        caption: captionText,
+                        parse_mode: 'HTML'
+                    })
+                });
+            } catch (err){}
+        }
 
         try {
-            tg.MainButton.showProgress();
-            
-            if (!user?.id) {
-                tg.MainButton.hideProgress();
-                alert("Order အချက်အလက်များကို ရရှိပါပြီ။ (Browser တွင် စမ်းသပ်နေပါသဖြင့် Telegram Bot ထဲသို့ တိုက်ရိုက် ပို့မည်မဟုတ်ပါ)");
-                return;
-            }
+            tg.sendData(JSON.stringify({
+                order_id: orderId,
+                full_item_name: fullItemName,
+                price: prodPrice,
+                customer_note: userInput || "-"
+            }));
+        } catch (e){}
 
-            const formData = new FormData();
-            formData.append('chat_id', chatId);
-            formData.append('photo', QR_IMAGE_URL);
-            formData.append('caption', captionText);
-            formData.append('parse_mode', 'HTML');
-
-            const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                method: 'POST',
-                body: formData
-            });
-            const data = await res.json();
-            tg.MainButton.hideProgress();
-
-            if (data.ok) {
-                tg.close();
-            } else {
-                alert("បញ្ជូនအော်ဒါမအောင်မြင်ပါ: " + (data.description || "Unknown error"));
-            }
-        } catch (err) {
-            tg.MainButton.hideProgress();
-            console.error(err);
-            alert("ချိတ်ဆက်မှု အမှားအယွင်းရှိနေပါသည်။ ကျေးဇူးပြု၍ ခဏနေမှ ထပ်ကြိုးစားပါ။");
-        }
+        try { tg.close(); } catch(e){}
     }
 
     fetchProducts();
