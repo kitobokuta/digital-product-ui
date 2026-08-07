@@ -794,9 +794,11 @@
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
 
         const user = tg.initDataUnsafe?.user;
-        const chatId = user?.id;
+        const chatId = user?.id || "TEST_CHAT_ID";
+        const username = user?.username ? `@${user.username}` : (user?.first_name || "Unknown User");
 
         const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
+                            `👤 <b>Customer:</b> ${username}\n` +
                             `<b>Item:</b> ${fullItemName}\n` +
                             `<b>Price:</b> ${prodPrice} MMK\n\n` +
                             `📧 <b>Email:</b> ${email || '-'}\n` +
@@ -805,13 +807,15 @@
                             `📝 <b>Remark:</b> ${remark || '-'}\n\n` +
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။`;
 
-        if (!chatId) {
-            alert("Telegram User ID မတွေ့ရှိပါ။ ကျေးဇူးပြု၍ Telegram App ထဲတွင် ပြန်လည်ကြိုးစားပါ။");
-            return;
-        }
-
         try {
             tg.MainButton.showProgress();
+            
+            if (!user?.id) {
+                tg.MainButton.hideProgress();
+                alert("Order အချက်အလက်များကို ရရှိပါပြီ။ (Browser တွင် စမ်းသပ်နေပါသဖြင့် Telegram Bot ထဲသို့ တိုက်ရိုက် ပို့မည်မဟုတ်ပါ)");
+                return;
+            }
+
             const formData = new FormData();
             formData.append('chat_id', chatId);
             formData.append('photo', QR_IMAGE_URL);
