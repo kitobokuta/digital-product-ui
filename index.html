@@ -439,9 +439,8 @@
         if (tg.expand) tg.expand(); 
     } catch(e){}
 
-    const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
-    const API_URL = "https://script.google.com/macros/s/AKfycbzsjpgTAxX3ii_Pw2mRt6kmAEaOp1oa9Im5GJ2VBPhqnPMmwGJjiYU4Y1CjIBNWgRgV/exec";
-    const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
+    // 🔴 Google Apps Script Deploy လုပ်ပြီးရရှိလာသော URL ကို အောက်ပါနေရာတွင် ထည့်ပေးပါ
+    const API_URL = "https://script.google.com/macros/s/AKfycbx_IZfb2VBcqqZl5VDdPUE_MlXbKunJpbeiWBNgzZOUiX-fhFMIz0Tzra_nKakdr7J2/exec";
 
     let rawData = [];
     let selectedProduct = null;
@@ -718,6 +717,7 @@
         }
     }
 
+    // Google Apps Script ထံ POST Payload ပို့၍ Order တင်သည့် Function
     async function sendOrderDirect() {
         if (!selectedProduct) return;
 
@@ -742,34 +742,26 @@
         btn.innerText = "Order တင်နေပါသည်...";
         btn.disabled = true;
 
-        const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
-                            `<b>Item:</b> ${fullItemName}\n` +
-                            `<b>Price:</b> ${prodPrice} MMK\n` +
-                            `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
-                            `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
+        const payload = {
+            action: "createOrder",
+            chat_id: chatId,
+            order_id: orderId,
+            item_name: fullItemName,
+            price: prodPrice,
+            user_input: userInput || '-'
+        };
 
         try {
-            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+            await fetch(API_URL, {
                 method: 'POST',
+                mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    photo: QR_IMAGE_URL,
-                    caption: captionText,
-                    parse_mode: 'HTML'
-                })
+                body: JSON.stringify(payload)
             });
 
-            const result = await response.json();
+            alert("Order တင်ပြီးပါပြီ! Bot မက်ဆေ့ခ်ျတွင် QR Code နှင့် အသေးစိတ်ကို စစ်ဆေးပေးပါခဗျာ။");
+            if (tg.close) tg.close();
 
-            if (result.ok) {
-                alert("Order အောင်မြင်စွာ တင်ပြီးပါပြီ ခဗျာ။");
-                if (tg.close) tg.close();
-            } else {
-                alert("Order တင်ရာတွင် အမှားအယွင်းရှိနေပါသည်။");
-                btn.innerText = `ORDER NOW (${prodPrice} MMK)`;
-                btn.disabled = false;
-            }
         } catch (err) {
             alert("ကွန်ရက် အမှားအယွင်း ရှိနေပါသည်။");
             btn.innerText = `ORDER NOW (${prodPrice} MMK)`;
