@@ -19,343 +19,219 @@
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(white, rgba(255,255,255,0.2) 2px, transparent 40px),
-                radial-gradient(white, rgba(255,255,255,0.15) 1px, transparent 30px),
-                radial-gradient(rgba(255,255,255,0.1) 2px, transparent 40px);
-            background-size: 550px 550px, 350px 350px, 250px 250px;
-            background-position: 0 0, 40px 60px, 130px 270px;
+                radial-gradient(white, rgba(255,255,255,0.15) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,0.1) 1px, transparent 30px);
+            background-size: 550px 550px, 350px 350px;
             color: var(--text-color);
             margin: 0;
             padding: 12px;
             min-height: 100vh;
             -webkit-overflow-scrolling: touch;
             overflow-x: hidden;
-            animation: fadeIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translate3d(0, 8px, 0); }
-            to { opacity: 1; transform: translate3d(0, 0, 0); }
-        }
-
-        .store-header { text-align: center; margin-bottom: 16px; position: relative; }
-        .planet-icon { width: 75px; height: auto; margin-bottom: -10px; filter: drop-shadow(0 0 15px rgba(139, 155, 180, 0.5)); transform: rotate(30deg); }
+        .store-header { text-align: center; margin-bottom: 12px; position: relative; }
+        .planet-icon { width: 65px; height: auto; margin-bottom: -8px; filter: drop-shadow(0 0 12px rgba(139, 155, 180, 0.4)); transform: rotate(30deg); }
         h1.store-title {
             font-family: "Cinzel", "Times New Roman", serif;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 900;
             letter-spacing: 2px;
             margin: 0;
             background: linear-gradient(180deg, #ffffff 20%, #b0bec5 60%, #546e7a 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
-        .store-subtitle { font-size: 9px; letter-spacing: 2px; color: #b0bec5; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
+        .store-subtitle { font-size: 8px; letter-spacing: 2px; color: #b0bec5; text-transform: uppercase; margin-top: 2px; font-weight: 600; }
 
-        /* --- Search Bar Styling --- */
-        .search-container {
-            margin-bottom: 14px;
-            position: relative;
-        }
+        /* --- Search Bar --- */
+        .search-container { margin-bottom: 12px; position: relative; }
         .search-input {
             width: 100%;
-            padding: 11px 14px 11px 38px;
+            padding: 10px 14px 10px 36px;
             border-radius: 12px;
             border: 1px solid #1e293b;
             background: #0b1120;
             color: #ffffff;
             font-size: 13px;
             outline: none;
-            transition: border-color 0.25s ease, box-shadow 0.25s ease;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+            transition: border-color 0.15s ease;
             user-select: text;
             -webkit-user-select: text;
         }
-        .search-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25), inset 0 2px 4px rgba(0,0,0,0.6);
-        }
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: var(--hint-color);
-            pointer-events: none;
-        }
+        .search-input:focus { border-color: #3b82f6; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; color: var(--hint-color); pointer-events: none; }
 
-        /* --- Ultra-Smooth Tab Switcher --- */
+        /* --- Fast Touch Switcher Tabs --- */
         .tab-container {
             display: flex;
             width: 100%;
             background: #0b1120;
-            border-radius: 14px;
-            padding: 4px;
+            border-radius: 12px;
+            padding: 3px;
             border: 1px solid #1e293b;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             gap: 4px;
-            position: relative;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
         }
         .tab-btn {
             flex: 1;
-            padding: 11px 4px;
+            padding: 9px 2px;
             background: transparent;
             border: none;
             color: var(--hint-color);
             font-size: 11px;
             font-weight: 700;
-            border-radius: 10px;
+            border-radius: 9px;
             cursor: pointer;
-            transition: color 0.25s ease, background 0.25s ease, transform 0.15s cubic-bezier(0.2, 0, 0, 1);
+            transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
             text-align: center;
-            white-space: nowrap;
-            z-index: 2;
+            will-change: transform;
         }
-        .tab-btn:active {
-            transform: scale(0.95);
-        }
+        .tab-btn:active { transform: scale(0.95); }
         .tab-btn.active {
             background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(147, 197, 253, 0.4);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
         }
 
-        /* --- Dynamic Back Button --- */
-        .back-btn-wrapper {
-            position: sticky;
-            top: 8px;
-            z-index: 100;
-            margin-bottom: 16px;
-        }
+        .back-btn-wrapper { position: sticky; top: 8px; z-index: 100; margin-bottom: 12px; }
         .back-btn {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: #ffffff;
             font-size: 12px;
             cursor: pointer;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 7px 14px;
+            border-radius: 18px;
             font-weight: 600;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            transition: transform 0.15s ease, background 0.2s ease;
+            transition: transform 0.08s ease;
+            will-change: transform;
         }
-        .back-btn:active {
-            transform: scale(0.94);
-            background: rgba(30, 41, 59, 0.95);
-        }
+        .back-btn:active { transform: scale(0.93); }
 
-        /* --- Jupiter Loading Graphic --- */
+        /* --- Ultra Fast Skeleton / Pulse Loader --- */
         .loading-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 50px 0;
-            gap: 20px;
+            padding: 40px 0;
+            gap: 12px;
         }
-        .jupiter-orbit-loader {
-            position: relative;
-            width: 90px;
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 300px;
-        }
-        .loader-planet {
-            width: 36px;
-            height: 36px;
+        .fast-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-top-color: #3b82f6;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #e2e8f0 0%, #64748b 50%, #0f172a 100%);
-            box-shadow: 0 0 15px rgba(100, 116, 139, 0.6), inset -4px -4px 8px rgba(0,0,0,0.8);
-            z-index: 2;
+            animation: spinFast 0.5s linear infinite;
         }
-        .loader-ring-system {
-            position: absolute;
-            width: 86px;
-            height: 86px;
-            transform: rotateX(70deg);
-            transform-style: preserve-3d;
-            animation: spin3D 2.2s linear infinite;
-            z-index: 3;
-        }
-        .loader-ring-back {
-            position: absolute;
-            inset: 0;
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-        }
-        .loader-moon {
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            width: 10px;
-            height: 10px;
-            background: #ffffff;
-            border-radius: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 10px #ffffff, 0 0 4px #3b82f6;
-        }
-        @keyframes spin3D {
-            0% { transform: rotateX(68deg) rotateZ(0deg); }
-            100% { transform: rotateX(68deg) rotateZ(360deg); }
-        }
-        .loading-text {
-            font-size: 11px;
-            color: var(--hint-color);
-            letter-spacing: 2px;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
-        }
+        @keyframes spinFast { to { transform: rotate(360deg); } }
 
-        /* --- Grid & Cards with Hardware-Accelerated Smooth Motion --- */
+        /* --- 120Hz Ultra Smooth Grid & Touch Reactive Cards --- */
         .grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
             gap: 10px; 
-            margin-bottom: 24px; 
+            margin-bottom: 20px; 
         }
 
         .card {
             position: relative;
             background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
             border-radius: 12px;
-            padding: 14px 8px;
+            padding: 12px 8px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
             border: 1px solid #30363d;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
             will-change: transform, opacity;
-            transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.1s cubic-bezier(0, 0, 0.2, 1), border-color 0.15s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            animation: cardAppear 0.25s cubic-bezier(0.2, 0, 0, 1) backwards;
+            transform: translate3d(0, 0, 0);
         }
 
-        @keyframes cardAppear {
-            from { opacity: 0; transform: translate3d(0, 12px, 0) scale(0.96); }
-            to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
-        }
-
+        /* Fluid Pointer Feedback */
         .card:active { 
-            transform: scale(0.94); 
-            border-color: #58a6ff; 
+            transform: scale3d(0.94, 0.94, 1); 
+            border-color: #3b82f6; 
         }
 
-        .card.is-inactive {
-            opacity: 0.6;
-            filter: grayscale(0.6);
-        }
+        .card.is-inactive { opacity: 0.55; }
         .unavailable-badge {
-            background: #ff4757;
-            color: #ffffff;
-            font-size: 8px;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-top: 4px;
-            letter-spacing: 0.5px;
+            background: #ff4757; color: #ffffff; font-size: 8px;
+            font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-top: 4px;
         }
 
-        .card-number { position: absolute; top: 6px; left: 8px; font-size: 10px; font-weight: 800; color: #8b9bb4; }
+        .card-number { position: absolute; top: 6px; left: 8px; font-size: 9px; font-weight: 800; color: #8b9bb4; }
         .card-img-wrap {
-            width: 54px; height: 54px; border-radius: 50%;
-            background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
-            border: 2px solid rgba(255,255,255,0.2);
+            width: 50px; height: 50px; border-radius: 50%;
+            background: #21262d; border: 2px solid rgba(255,255,255,0.15);
             display: flex; align-items: center; justify-content: center;
-            margin-top: 4px; margin-bottom: 8px; overflow: hidden;
-            transition: transform 0.2s ease;
+            margin-top: 2px; margin-bottom: 6px; overflow: hidden;
+            pointer-events: none;
         }
-        .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; pointer-events: none; }
-        .card h3 { margin: 0; font-size: 12px; font-weight: 700; color: #f0f6fc; word-break: break-word; line-height: 1.2; }
-        .duration { font-size: 10px; font-weight: 700; color: var(--accent-red); margin-top: 4px; }
-        .price { font-weight: 800; color: #58a6ff; margin-top: 4px; font-size: 11px; }
+        .card img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .card h3 { margin: 0; font-size: 12px; font-weight: 700; color: #f0f6fc; line-height: 1.2; }
+        .duration { font-size: 10px; font-weight: 700; color: var(--accent-red); margin-top: 3px; }
+        .price { font-weight: 800; color: #58a6ff; margin-top: 3px; font-size: 11px; }
 
-        .card-footer-ornament { margin-top: 6px; font-size: 9px; color: #8b9bb4; display: flex; align-items: center; gap: 4px; }
-        .card-footer-ornament::before, .card-footer-ornament::after { content: "—"; color: #30363d; }
+        .card-footer-ornament { margin-top: 4px; font-size: 8px; color: #8b9bb4; }
 
+        /* Detail View Animation */
         .detail-view { 
             display: none; 
-            background: linear-gradient(145deg, #161b22 0%, #0d1117 100%); 
-            padding: 20px 14px; border-radius: 14px; border: 1px solid #30363d; text-align: center;
-            animation: fadeIn 0.25s ease-out;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            background: #161b22; 
+            padding: 16px 12px; border-radius: 14px; border: 1px solid #30363d; text-align: center;
+            transform: translate3d(0, 0, 0);
         }
         .detail-img-wrap {
-            width: 70px; height: 70px; border-radius: 50%;
-            background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
-            border: 3px solid rgba(255,255,255,0.3); display: inline-flex;
-            align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;
+            width: 64px; height: 64px; border-radius: 50%;
+            background: #21262d; border: 2px solid rgba(255,255,255,0.2);
+            display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;
         }
-        .detail-img-wrap img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
-        .note-box { background-color: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; color: #ffecb3; padding: 10px; font-size: 11px; border-radius: 6px; margin: 14px 0; text-align: left; line-height: 1.4; user-select: text; -webkit-user-select: text; }
-        
-        .unavailable-msg {
-            background-color: rgba(255, 71, 87, 0.15);
-            border: 1px solid #ff4757;
-            color: #ff6b81;
-            padding: 10px;
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 8px;
-            margin-top: 14px;
-        }
+        .detail-img-wrap img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+        .note-box { background-color: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; color: #ffecb3; padding: 8px; font-size: 11px; border-radius: 6px; margin: 12px 0; text-align: left; user-select: text; -webkit-user-select: text; }
+        .unavailable-msg { background-color: rgba(255, 71, 87, 0.15); border: 1px solid #ff4757; color: #ff6b81; padding: 8px; font-size: 11px; font-weight: 700; border-radius: 8px; margin-top: 10px; }
 
-        .input-group { margin-top: 14px; text-align: left; }
+        .input-group { margin-top: 12px; text-align: left; }
         .input-group label { font-size: 10px; color: var(--hint-color); display: block; margin-bottom: 4px; }
-        .input-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #ffffff; font-size: 13px; outline: none; transition: border-color 0.2s ease; user-select: text; -webkit-user-select: text; }
-        .input-group input:focus { border-color: #3b82f6; }
+        .input-group input { width: 100%; padding: 9px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #ffffff; font-size: 12px; outline: none; user-select: text; -webkit-user-select: text; }
 
         .trust-footer {
-            margin-top: 20px; background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
-            border: 1px solid #30363d; border-radius: 10px; padding: 10px 4px;
-            display: flex; justify-content: space-around; align-items: center; font-size: 8px; color: #8b9bb4; text-align: center;
+            margin-top: 16px; background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 8px 4px;
+            display: flex; justify-content: space-around; font-size: 8px; color: #8b9bb4;
         }
-        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     </style>
 </head>
 <body>
 
 <div class="store-header">
-    <svg class="planet-icon" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(45deg);">
+    <svg class="planet-icon" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
         <g transform="rotate(-10 100 65)">
             <ellipse cx="100" cy="65" rx="90" ry="28" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4"/>
-            <circle cx="100" cy="65" r="42" fill="url(#headerPlanetGrad)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
-            <path d="M 10 65 A 90 28 0 0 0 190 65" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="100" cy="65" r="42" fill="#64748b"/>
         </g>
-        <defs>
-            <radialGradient id="headerPlanetGrad" cx="30%" cy="30%" r="70%">
-                <stop offset="0%" stop-color="#e2e8f0"/>
-                <stop offset="50%" stop-color="#64748b"/>
-                <stop offset="100%" stop-color="#0f172a"/>
-            </radialGradient>
-        </defs>
     </svg>
     <h1 class="store-title">JUPITER STORE</h1>
     <div class="store-subtitle">✦ PREMIUM DIGITAL PRODUCTS ✦</div>
 </div>
 
-<!-- Search Bar -->
 <div class="search-container" id="searchContainer">
     <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" class="search-input" placeholder="search now..." oninput="handleSearch()">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search..." oninput="handleSearch()">
 </div>
 
 <div id="tabContainer" class="tab-container">
@@ -364,22 +240,14 @@
     <button class="tab-btn" id="tabGame" onclick="switchTab('GAME')">Game Item</button>
 </div>
 
-<!-- Fixed Back Button Container -->
 <div class="back-btn-wrapper">
     <button id="backBtn" class="back-btn" onclick="goBack()">← Back</button>
 </div>
 
-<!-- Jupiter 3D Orbit Loading Graphic -->
+<!-- Lightning Fast Loader -->
 <div id="loading" class="loading-container">
-    <div class="jupiter-orbit-loader">
-        <div class="loader-ring-system">
-            <div class="loader-ring-back">
-                <div class="loader-moon"></div>
-            </div>
-        </div>
-        <div class="loader-planet"></div>
-    </div>
-    <div class="loading-text">Loading Universe...</div>
+    <div class="fast-spinner"></div>
+    <div style="font-size: 10px; color: var(--hint-color); font-weight: 700;">CONNECTING...</div>
 </div>
 
 <div id="productGrid" class="grid"></div>
@@ -387,43 +255,32 @@
 
 <div id="detailView" class="detail-view">
     <div>
-        <div class="detail-img-wrap">
-            <img id="detailLogo" src="" alt="Logo">
-        </div>
-        <h3 id="productTitle" style="margin: 4px 0; font-size: 15px; color:#f0f6fc;"></h3>
-        <div id="productDuration" class="duration" style="font-size: 11px; margin-top: 4px;"></div>
-        <div id="productPrice" class="price" style="font-size: 16px; margin-top: 6px;"></div>
+        <div class="detail-img-wrap"><img id="detailLogo" src="" alt="Logo"></div>
+        <h3 id="productTitle" style="margin: 2px 0; font-size: 14px; color:#f0f6fc;"></h3>
+        <div id="productDuration" class="duration"></div>
+        <div id="productPrice" class="price" style="font-size: 15px;"></div>
     </div>
-
     <div id="noteBox" class="note-box" style="display:none;"></div>
-    
-    <div id="unavailMsg" class="unavailable-msg" style="display:none;">
-        ⚠️ လက်ရှိ ပစ္စည်းပြတ်လပ်နေပါသည်။ (Unavailable)
-    </div>
-
+    <div id="unavailMsg" class="unavailable-msg" style="display:none;">⚠️ လက်ရှိ ပစ္စည်းပြတ်လပ်နေပါသည်။</div>
     <div id="inputForm" class="input-group">
         <label for="accountData">Account ID / Email / Phone / Remarks:</label>
-        <input type="text" id="accountData" placeholder="ဝယ်ယူမည့် အကောင့်အချက်အလက်ထည့်ပါ...">
+        <input type="text" id="accountData" placeholder="အကောင့်အချက်အလက်ထည့်ပါ...">
     </div>
 </div>
 
 <div class="trust-footer">
-    <div class="trust-item"><span>🛡️</span> SAFE & SECURE</div>
-    <div class="trust-item"><span>⚡</span> INSTANT DELIVERY</div>
-    <div class="trust-item"><span>🎖️</span> PREMIUM</div>
-    <div class="trust-item"><span>🎧</span> 24/7 SUPPORT</div>
+    <div>🛡️ SECURE</div>
+    <div>⚡ INSTANT</div>
+    <div>🎖️ PREMIUM</div>
+    <div>🎧 24/7 SUPPORT</div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     try { 
-        tg.ready();
-        tg.expand(); 
-        
-        // Native Telegram BackButton support
-        if (tg.BackButton) {
-            tg.BackButton.onClick(() => goBack());
-        }
+        tg.ready(); 
+        tg.expand();
+        if (tg.BackButton) tg.BackButton.onClick(() => goBack());
     } catch(e){}
 
     const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
@@ -438,11 +295,7 @@
     let searchTimeout = null;
 
     function triggerHaptic() {
-        try {
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
-            }
-        } catch(e){}
+        try { if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); } catch(e){}
     }
 
     function getProp(obj, keys) {
@@ -451,9 +304,7 @@
             for (let prop in obj) {
                 if (prop.toLowerCase() === k.toLowerCase()) {
                     let val = obj[prop];
-                    if (val !== undefined && val !== null && String(val).trim() !== "") {
-                        return String(val).trim();
-                    }
+                    if (val !== undefined && val !== null && String(val).trim() !== "") return String(val).trim();
                 }
             }
         }
@@ -466,22 +317,15 @@
         document.getElementById('tabPremium').classList.toggle('active', tabType === 'PREMIUM');
         document.getElementById('tabService').classList.toggle('active', tabType === 'SERVICE');
         document.getElementById('tabGame').classList.toggle('active', tabType === 'GAME');
-        
         document.getElementById('searchInput').value = '';
         showProducts();
     }
 
     function getSvgInitialsLogo(text) {
         const initial = (text || "J").trim().charAt(0).toUpperCase();
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-            <rect width="100" height="100" rx="50" fill="url(#metalGrad)"/>
-            <defs>
-                <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#374151"/>
-                    <stop offset="100%" stop-color="#111827"/>
-                </linearGradient>
-            </defs>
-            <text x="50%" y="54%" font-family="-apple-system, Roboto, sans-serif" font-weight="bold" font-size="44" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initial}</text>
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="50" fill="#1e293b"/>
+            <text x="50%" y="54%" font-family="sans-serif" font-weight="bold" font-size="44" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initial}</text>
         </svg>`;
         return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
     }
@@ -490,23 +334,30 @@
         if (!item) return getSvgInitialsLogo(categoryName);
         let logoVal = getProp(item, ["logo", "image", "img"]);
         if (logoVal !== "") {
-            if (logoVal.startsWith("http://") || logoVal.startsWith("https://") || logoVal.startsWith("data:")) return logoVal;
+            if (logoVal.startsWith("http") || logoVal.startsWith("data:")) return logoVal;
             if (!logoVal.startsWith("images/")) logoVal = "images/" + logoVal;
             return logoVal;
         }
         return getSvgInitialsLogo(getProp(item, ["name", "title"]) || categoryName);
     }
 
+    /* Fast Pre-fetch Optimization */
     async function fetchProducts() {
         try {
-            const timestampUrl = API_URL + (API_URL.includes("?") ? "&" : "?") + "_t=" + new Date().getTime();
-            const response = await fetch(timestampUrl, { redirect: "follow" });
+            const response = await fetch(API_URL, { cache: "force-cache" });
             rawData = await response.json();
             document.getElementById('loading').style.display = 'none';
             showProducts();
         } catch (error) {
-            console.error("Fetch error:", error);
-            document.getElementById('loading').innerHTML = `<div style="color: var(--hint-color); font-size: 12px; text-align: center;">Data ရယူ၍ မရနိုင်ပါ။</div>`;
+            // Fallback retry without cache if failed
+            try {
+                const retryRes = await fetch(API_URL);
+                rawData = await retryRes.json();
+                document.getElementById('loading').style.display = 'none';
+                showProducts();
+            } catch(err) {
+                document.getElementById('loading').innerHTML = `<div style="color:var(--hint-color);font-size:11px;">Error Loading Data</div>`;
+            }
         }
     }
 
@@ -550,22 +401,18 @@
                 if (currentTab === 'SERVICE' && sheetType === "Log in Service") isMatchedTab = true;
                 if (currentTab === 'GAME' && sheetType === "Game Items") isMatchedTab = true;
 
-                if (isMatchedTab) {
-                    if (!uniqueProductsMap.has(prodName)) {
-                        uniqueProductsMap.set(prodName, prod);
-                    }
+                if (isMatchedTab && !uniqueProductsMap.has(prodName)) {
+                    uniqueProductsMap.set(prodName, prod);
                 }
             } else {
-                if (nameLower.startsWith(query)) {
-                    if (!uniqueProductsMap.has(prodName)) {
-                        uniqueProductsMap.set(prodName, prod);
-                    }
+                if (nameLower.includes(query) && !uniqueProductsMap.has(prodName)) {
+                    uniqueProductsMap.set(prodName, prod);
                 }
             }
         });
 
         if (uniqueProductsMap.size === 0) {
-            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">No products found!...</div>`;
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 20px; font-size: 11px;">No products found!</div>`;
             return;
         }
 
@@ -576,7 +423,6 @@
 
             const card = document.createElement('div');
             card.className = 'card';
-            card.style.animationDelay = `${Math.min((index - 1) * 0.03, 0.3)}s`;
             card.innerHTML = `
                 <div class="card-number">${index < 10 ? '0' + index : index}</div>
                 <div class="card-img-wrap">
@@ -589,14 +435,13 @@
             card.onclick = () => {
                 triggerHaptic();
                 const sheetType = getProp(prod, ["sheet_type", "type"]);
-                let targetTab = 'PREMIUM';
-                if (sheetType === "Log in Service") targetTab = 'SERVICE';
-                else if (sheetType === "Game Items") targetTab = 'GAME';
+                if (sheetType === "Log in Service") currentTab = 'SERVICE';
+                else if (sheetType === "Game Items") currentTab = 'GAME';
+                else currentTab = 'PREMIUM';
 
-                currentTab = targetTab;
-                document.getElementById('tabPremium').classList.toggle('active', targetTab === 'PREMIUM');
-                document.getElementById('tabService').classList.toggle('active', targetTab === 'SERVICE');
-                document.getElementById('tabGame').classList.toggle('active', targetTab === 'GAME');
+                document.getElementById('tabPremium').classList.toggle('active', currentTab === 'PREMIUM');
+                document.getElementById('tabService').classList.toggle('active', currentTab === 'SERVICE');
+                document.getElementById('tabGame').classList.toggle('active', currentTab === 'GAME');
 
                 showVariants(prodName);
             };
@@ -610,12 +455,9 @@
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             const query = document.getElementById('searchInput').value;
-            if (currentView === 'PRODUCTS') {
-                showProducts(query);
-            } else if (currentView === 'VARIANTS') {
-                showVariants(lastSelectedProductName, query);
-            }
-        }, 150);
+            if (currentView === 'PRODUCTS') showProducts(query);
+            else if (currentView === 'VARIANTS') showVariants(lastSelectedProductName, query);
+        }, 80);
     }
 
     function showVariants(prodName, searchQuery = "") {
@@ -629,8 +471,7 @@
             const nameMatch = getProp(i, ["name", "title"]) === prodName;
             if (!nameMatch) return false;
             if (query === "") return true;
-            const itemCat = (getProp(i, ["category", "cat"]) || prodName).toLowerCase();
-            return itemCat.startsWith(query);
+            return (getProp(i, ["category", "cat"]) || prodName).toLowerCase().includes(query);
         });
 
         document.getElementById('searchContainer').style.display = 'block';
@@ -644,7 +485,7 @@
         container.innerHTML = '';
 
         if (matchedItems.length === 0) {
-            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">ဤအမျိုးအစားထဲတွင် ရှာဖွေမှုနှင့် ကိုက်ညီသော ပစ္စည်းများ မရှိပါ။</div>`;
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 20px; font-size: 11px;">No items found.</div>`;
             return;
         }
 
@@ -652,15 +493,13 @@
             const itemCat = getProp(item, ["category", "cat"]) || prodName;
             const itemPrice = getProp(item, ["price", "cost"]) || '0';
             const itemDuration = getProp(item, ["duration", "time"]) || '';
-            const itemStatus = (getProp(item, ["status", "stat"]) || 'Active').toLowerCase();
-            const isInactive = itemStatus === 'inactive';
+            const isInactive = (getProp(item, ["status", "stat"]) || 'Active').toLowerCase() === 'inactive';
 
             const logoSrc = resolveLogo(item, itemCat);
             const fallbackSrc = getSvgInitialsLogo(itemCat);
 
             const card = document.createElement('div');
             card.className = `card ${isInactive ? 'is-inactive' : ''}`;
-            card.style.animationDelay = `${Math.min(index * 0.03, 0.3)}s`;
             card.innerHTML = `
                 <div class="card-number">${(index + 1) < 10 ? '0' + (index + 1) : (index + 1)}</div>
                 <div class="card-img-wrap">
@@ -695,9 +534,7 @@
         const prodPrice = getProp(product, ["price", "cost"]);
         const prodDuration = getProp(product, ["duration", "time"]);
         const prodDesc = getProp(product, ["description", "desc"]);
-        
-        const prodStatus = (getProp(product, ["status", "stat"]) || 'Active').toLowerCase();
-        const isInactive = prodStatus === 'inactive';
+        const isInactive = (getProp(product, ["status", "stat"]) || 'Active').toLowerCase() === 'inactive';
 
         document.getElementById('detailLogo').src = resolveLogo(product, prodName);
         document.getElementById('productTitle').innerText = prodCat && prodCat !== prodName ? `${prodName} - ${prodCat}` : prodName;
@@ -706,7 +543,7 @@
 
         const noteBox = document.getElementById('noteBox');
         if (prodDesc) {
-            noteBox.innerHTML = `📌 <b>Condition / Note:</b><br>${prodDesc}`;
+            noteBox.innerHTML = `📌 <b>Condition:</b><br>${prodDesc}`;
             noteBox.style.display = 'block';
         } else {
             noteBox.style.display = 'none';
@@ -729,7 +566,7 @@
                 tg.MainButton.onClick(sendOrder);
             } catch(e){}
         }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0 });
     }
 
     function goBack() {
@@ -755,7 +592,6 @@
 
         const fullItemName = `${prodName} (${prodCat}${prodDuration ? ' - ' + prodDuration : ''})`;
         const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
-
         const user = tg.initDataUnsafe?.user;
         const chatId = user?.id;
 
@@ -789,12 +625,10 @@
                 user_id: chatId || null
             }));
             tg.close();
-        } catch (e) {
-            console.error("sendData error:", e);
-        }
+        } catch (e){}
     }
 
-    // App Initialize
+    // App Fast Init
     fetchProducts();
 </script>
 </body>
