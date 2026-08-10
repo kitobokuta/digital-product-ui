@@ -320,6 +320,26 @@
         .input-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #ffffff; box-sizing: border-box; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
         .input-group input:focus { border-color: #3b82f6; }
 
+        /* Custom Order Button in Detail View */
+        .order-btn {
+            width: 100%;
+            margin-top: 16px;
+            padding: 12px;
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+            color: #ffffff;
+            border: 1px solid rgba(147, 197, 253, 0.4);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.45);
+            transition: all 0.2s ease;
+        }
+        .order-btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
         .trust-footer {
             margin-top: 20px; background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
             border: 1px solid #30363d; border-radius: 10px; padding: 10px 4px;
@@ -401,6 +421,7 @@
     <div id="inputForm" class="input-group">
         <label for="accountData">Account ID / Email / Phone / Remarks:</label>
         <input type="text" id="accountData" placeholder="ဝယ်ယူမည့် အကောင့်အချက်အလက်ထည့်ပါ...">
+        <button id="customOrderBtn" class="order-btn" onclick="sendOrderDirect()">ORDER NOW</button>
     </div>
 </div>
 
@@ -500,7 +521,6 @@
         document.getElementById('productGrid').style.display = 'grid';
         document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'none';
-        try { if(tg.MainButton) tg.MainButton.hide(); } catch(e){}
 
         const container = document.getElementById('productGrid');
         container.innerHTML = '';
@@ -604,7 +624,6 @@
         document.getElementById('productGrid').style.display = 'none';
         document.getElementById('categoryGrid').style.display = 'grid';
         document.getElementById('detailView').style.display = 'none';
-        try { if(tg.MainButton) tg.MainButton.hide(); } catch(e){}
 
         const container = document.getElementById('categoryGrid');
         container.innerHTML = '';
@@ -676,22 +695,15 @@
 
         const unavailMsg = document.getElementById('unavailMsg');
         const inputForm = document.getElementById('inputForm');
+        const customOrderBtn = document.getElementById('customOrderBtn');
 
         if (isInactive) {
             unavailMsg.style.display = 'block';
             inputForm.style.display = 'none';
-            try { if(tg.MainButton) tg.MainButton.hide(); } catch(e){}
         } else {
             unavailMsg.style.display = 'none';
             inputForm.style.display = 'block';
-            try {
-                if(tg.MainButton) {
-                    tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
-                    tg.MainButton.show();
-                    tg.MainButton.offClick(sendOrder);
-                    tg.MainButton.onClick(sendOrder);
-                }
-            } catch(e){}
+            customOrderBtn.innerText = `ORDER NOW (${prodPrice} MMK)`;
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -706,9 +718,9 @@
         }
     }
 
-    async function sendOrder() {
+    async function sendOrderDirect() {
         if (!selectedProduct) return;
-        
+
         const userInput = document.getElementById('accountData').value;
         const prodName = getProp(selectedProduct, ["name", "title"]);
         const prodCat = getProp(selectedProduct, ["category", "cat"]);
@@ -721,37 +733,48 @@
         const user = tg.initDataUnsafe?.user;
         const chatId = user?.id;
 
+        if (!chatId) {
+            alert("Telegram User ID မတွေ့ရှိပါ။ ကျေးဇူးပြု၍ Telegram Bot တွင်းမှ အသုံးပြုပေးပါ။");
+            return;
+        }
+
+        const btn = document.getElementById('customOrderBtn');
+        btn.innerText = "Order တင်နေပါသည်...";
+        btn.disabled = true;
+
         const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
                             `<b>Item:</b> ${fullItemName}\n` +
                             `<b>Price:</b> ${prodPrice} MMK\n` +
                             `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
 
-        if (chatId) {
-            try {
-                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        photo: QR_IMAGE_URL,
-                        caption: captionText,
-                        parse_mode: 'HTML'
-                    })
-                });
-            } catch (err){}
-        }
-
         try {
-            if (tg.sendData) {
-                tg.sendData(JSON.stringify({
-                    order_id: orderId,
-                    item_name: fullItemName,
-                    price: prodPrice,
-                    account_data: userInput || '-'
-                }));
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    photo: QR_IMAGE_URL,
+                    caption: captionText,
+                    parse_mode: 'HTML'
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.ok) {
+                alert("Order အောင်မြင်စွာ တင်ပြီးပါပြီ ခဗျာ။");
+                if (tg.close) tg.close();
+            } else {
+                alert("Order တင်ရာတွင် အမှားအယွင်းရှိနေပါသည်။");
+                btn.innerText = `ORDER NOW (${prodPrice} MMK)`;
+                btn.disabled = false;
             }
-        } catch(e){}
+        } catch (err) {
+            alert("ကွန်ရက် အမှားအယွင်း ရှိနေပါသည်။");
+            btn.innerText = `ORDER NOW (${prodPrice} MMK)`;
+            btn.disabled = false;
+        }
     }
 
     // Initialize App
