@@ -84,7 +84,7 @@
             pointer-events: none;
         }
 
-        /* --- Ultra-Smooth Tab Switcher --- */
+        /* --- Tab Switcher --- */
         .tab-container {
             display: flex;
             width: 100%;
@@ -108,30 +108,19 @@
             font-weight: 700;
             border-radius: 10px;
             cursor: pointer;
-            transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
-                        background 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-                        box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                        transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: color 0.3s ease, background 0.35s ease, box-shadow 0.35s ease;
             text-align: center;
             white-space: nowrap;
             z-index: 2;
         }
-        .tab-btn:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.03);
-        }
-        .tab-btn:active {
-            transform: scale(0.96);
-        }
         .tab-btn.active {
             background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.45);
             border: 1px solid rgba(147, 197, 253, 0.4);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
         }
 
-        /* --- Fixed Back Button --- */
+        /* --- Back Button --- */
         .back-btn-wrapper {
             position: sticky;
             top: 8px;
@@ -148,17 +137,11 @@
             border-radius: 20px;
             font-weight: 600;
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             display: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            transition: all 0.2s ease;
-        }
-        .back-btn:active {
-            transform: scale(0.95);
-            background: rgba(30, 41, 59, 0.95);
         }
 
-        /* --- Jupiter 3D Side-Perspective Orbit Loading Graphic --- */
+        /* --- Loader --- */
         .loading-container {
             display: flex;
             flex-direction: column;
@@ -181,7 +164,7 @@
             height: 36px;
             border-radius: 50%;
             background: radial-gradient(circle at 30% 30%, #e2e8f0 0%, #64748b 50%, #0f172a 100%);
-            box-shadow: 0 0 15px rgba(100, 116, 139, 0.6), inset -4px -4px 8px rgba(0,0,0,0.8);
+            box-shadow: 0 0 15px rgba(100, 116, 139, 0.6);
             z-index: 2;
         }
         .loader-ring-system {
@@ -189,7 +172,6 @@
             width: 86px;
             height: 86px;
             transform: rotateX(70deg);
-            transform-style: preserve-3d;
             animation: spin3D 2.2s linear infinite;
             z-index: 3;
         }
@@ -220,10 +202,9 @@
             letter-spacing: 2px;
             font-weight: 700;
             text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
         }
 
-        /* --- Grid & Cards with Smooth Motion --- */
+        /* --- Grid & Cards --- */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
 
         .card {
@@ -235,7 +216,7 @@
             cursor: pointer;
             box-shadow: 0 6px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
             border: 1px solid #30363d;
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, border-color 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -247,16 +228,10 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .card:hover {
-            border-color: rgba(88, 166, 255, 0.5);
-            box-shadow: 0 8px 22px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.25);
-        }
-        .card:active { transform: scale(0.95); border-color: #58a6ff; }
+        .card:hover { border-color: rgba(88, 166, 255, 0.5); }
+        .card:active { transform: scale(0.95); }
 
-        .card.is-inactive {
-            opacity: 0.6;
-            filter: grayscale(0.6);
-        }
+        .card.is-inactive { opacity: 0.6; filter: grayscale(0.6); }
         .unavailable-badge {
             background: #ff4757;
             color: #ffffff;
@@ -265,7 +240,6 @@
             padding: 2px 6px;
             border-radius: 4px;
             margin-top: 4px;
-            letter-spacing: 0.5px;
         }
 
         .card-number { position: absolute; top: 6px; left: 8px; font-size: 10px; font-weight: 800; color: #8b9bb4; }
@@ -275,22 +249,16 @@
             border: 2px solid rgba(255,255,255,0.2);
             display: flex; align-items: center; justify-content: center;
             margin-top: 4px; margin-bottom: 8px; overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        .card:hover .card-img-wrap {
-            transform: scale(1.05);
-            border-color: rgba(255,255,255,0.4);
         }
         .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
         .card h3 { margin: 0; font-size: 12px; font-weight: 700; color: #f0f6fc; word-break: break-word; line-height: 1.2; }
         .duration { font-size: 10px; font-weight: 700; color: var(--accent-red); margin-top: 4px; }
         .price { font-weight: 800; color: #58a6ff; margin-top: 4px; font-size: 11px; }
 
-        .card-footer-ornament { margin-top: 6px; font-size: 9px; color: #8b9bb4; display: flex; align-items: center; gap: 4px; }
-        .card-footer-ornament::before, .card-footer-ornament::after { content: "—"; color: #30363d; }
+        .card-footer-ornament { margin-top: 6px; font-size: 9px; color: #8b9bb4; }
 
         .detail-view { 
-            display: none; background: linear-gradient(145deg, #161b22 0%, #0d1117.5 100%); 
+            display: none; background: linear-gradient(145deg, #161b22 0%, #0d1117 100%); 
             padding: 20px 14px; border-radius: 14px; border: 1px solid #30363d; text-align: center;
             animation: fadeIn 0.3s ease-out;
             box-shadow: 0 8px 24px rgba(0,0,0,0.6);
@@ -315,10 +283,40 @@
             margin-top: 14px;
         }
 
-        .input-group { margin-top: 14px; text-align: left; }
-        .input-group label { font-size: 10px; color: var(--hint-color); display: block; margin-bottom: 4px; }
-        .input-group input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #ffffff; box-sizing: border-box; font-size: 13px; outline: none; transition: border-color 0.2s ease; }
-        .input-group input:focus { border-color: #3b82f6; }
+        /* --- 4 Specific Input Box Styles --- */
+        .input-group-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 14px;
+            text-align: left;
+        }
+        .input-group { 
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label { 
+            font-size: 11px; 
+            color: var(--hint-color); 
+            margin-bottom: 4px; 
+            font-weight: 600;
+        }
+        .input-group input { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border-radius: 8px; 
+            border: 1px solid #30363d; 
+            background: #0d1117; 
+            color: #ffffff; 
+            box-sizing: border-box; 
+            font-size: 13px; 
+            outline: none; 
+            transition: border-color 0.2s ease, box-shadow 0.2s ease; 
+        }
+        .input-group input:focus { 
+            border-color: #3b82f6; 
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
+        }
 
         .trust-footer {
             margin-top: 20px; background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
@@ -366,7 +364,7 @@
     <button id="backBtn" class="back-btn" onclick="goBack()">← Back</button>
 </div>
 
-<!-- Jupiter 3D Side-Perspective Orbit Loading Graphic -->
+<!-- Loading Graphic -->
 <div id="loading" class="loading-container">
     <div class="jupiter-orbit-loader">
         <div class="loader-ring-system">
@@ -398,9 +396,24 @@
         ⚠️ လက်ရှိ ပစ္စည်းပြတ်လပ်နေပါသည်။ (Unavailable)
     </div>
 
-    <div id="inputForm" class="input-group">
-        <label for="accountData">Account ID / Email / Phone / Remarks:</label>
-        <input type="text" id="accountData" placeholder="ဝယ်ယူမည့် အကောင့်အချက်အလက်ထည့်ပါ...">
+    <!-- 4 Specific Input Fields Requested -->
+    <div id="inputForm" class="input-group-container">
+        <div class="input-group">
+            <label for="accountEmail">Email (if need):</label>
+            <input type="email" id="accountEmail" placeholder="Email အကောင့်ထည့်ပါ (လိုအပ်လျှင်)...">
+        </div>
+        <div class="input-group">
+            <label for="accountPsw">Password (if need):</label>
+            <input type="text" id="accountPsw" placeholder="Password ထည့်ပါ (လိုအပ်လျှင်)...">
+        </div>
+        <div class="input-group">
+            <label for="accountPhone">Phone Number:</label>
+            <input type="tel" id="accountPhone" placeholder="ဖုန်းနံပါတ်ထည့်ပါ...">
+        </div>
+        <div class="input-group">
+            <label for="accountRemarks">Remarks / Note:</label>
+            <input type="text" id="accountRemarks" placeholder="အခြားမှတ်ချက် (ရှိလျှင်)...">
+        </div>
     </div>
 </div>
 
@@ -527,7 +540,6 @@
                     }
                 }
             } else {
-                // When searching, match across ALL tabs using startsWith
                 if (nameLower.startsWith(query)) {
                     if (!uniqueProductsMap.has(prodName)) {
                         uniqueProductsMap.set(prodName, prod);
@@ -558,7 +570,6 @@
                 <div class="card-footer-ornament">👑</div>
             `;
             
-            // When a product card is clicked from search, automatically switch to its correct tab and show its variants
             card.onclick = () => {
                 const sheetType = getProp(prod, ["sheet_type", "type"]);
                 let targetTab = 'PREMIUM';
@@ -656,6 +667,12 @@
         document.getElementById('categoryGrid').style.display = 'none';
         document.getElementById('detailView').style.display = 'block';
 
+        // Input Fields Reset
+        document.getElementById('accountEmail').value = '';
+        document.getElementById('accountPsw').value = '';
+        document.getElementById('accountPhone').value = '';
+        document.getElementById('accountRemarks').value = '';
+
         const prodName = getProp(product, ["name", "title"]);
         const prodCat = getProp(product, ["category", "cat"]);
         const prodPrice = getProp(product, ["price", "cost"]);
@@ -687,7 +704,7 @@
             try { tg.MainButton.hide(); } catch(e){}
         } else {
             unavailMsg.style.display = 'none';
-            inputForm.style.display = 'block';
+            inputForm.style.display = 'flex';
             try {
                 tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
                 tg.MainButton.show();
@@ -711,7 +728,22 @@
     async function sendOrder() {
         if (!selectedProduct) return;
         
-        const userInput = document.getElementById('accountData').value;
+        const accEmail = document.getElementById('accountEmail').value.trim();
+        const accPsw = document.getElementById('accountPsw').value.trim();
+        const accPhone = document.getElementById('accountPhone').value.trim();
+        const accRemarks = document.getElementById('accountRemarks').value.trim();
+
+        let detailsArr = [];
+        if (accEmail) detailsArr.push(`Email: ${accEmail}`);
+        if (accPsw) detailsArr.push(`Password: ${accPsw}`);
+        if (accPhone) detailsArr.push(`Phone: ${accPhone}`);
+        if (accRemarks) detailsArr.push(`Remarks: ${accRemarks}`);
+
+        const accountSummaryText = detailsArr.length > 0 ? detailsArr.join(' | ') : '-';
+        const formattedAccountDetails = detailsArr.length > 0 
+            ? '\n' + detailsArr.map(item => `  • ${item}`).join('\n') 
+            : ' -';
+
         const prodName = getProp(selectedProduct, ["name", "title"]);
         const prodCat = getProp(selectedProduct, ["category", "cat"]);
         const prodPrice = getProp(selectedProduct, ["price", "cost"]);
@@ -726,14 +758,14 @@
         const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
                             `<b>Item:</b> ${fullItemName}\n` +
                             `<b>Price:</b> ${prodPrice} MMK\n` +
-                            `<b>Account/Note:</b> ${userInput || '-'}\n\n` +
+                            `<b>Account Details:</b>${formattedAccountDetails}\n\n` +
                             `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
 
         if (chatId) {
             try {
                 await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'Application/json' },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         chat_id: chatId,
                         photo: QR_IMAGE_URL,
@@ -741,21 +773,30 @@
                         parse_mode: 'HTML'
                     })
                 });
-            } catch (err){}
+            } catch (err) {
+                console.error("Bot payload error:", err);
+            }
+        }
+
+        const payload = {
+            order_id: orderId,
+            full_item_name: fullItemName,
+            price: prodPrice,
+            account_data: accountSummaryText
+        };
+
+        try {
+            tg.sendData(JSON.stringify(payload));
+        } catch (e) {
+            alert(`Order Placed!\nOrder ID: ${orderId}\nItem: ${fullItemName}`);
         }
 
         try {
-            tg.sendData(JSON.stringify({
-                order_id: orderId,
-                full_item_name: fullItemName,
-                price: prodPrice,
-                customer_note: userInput || "-"
-            }));
-        } catch (e){}
-
-        try { tg.close(); } catch(e){}
+            tg.close();
+        } catch(e){}
     }
 
+    // Initialize fetching data
     fetchProducts();
 </script>
 </body>
