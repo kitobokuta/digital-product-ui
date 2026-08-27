@@ -2,471 +2,616 @@
 <html lang="my">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JUPITER UNIVERSE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Jupiter Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --hint-color: #94a3b8;
-            --accent-color: #3b82f6;
-            --accent-hover: #2563eb;
-            --border-color: #334155;
-            --danger-color: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            --bg-color: #07090e;
+            --text-color: #ffffff;
+            --hint-color: #8b9bb4;
+            --accent-red: #ff4757;
+            --button-color: #2481cc;
         }
 
         body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,0.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,0.15) 1px, transparent 30px),
+                radial-gradient(rgba(255,255,255,0.1) 2px, transparent 40px);
+            background-size: 550px 550px, 350px 350px, 250px 250px;
+            background-position: 0 0, 40px 60px, 130px 270px;
             color: var(--text-color);
+            margin: 0;
             padding: 12px;
-            padding-bottom: 30px;
+            box-sizing: border-box;
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+            animation: fadeIn 0.4s ease-out;
         }
 
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .back-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: none;
-            font-size: 13px;
+        .store-header { text-align: center; margin-bottom: 16px; position: relative; }
+        .planet-icon { width: 75px; height: auto; margin-bottom: -10px; filter: drop-shadow(0 0 15px rgba(139, 155, 180, 0.5)); transform: rotate(30deg); }
+        h1.store-title {
+            font-family: "Cinzel", "Times New Roman", serif;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin: 0;
+            background: linear-gradient(180deg, #ffffff 20%, #b0bec5 60%, #546e7a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.8);
         }
+        .store-subtitle { font-size: 9px; letter-spacing: 2px; color: #b0bec5; text-transform: uppercase; margin-top: 4px; font-weight: 600; }
 
-        .search-box {
-            margin-bottom: 12px;
+        /* --- Search Bar Styling --- */
+        .search-container {
+            margin-bottom: 14px;
+            position: relative;
         }
-
-        .search-box input {
+        .search-input {
             width: 100%;
-            padding: 10px 14px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--text-color);
-            font-size: 14px;
+            padding: 11px 14px 11px 38px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+            background: #0b1120;
+            color: #ffffff;
+            font-size: 13px;
+            box-sizing: border-box;
             outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.25), inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: var(--hint-color);
+            pointer-events: none;
         }
 
-        .search-box input:focus {
-            border-color: var(--accent-color);
-        }
-
-        .tabs {
+        /* --- Tab Switcher --- */
+        .tab-container {
             display: flex;
-            gap: 8px;
+            width: 100%;
+            background: #0b1120;
+            border-radius: 14px;
+            padding: 4px;
+            border: 1px solid #1e293b;
             margin-bottom: 16px;
+            gap: 4px;
+            box-sizing: border-box;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
         }
-
         .tab-btn {
             flex: 1;
-            padding: 8px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            padding: 11px 4px;
+            background: transparent;
+            border: none;
             color: var(--hint-color);
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 10px;
             cursor: pointer;
+            transition: color 0.3s ease, background 0.35s ease, box-shadow 0.35s ease;
             text-align: center;
+            white-space: nowrap;
+            z-index: 2;
         }
-
         .tab-btn.active {
-            background: var(--accent-color);
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
             color: #ffffff;
-            border-color: var(--accent-color);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.45);
+            border: 1px solid rgba(147, 197, 253, 0.4);
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+        /* --- Back Button --- */
+        .back-btn-wrapper {
+            position: sticky;
+            top: 8px;
+            z-index: 100;
+            margin-bottom: 16px;
+        }
+        .back-btn {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
+        /* --- Loader --- */
+        .loading-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+            padding: 50px 0;
+            gap: 20px;
+        }
+        .jupiter-orbit-loader {
             position: relative;
-            cursor: pointer;
-            transition: transform 0.1s ease;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 300px;
         }
-
-        .card:active {
-            transform: scale(0.98);
+        .loader-planet {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #e2e8f0 0%, #64748b 50%, #0f172a 100%);
+            box-shadow: 0 0 15px rgba(100, 116, 139, 0.6);
+            z-index: 2;
         }
-
-        .card.is-inactive {
-            opacity: 0.5;
-        }
-
-        .card-number {
+        .loader-ring-system {
             position: absolute;
-            top: 6px;
-            left: 8px;
-            font-size: 10px;
-            color: var(--hint-color);
+            width: 86px;
+            height: 86px;
+            transform: rotateX(70deg);
+            animation: spin3D 2.2s linear infinite;
+            z-index: 3;
         }
-
-        .card-img-wrap {
-            width: 54px;
-            height: 54px;
-            margin-top: 6px;
-            margin-bottom: 8px;
-        }
-
-        .card-img-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .loader-ring-back {
+            position: absolute;
+            inset: 0;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
             border-radius: 50%;
         }
-
-        .card h3 {
-            font-size: 13px;
-            text-align: center;
-            margin-bottom: 4px;
-            line-height: 1.2;
+        .loader-moon {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: #ffffff;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #ffffff, 0 0 4px #3b82f6;
         }
-
-        .card .duration {
+        @keyframes spin3D {
+            0% { transform: rotateX(68deg) rotateZ(0deg); }
+            100% { transform: rotateX(68deg) rotateZ(360deg); }
+        }
+        .loading-text {
             font-size: 11px;
             color: var(--hint-color);
-            margin-bottom: 4px;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
-        .card .price {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
+        /* --- Grid & Cards --- */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 24px; }
 
-        .card-footer-ornament {
-            font-size: 10px;
-            margin-top: 4px;
-        }
-
-        .unavailable-badge {
-            font-size: 9px;
-            color: var(--danger-color);
-            font-weight: bold;
-            margin-top: 4px;
-        }
-
-        .detail-view {
-            display: none;
-            background: var(--card-bg);
+        .card {
+            position: relative;
+            background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
             border-radius: 12px;
-            padding: 16px;
-            border: 1px solid var(--border-color);
-        }
-
-        .detail-header {
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+            border: 1px solid #30363d;
+            transition: transform 0.2s ease, border-color 0.2s ease;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
+            justify-content: center;
+            box-sizing: border-box;
+            animation: cardAppear 0.35s ease backwards;
         }
-
-        .detail-header img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+        .card:hover { border-color: rgba(88, 166, 255, 0.5); }
+        .card:active { transform: scale(0.95); }
 
-        .detail-info h2 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-
-        .detail-info p {
-            font-size: 12px;
-            color: var(--hint-color);
-        }
-
-        .detail-info .price-tag {
-            font-size: 14px;
-            color: var(--accent-color);
-            font-weight: bold;
-            margin-top: 2px;
-        }
-
-        .note-box {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 3px solid var(--accent-color);
-            padding: 8px 12px;
-            font-size: 12px;
+        .card.is-inactive { opacity: 0.6; filter: grayscale(0.6); }
+        .unavailable-badge {
+            background: #ff4757;
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: 800;
+            padding: 2px 6px;
             border-radius: 4px;
-            margin-bottom: 14px;
+            margin-top: 4px;
         }
 
-        .input-group {
+        .card-number { position: absolute; top: 6px; left: 8px; font-size: 10px; font-weight: 800; color: #8b9bb4; }
+        .card-img-wrap {
+            width: 54px; height: 54px; border-radius: 50%;
+            background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
+            border: 2px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 4px; margin-bottom: 8px; overflow: hidden;
+        }
+        .card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .card h3 { margin: 0; font-size: 12px; font-weight: 700; color: #f0f6fc; word-break: break-word; line-height: 1.2; }
+        .duration { font-size: 10px; font-weight: 700; color: var(--accent-red); margin-top: 4px; }
+        .price { font-weight: 800; color: #58a6ff; margin-top: 4px; font-size: 11px; }
+
+        .card-footer-ornament { margin-top: 6px; font-size: 9px; color: #8b9bb4; }
+
+        .detail-view { 
+            display: none; background: linear-gradient(145deg, #161b22 0%, #0d1117 100%); 
+            padding: 20px 14px; border-radius: 14px; border: 1px solid #30363d; text-align: center;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+        .detail-img-wrap {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: radial-gradient(circle, #21262d 0%, #0d1117 100%);
+            border: 3px solid rgba(255,255,255,0.3); display: inline-flex;
+            align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden;
+        }
+        .detail-img-wrap img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
+        .note-box { background-color: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; color: #ffecb3; padding: 10px; font-size: 11px; border-radius: 6px; margin: 14px 0; text-align: left; line-height: 1.4; }
+        
+        .unavailable-msg {
+            background-color: rgba(255, 71, 87, 0.15);
+            border: 1px solid #ff4757;
+            color: #ff6b81;
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-top: 14px;
+        }
+
+        /* --- 4 Specific Input Box Styles --- */
+        .input-group-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            margin-top: 14px;
+            text-align: left;
+        }
+        .input-group { 
+            display: flex;
+            flex-direction: column;
+        }
+        .input-group label { 
+            font-size: 11px; 
+            color: var(--hint-color); 
+            margin-bottom: 4px; 
+            font-weight: 600;
+        }
+        .input-group input { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border-radius: 8px; 
+            border: 1px solid #30363d; 
+            background: #0d1117; 
+            color: #ffffff; 
+            box-sizing: border-box; 
+            font-size: 13px; 
+            outline: none; 
+            transition: border-color 0.2s ease, box-shadow 0.2s ease; 
+        }
+        .input-group input:focus { 
+            border-color: #3b82f6; 
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
         }
 
-        .input-group input {
-            padding: 10px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            font-size: 13px;
-            outline: none;
+        .trust-footer {
+            margin-top: 20px; background: linear-gradient(145deg, #161b22 0%, #0d1117 100%);
+            border: 1px solid #30363d; border-radius: 10px; padding: 10px 4px;
+            display: flex; justify-content: space-around; align-items: center; font-size: 8px; color: #8b9bb4; text-align: center;
         }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: var(--hint-color);
-            font-size: 13px;
-        }
-
-        .unavail-msg {
-            text-align: center;
-            color: var(--danger-color);
-            font-size: 13px;
-            padding: 10px;
-            display: none;
-        }
+        .trust-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <button class="back-btn" id="backBtn" onclick="goBack()">← နောက်သို့</button>
-    </div>
+<div class="store-header">
+    <svg class="planet-icon" viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg" style="transform: rotate(45deg);">
+        <g transform="rotate(-10 100 65)">
+            <ellipse cx="100" cy="65" rx="90" ry="28" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4"/>
+            <circle cx="100" cy="65" r="42" fill="url(#headerPlanetGrad)" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <path d="M 10 65 A 90 28 0 0 0 190 65" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="4" stroke-linecap="round"/>
+        </g>
+        <defs>
+            <radialGradient id="headerPlanetGrad" cx="30%" cy="30%" r="70%">
+                <stop offset="0%" stop-color="#e2e8f0"/>
+                <stop offset="50%" stop-color="#64748b"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+            </radialGradient>
+        </defs>
+    </svg>
+    <h1 class="store-title">JUPITER STORE</h1>
+    <div class="store-subtitle">✦ PREMIUM DIGITAL PRODUCTS ✦</div>
+</div>
 
-    <div class="search-box" id="searchContainer">
-        <input type="text" id="searchInput" placeholder="ပစ္စည်းအမည် ရှာဖွေရန်..." oninput="handleSearch()">
-    </div>
+<!-- Search Bar -->
+<div class="search-container" id="searchContainer">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" class="search-input" placeholder="search now..." oninput="handleSearch()">
+</div>
 
-    <div class="tabs" id="tabContainer">
-        <button class="tab-btn active" id="tabPremium" onclick="switchTab('PREMIUM')">Premium Item</button>
-        <button class="tab-btn" id="tabService" onclick="switchTab('SERVICE')">Log in Service</button>
-        <button class="tab-btn" id="tabBundle" onclick="switchTab('BUNDLE')">Bundle Item</button>
-    </div>
+<div id="tabContainer" class="tab-container">
+    <button class="tab-btn active" id="tabPremium" onclick="switchTab('PREMIUM')">Premium</button>
+    <button class="tab-btn" id="tabService" onclick="switchTab('SERVICE')">Log in Service</button>
+    <button class="tab-btn" id="tabGame" onclick="switchTab('GAME')">Game Item</button>
+</div>
 
-    <div id="loading" class="loading">အချက်အလက်များ ရယူနေပါသည်...</div>
+<!-- Fixed Back Button Container -->
+<div class="back-btn-wrapper">
+    <button id="backBtn" class="back-btn" onclick="goBack()">← Back</button>
+</div>
 
-    <div id="productGrid" class="grid"></div>
-    <div id="categoryGrid" class="grid" style="display:none;"></div>
-
-    <div id="detailView" class="detail-view">
-        <div class="detail-header">
-            <img id="detailLogo" src="" alt="">
-            <div class="detail-info">
-                <h2 id="productTitle"></h2>
-                <p id="productDuration"></p>
-                <div class="price-tag" id="productPrice"></div>
+<!-- Loading Graphic -->
+<div id="loading" class="loading-container">
+    <div class="jupiter-orbit-loader">
+        <div class="loader-ring-system">
+            <div class="loader-ring-back">
+                <div class="loader-moon"></div>
             </div>
         </div>
+        <div class="loader-planet"></div>
+    </div>
+    <div class="loading-text">Loading Universe...</div>
+</div>
 
-        <div id="noteBox" class="note-box" style="display:none;"></div>
-        <div id="unavailMsg" class="unavail-msg">လတ်တလော ဝယ်ယူ၍ မရနိုင်သေးပါ။</div>
+<div id="productGrid" class="grid"></div>
+<div id="categoryGrid" class="grid" style="display: none;"></div>
 
-        <div id="inputForm" class="input-group">
-            <input type="email" id="accountEmail" placeholder="Email / Username (လိုအပ်ပါက)">
-            <input type="text" id="accountPsw" placeholder="Password (လိုအပ်ပါက)">
-            <input type="text" id="accountPhone" placeholder="Phone Number (လိုအပ်ပါက)">
-            <input type="text" id="accountRemarks" placeholder="ဖြည့်စွက်ချက် / မှတ်ချက်">
+<div id="detailView" class="detail-view">
+    <div>
+        <div class="detail-img-wrap">
+            <img id="detailLogo" src="" alt="Logo">
         </div>
+        <h3 id="productTitle" style="margin: 4px 0; font-size: 15px; color:#f0f6fc;"></h3>
+        <div id="productDuration" class="duration" style="font-size: 11px; margin-top: 4px;"></div>
+        <div id="productPrice" class="price" style="font-size: 16px; margin-top: 6px;"></div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        try { 
-            tg.ready();
-            tg.expand(); 
-        } catch(e){}
+    <div id="noteBox" class="note-box" style="display:none;"></div>
+    
+    <div id="unavailMsg" class="unavailable-msg" style="display:none;">
+        ⚠️ လက်ရှိ ပစ္စည်းပြတ်လပ်နေပါသည်။ (Unavailable)
+    </div>
 
-        const API_URL = "https://script.google.com/macros/s/AKfycbz_DalKW3vfaMtxBNwHIVfVfRCoqvE2tJKu_EMj-I-uaXgeIKjyxJMf-hvdAohdNNg-/exec";
+    <!-- 4 Specific Input Fields Requested -->
+    <div id="inputForm" class="input-group-container">
+        <div class="input-group">
+            <label for="accountEmail">Email (if need):</label>
+            <input type="email" id="accountEmail" placeholder="Email အကောင့်ထည့်ပါ (လိုအပ်လျှင်)...">
+        </div>
+        <div class="input-group">
+            <label for="accountPsw">Password (if need):</label>
+            <input type="text" id="accountPsw" placeholder="Password ထည့်ပါ (လိုအပ်လျှင်)...">
+        </div>
+        <div class="input-group">
+            <label for="accountPhone">Phone Number:</label>
+            <input type="tel" id="accountPhone" placeholder="ဖုန်းနံပါတ်ထည့်ပါ...">
+        </div>
+        <div class="input-group">
+            <label for="accountRemarks">Remarks / Note:</label>
+            <input type="text" id="accountRemarks" placeholder="အခြားမှတ်ချက် (ရှိလျှင်)...">
+        </div>
+    </div>
+</div>
 
-        let rawData = [];
-        let selectedProduct = null;
-        let currentView = 'PRODUCTS';
-        let currentTab = 'PREMIUM';
-        let lastSelectedProductName = '';
+<div class="trust-footer">
+    <div class="trust-item"><span>🛡️</span> SAFE & SECURE</div>
+    <div class="trust-item"><span>⚡</span> INSTANT DELIVERY</div>
+    <div class="trust-item"><span>🎖️</span> PREMIUM</div>
+    <div class="trust-item"><span>🎧</span> 24/7 SUPPORT</div>
+</div>
 
-        function getProp(obj, keys) {
-            if (!obj) return "";
-            for (let k of keys) {
-                for (let prop in obj) {
-                    if (prop.toLowerCase() === k.toLowerCase()) {
-                        let val = obj[prop];
-                        if (val !== undefined && val !== null && String(val).trim() !== "") {
-                            return String(val).trim();
-                        }
+<script>
+    const tg = window.Telegram.WebApp;
+    try { 
+        tg.ready();
+        tg.expand(); 
+    } catch(e){}
+
+    const BOT_TOKEN = "8872507193:AAFzPJBbCG2pjLtBDvtSakBUqEYKLbHdGks";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz_DalKW3vfaMtxBNwHIVfVfRCoqvE2tJKu_EMj-I-uaXgeIKjyxJMf-hvdAohdNNg-/exec";
+    const QR_IMAGE_URL = "https://kitobokuta.github.io/digital-product-ui/qr.jpg";
+
+    let rawData = [];
+    let selectedProduct = null;
+    let currentView = 'PRODUCTS';
+    let currentTab = 'PREMIUM';
+    let lastSelectedProductName = '';
+
+    function getProp(obj, keys) {
+        if (!obj) return "";
+        for (let k of keys) {
+            for (let prop in obj) {
+                if (prop.toLowerCase() === k.toLowerCase()) {
+                    let val = obj[prop];
+                    if (val !== undefined && val !== null && String(val).trim() !== "") {
+                        return String(val).trim();
                     }
                 }
             }
-            return "";
         }
+        return "";
+    }
 
-        function switchTab(tabType) {
-            currentTab = tabType;
-            document.getElementById('tabPremium').classList.toggle('active', tabType === 'PREMIUM');
-            document.getElementById('tabService').classList.toggle('active', tabType === 'SERVICE');
-            document.getElementById('tabBundle').classList.toggle('active', tabType === 'BUNDLE');
-            
-            document.getElementById('searchInput').value = '';
+    function switchTab(tabType) {
+        currentTab = tabType;
+        document.getElementById('tabPremium').classList.toggle('active', tabType === 'PREMIUM');
+        document.getElementById('tabService').classList.toggle('active', tabType === 'SERVICE');
+        document.getElementById('tabGame').classList.toggle('active', tabType === 'GAME');
+        
+        document.getElementById('searchInput').value = '';
+        showProducts();
+    }
+
+    function getSvgInitialsLogo(text) {
+        const initial = (text || "J").trim().charAt(0).toUpperCase();
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+            <rect width="100" height="100" rx="50" fill="url(#metalGrad)"/>
+            <defs>
+                <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#374151"/>
+                    <stop offset="100%" stop-color="#111827"/>
+                </linearGradient>
+            </defs>
+            <text x="50%" y="54%" font-family="-apple-system, Roboto, sans-serif" font-weight="bold" font-size="44" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initial}</text>
+        </svg>`;
+        return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    function resolveLogo(item, categoryName) {
+        if (!item) return getSvgInitialsLogo(categoryName);
+        let logoVal = getProp(item, ["logo", "image", "img"]);
+        if (logoVal !== "") {
+            if (logoVal.startsWith("http://") || logoVal.startsWith("https://") || logoVal.startsWith("data:")) return logoVal;
+            if (!logoVal.startsWith("images/")) logoVal = "images/" + logoVal;
+            return logoVal;
+        }
+        return getSvgInitialsLogo(getProp(item, ["name", "title"]) || categoryName);
+    }
+
+    async function fetchProducts() {
+        try {
+            const timestampUrl = API_URL + (API_URL.includes("?") ? "&" : "?") + "_t=" + new Date().getTime();
+            const response = await fetch(timestampUrl, { redirect: "follow" });
+            rawData = await response.json();
+            document.getElementById('loading').style.display = 'none';
             showProducts();
+        } catch (error) {
+            console.error("Fetch error:", error);
+            document.getElementById('loading').innerHTML = `<div style="color: var(--hint-color); font-size: 12px; text-align: center;">Data ရယူ၍ မရနိုင်ပါ။</div>`;
         }
+    }
 
-        function getSvgInitialsLogo(text) {
-            const initial = (text || "J").trim().charAt(0).toUpperCase();
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
-                <rect width="100" height="100" rx="50" fill="url(#metalGrad)"/>
-                <defs>
-                    <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stop-color="#374151"/>
-                        <stop offset="100%" stop-color="#111827"/>
-                    </linearGradient>
-                </defs>
-                <text x="50%" y="54%" font-family="-apple-system, Roboto, sans-serif" font-weight="bold" font-size="44" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">${initial}</text>
-            </svg>`;
-            return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
-        }
+    function showProducts(searchQuery = "") {
+        currentView = 'PRODUCTS';
+        document.getElementById('searchContainer').style.display = 'block';
+        document.getElementById('tabContainer').style.display = 'flex';
+        document.getElementById('backBtn').style.display = 'none';
+        document.getElementById('productGrid').style.display = 'grid';
+        document.getElementById('categoryGrid').style.display = 'none';
+        document.getElementById('detailView').style.display = 'none';
+        try { tg.MainButton.hide(); } catch(e){}
 
-        function resolveLogo(item, categoryName) {
-            if (!item) return getSvgInitialsLogo(categoryName);
-            let logoVal = getProp(item, ["logo", "image", "img"]);
-            if (logoVal !== "") {
-                if (logoVal.startsWith("http://") || logoVal.startsWith("https://") || logoVal.startsWith("data:")) return logoVal;
-                if (!logoVal.startsWith("images/")) logoVal = "images/" + logoVal;
-                return logoVal;
-            }
-            return getSvgInitialsLogo(getProp(item, ["name", "title"]) || categoryName);
-        }
+        const container = document.getElementById('productGrid');
+        container.innerHTML = '';
 
-        async function fetchProducts() {
-            try {
-                const timestampUrl = API_URL + (API_URL.includes("?") ? "&" : "?") + "_t=" + new Date().getTime();
-                const response = await fetch(timestampUrl, { redirect: "follow" });
-                rawData = await response.json();
-                document.getElementById('loading').style.display = 'none';
-                showProducts();
-            } catch (error) {
-                console.error("Fetch error:", error);
-                document.getElementById('loading').innerHTML = `<div style="color: var(--hint-color); font-size: 12px; text-align: center;">Data ရယူ၍ မရနိုင်ပါ။</div>`;
-            }
-        }
+        const uniqueProductsMap = new Map();
+        const query = searchQuery.trim().toLowerCase();
 
-        function showProducts(searchQuery = "") {
-            currentView = 'PRODUCTS';
-            document.getElementById('searchContainer').style.display = 'block';
-            document.getElementById('tabContainer').style.display = 'flex';
-            document.getElementById('backBtn').style.display = 'none';
-            document.getElementById('productGrid').style.display = 'grid';
-            document.getElementById('categoryGrid').style.display = 'none';
-            document.getElementById('detailView').style.display = 'none';
-            try { tg.MainButton.hide(); } catch(e){}
+        rawData.forEach((prod) => {
+            const sheetType = getProp(prod, ["sheet_type", "type"]);
+            const prodName = getProp(prod, ["name", "title"]);
+            if (!prodName) return;
 
-            const container = document.getElementById('productGrid');
-            container.innerHTML = '';
+            const nameLower = prodName.toLowerCase();
 
-            const uniqueProductsMap = new Map();
-            const query = searchQuery.trim().toLowerCase();
+            if (query === "") {
+                let isMatchedTab = false;
+                if (currentTab === 'PREMIUM' && (sheetType === "Products Master Database" || sheetType === "Premium")) isMatchedTab = true;
+                if (currentTab === 'SERVICE' && sheetType === "Log in Service") isMatchedTab = true;
+                if (currentTab === 'GAME' && sheetType === "Game Items") isMatchedTab = true;
 
-            rawData.forEach((prod) => {
-                const sheetType = getProp(prod, ["sheet_type", "type"]);
-                const prodName = getProp(prod, ["name", "title"]);
-                if (!prodName) return;
-
-                const nameLower = prodName.toLowerCase();
-
-                if (query === "") {
-                    let isMatchedTab = false;
-                    if (currentTab === 'PREMIUM' && (sheetType === "Products Master Database" || sheetType === "Premium")) isMatchedTab = true;
-                    if (currentTab === 'SERVICE' && sheetType === "Log in Service") isMatchedTab = true;
-                    if (currentTab === 'BUNDLE' && (sheetType === "Bundle Item" || sheetType === "Game Items")) isMatchedTab = true;
-
-                    if (isMatchedTab) {
-                        if (!uniqueProductsMap.has(prodName)) {
-                            uniqueProductsMap.set(prodName, prod);
-                        }
-                    }
-                } else {
-                    if (nameLower.includes(query)) {
-                        if (!uniqueProductsMap.has(prodName)) {
-                            uniqueProductsMap.set(prodName, prod);
-                        }
+                if (isMatchedTab) {
+                    if (!uniqueProductsMap.has(prodName)) {
+                        uniqueProductsMap.set(prodName, prod);
                     }
                 }
-            });
-
-            if (uniqueProductsMap.size === 0) {
-                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">ပစ္စည်းများ မရှိပါ။</div>`;
-                return;
+            } else {
+                if (nameLower.startsWith(query)) {
+                    if (!uniqueProductsMap.has(prodName)) {
+                        uniqueProductsMap.set(prodName, prod);
+                    }
+                }
             }
+        });
 
-            let index = 1;
-            uniqueProductsMap.forEach((prod, prodName) => {
-                const logoSrc = resolveLogo(prod, prodName);
-                const fallbackSrc = getSvgInitialsLogo(prodName);
-
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.style.animationDelay = `${(index - 1) * 0.04}s`;
-                card.innerHTML = `
-                    <div class="card-number">${index < 10 ? '0' + index : index}</div>
-                    <div class="card-img-wrap">
-                        <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
-                    </div>
-                    <h3>${prodName}</h3>
-                    <div class="card-footer-ornament">👑</div>
-                `;
-                
-                card.onclick = () => showVariants(prodName);
-                container.appendChild(card);
-                index++;
-            });
+        if (uniqueProductsMap.size === 0) {
+            container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--hint-color); padding: 30px; font-size: 12px;">No products found!...</div>`;
+            return;
         }
 
-        function handleSearch() {
-            const query = document.getElementById('searchInput').value;
-            if (currentView === 'PRODUCTS') {
-                showProducts(query);
-            } else if (currentView === 'VARIANTS') {
-                showVariants(lastSelectedProductName, query);
-            }
-        }
+        let index = 1;
+        uniqueProductsMap.forEach((prod, prodName) => {
+            const logoSrc = resolveLogo(prod, prodName);
+            const fallbackSrc = getSvgInitialsLogo(prodName);
 
-        function showVariants(prodName, searchQuery = "") {
-            currentView = 'VARIANTS';
-            lastSelectedProductName = prodName;
-            const query = searchQuery.trim().toLowerCase();
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.animationDelay = `${(index - 1) * 0.04}s`;
+            card.innerHTML = `
+                <div class="card-number">${index < 10 ? '0' + index : index}</div>
+                <div class="card-img-wrap">
+                    <img src="${logoSrc}" alt="${prodName}" onerror="this.onerror=null; this.src='${fallbackSrc}';">
+                </div>
+                <h3>${prodName}</h3>
+                <div class="card-footer-ornament">👑</div>
+            `;
             
-            const matchedItems = rawData.filter(i => {
-                const nameMatch = getProp(i, ["name", "title"]) === prodName;
-                if (!nameMatch) return false;
-                if (query === "") return true;
-                const itemCat = (getProp(i, ["category", "cat"]) || prodName).toLowerCase();
-                return itemCat.includes(query);
-            });
+            card.onclick = () => {
+                const sheetType = getProp(prod, ["sheet_type", "type"]);
+                let targetTab = 'PREMIUM';
+                if (sheetType === "Log in Service") targetTab = 'SERVICE';
+                else if (sheetType === "Game Items") targetTab = 'GAME';
 
+                currentTab = targetTab;
+                document.getElementById('tabPremium').classList.toggle('active', targetTab === 'PREMIUM');
+                document.getElementById('tabService').classList.toggle('active', targetTab === 'SERVICE');
+                document.getElementById('tabGame').classList.toggle('active', targetTab === 'GAME');
+
+                showVariants(prodName);
+            };
+
+            container.appendChild(card);
+            index++;
+        });
+    }
+
+    function handleSearch() {
+        const query = document.getElementById('searchInput').value;
+        if (currentView === 'PRODUCTS') {
+            showProducts(query);
+        } else if (currentView === 'VARIANTS') {
+            showVariants(lastSelectedProductName, query);
+        }
+    }
+
+    function showVariants(prodName, searchQuery = "") {
+        currentView = 'VARIANTS';
+        lastSelectedProductName = prodName;
+        const query = searchQuery.trim().toLowerCase();
+        
+        const matchedItems = rawData.filter(i => {
+            const nameMatch = getProp(i, ["name", "title"]) === prodName;
+            if (!nameMatch) return false;
+            if (query === "") return true;
+            const itemCat = (getProp(i, ["category", "cat"]) || prodName).toLowerCase();
+            return itemCat.startsWith(query);
+        });
+
+        if (matchedItems.length >= 0) {
             document.getElementById('searchContainer').style.display = 'block';
             document.getElementById('tabContainer').style.display = 'none';
             document.getElementById('backBtn').style.display = 'inline-block';
@@ -510,111 +655,149 @@
                 container.appendChild(card);
             });
         }
+    }
 
-        function showDetail(product) {
-            currentView = 'DETAIL';
-            selectedProduct = product;
-            document.getElementById('searchContainer').style.display = 'none';
-            document.getElementById('tabContainer').style.display = 'none';
-            document.getElementById('backBtn').style.display = 'inline-block';
-            document.getElementById('productGrid').style.display = 'none';
-            document.getElementById('categoryGrid').style.display = 'none';
-            document.getElementById('detailView').style.display = 'block';
+    function showDetail(product) {
+        currentView = 'DETAIL';
+        selectedProduct = product;
+        document.getElementById('searchContainer').style.display = 'none';
+        document.getElementById('tabContainer').style.display = 'none';
+        document.getElementById('backBtn').style.display = 'inline-block';
+        document.getElementById('productGrid').style.display = 'none';
+        document.getElementById('categoryGrid').style.display = 'none';
+        document.getElementById('detailView').style.display = 'block';
 
-            document.getElementById('accountEmail').value = '';
-            document.getElementById('accountPsw').value = '';
-            document.getElementById('accountPhone').value = '';
-            document.getElementById('accountRemarks').value = '';
+        // Input Fields Reset
+        document.getElementById('accountEmail').value = '';
+        document.getElementById('accountPsw').value = '';
+        document.getElementById('accountPhone').value = '';
+        document.getElementById('accountRemarks').value = '';
 
-            const prodName = getProp(product, ["name", "title"]);
-            const prodCat = getProp(product, ["category", "cat"]);
-            const prodPrice = getProp(product, ["price", "cost"]);
-            const prodDuration = getProp(product, ["duration", "time"]);
-            const prodDesc = getProp(product, ["description", "desc"]);
-            
-            const prodStatus = (getProp(product, ["status", "stat"]) || 'Active').toLowerCase();
-            const isInactive = prodStatus === 'inactive';
+        const prodName = getProp(product, ["name", "title"]);
+        const prodCat = getProp(product, ["category", "cat"]);
+        const prodPrice = getProp(product, ["price", "cost"]);
+        const prodDuration = getProp(product, ["duration", "time"]);
+        const prodDesc = getProp(product, ["description", "desc"]);
+        
+        const prodStatus = (getProp(product, ["status", "stat"]) || 'Active').toLowerCase();
+        const isInactive = prodStatus === 'inactive';
 
-            document.getElementById('detailLogo').src = resolveLogo(product, prodName);
-            document.getElementById('productTitle').innerText = prodCat && prodCat !== prodName ? `${prodName} - ${prodCat}` : prodName;
-            document.getElementById('productDuration').innerText = prodDuration ? `⏱ ${prodDuration}` : '';
-            document.getElementById('productPrice').innerText = `${prodPrice} MMK`;
+        document.getElementById('detailLogo').src = resolveLogo(product, prodName);
+        document.getElementById('productTitle').innerText = prodCat && prodCat !== prodName ? `${prodName} - ${prodCat}` : prodName;
+        document.getElementById('productDuration').innerText = prodDuration ? `⏱ ${prodDuration}` : '';
+        document.getElementById('productPrice').innerText = `${prodPrice} MMK`;
 
-            const noteBox = document.getElementById('noteBox');
-            if (prodDesc) {
-                noteBox.innerHTML = `📌 <b>Condition / Note:</b><br>${prodDesc}`;
-                noteBox.style.display = 'block';
-            } else {
-                noteBox.style.display = 'none';
-            }
-
-            const unavailMsg = document.getElementById('unavailMsg');
-            const inputForm = document.getElementById('inputForm');
-
-            if (isInactive) {
-                unavailMsg.style.display = 'block';
-                inputForm.style.display = 'none';
-                try { tg.MainButton.hide(); } catch(e){}
-            } else {
-                unavailMsg.style.display = 'none';
-                inputForm.style.display = 'flex';
-                try {
-                    tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
-                    tg.MainButton.show();
-                    tg.MainButton.offClick(sendOrder);
-                    tg.MainButton.onClick(sendOrder);
-                } catch(e){}
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        const noteBox = document.getElementById('noteBox');
+        if (prodDesc) {
+            noteBox.innerHTML = `📌 <b>Condition / Note:</b><br>${prodDesc}`;
+            noteBox.style.display = 'block';
+        } else {
+            noteBox.style.display = 'none';
         }
 
-        function goBack() {
-            if (currentView === 'DETAIL') {
-                document.getElementById('searchInput').value = '';
-                showVariants(lastSelectedProductName);
-            } else if (currentView === 'VARIANTS') {
-                document.getElementById('searchInput').value = '';
-                showProducts();
+        const unavailMsg = document.getElementById('unavailMsg');
+        const inputForm = document.getElementById('inputForm');
+
+        if (isInactive) {
+            unavailMsg.style.display = 'block';
+            inputForm.style.display = 'none';
+            try { tg.MainButton.hide(); } catch(e){}
+        } else {
+            unavailMsg.style.display = 'none';
+            inputForm.style.display = 'flex';
+            try {
+                tg.MainButton.setText(`ORDER NOW (${prodPrice} MMK)`);
+                tg.MainButton.show();
+                tg.MainButton.offClick(sendOrder);
+                tg.MainButton.onClick(sendOrder);
+            } catch(e){}
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function goBack() {
+        if (currentView === 'DETAIL') {
+            document.getElementById('searchInput').value = '';
+            showVariants(lastSelectedProductName);
+        } else if (currentView === 'VARIANTS') {
+            document.getElementById('searchInput').value = '';
+            showProducts();
+        }
+    }
+
+    async function sendOrder() {
+        if (!selectedProduct) return;
+        
+        const accEmail = document.getElementById('accountEmail').value.trim();
+        const accPsw = document.getElementById('accountPsw').value.trim();
+        const accPhone = document.getElementById('accountPhone').value.trim();
+        const accRemarks = document.getElementById('accountRemarks').value.trim();
+
+        let detailsArr = [];
+        if (accEmail) detailsArr.push(`Email: ${accEmail}`);
+        if (accPsw) detailsArr.push(`Password: ${accPsw}`);
+        if (accPhone) detailsArr.push(`Phone: ${accPhone}`);
+        if (accRemarks) detailsArr.push(`Remarks: ${accRemarks}`);
+
+        const accountSummaryText = detailsArr.length > 0 ? detailsArr.join(' | ') : '-';
+        const formattedAccountDetails = detailsArr.length > 0 
+            ? '\n' + detailsArr.map(item => `  • ${item}`).join('\n') 
+            : ' -';
+
+        const prodName = getProp(selectedProduct, ["name", "title"]);
+        const prodCat = getProp(selectedProduct, ["category", "cat"]);
+        const prodPrice = getProp(selectedProduct, ["price", "cost"]);
+        const prodDuration = getProp(selectedProduct, ["duration", "time"]);
+
+        const fullItemName = `${prodName} (${prodCat}${prodDuration ? ' - ' + prodDuration : ''})`;
+        const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
+
+        const user = tg.initDataUnsafe?.user;
+        const chatId = user?.id;
+
+        const captionText = `🛒 <b>Order ID:</b> <code>${orderId}</code>\n` +
+                            `<b>Item:</b> ${fullItemName}\n` +
+                            `<b>Price:</b> ${prodPrice} MMK\n` +
+                            `<b>Account Details:</b>${formattedAccountDetails}\n\n` +
+                            `📷 <b>ငွေလွှဲပြေစာ နှင့်တကွ နောက်ဆုံး ဂဏန်း ၆ လုံးကို ပို့ပေးပါခဗျာ။</b>`;
+
+        if (chatId) {
+            try {
+                await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        photo: QR_IMAGE_URL,
+                        caption: captionText,
+                        parse_mode: 'HTML'
+                    })
+                });
+            } catch (err) {
+                console.error("Bot payload error:", err);
             }
         }
 
-        async function sendOrder() {
-            if (!selectedProduct) return;
-            
-            const accEmail = document.getElementById('accountEmail').value.trim();
-            const accPsw = document.getElementById('accountPsw').value.trim();
-            const accPhone = document.getElementById('accountPhone').value.trim();
-            const accRemarks = document.getElementById('accountRemarks').value.trim();
+        const payload = {
+            order_id: orderId,
+            full_item_name: fullItemName,
+            price: prodPrice,
+            account_data: accountSummaryText
+        };
 
-            let detailsArr = [];
-            if (accEmail) detailsArr.push(`Email: ${accEmail}`);
-            if (accPsw) detailsArr.push(`Password: ${accPsw}`);
-            if (accPhone) detailsArr.push(`Phone: ${accPhone}`);
-            if (accRemarks) detailsArr.push(`Remarks: ${accRemarks}`);
-
-            const accountSummaryText = detailsArr.length > 0 ? detailsArr.join(', ') : '-';
-
-            const prodName = getProp(selectedProduct, ["name", "title"]);
-            const prodCat = getProp(selectedProduct, ["category", "cat"]);
-            const prodPrice = getProp(selectedProduct, ["price", "cost"]);
-            const prodDuration = getProp(selectedProduct, ["duration", "time"]);
-
-            const fullItemName = `${prodName} (${prodCat}${prodDuration ? ' - ' + prodDuration : ''})`;
-            const orderId = `ORD-${Math.floor(100000000 + Math.random() * 900000000)}`;
-
-            const payload = {
-                orderId: orderId,
-                item: fullItemName,
-                price: prodPrice,
-                details: accountSummaryText,
-                initData: tg.initData
-            };
-
-            // Telegram WebApp သို့ Payload ပို့ပေးခြင်း
+        try {
             tg.sendData(JSON.stringify(payload));
+        } catch (e) {
+            alert(`Order Placed!\nOrder ID: ${orderId}\nItem: ${fullItemName}`);
         }
 
-        fetchProducts();
-    </script>
+        try {
+            tg.close();
+        } catch(e){}
+    }
+
+    // Initialize fetching data
+    fetchProducts();
+</script>
 </body>
 </html>
